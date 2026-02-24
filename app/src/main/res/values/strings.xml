@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Bee Free POC</string>
+    <string name="accessibility_service_label">BeFreeAccessibilityService</string>
+    <string name="accessibility_service_description">A app to help user to get out of addiction</string>
+    <string name="dont_do_this">Não Faça Isso</string>
+    <string name="request_screen_monitor_permission">I need this permission to monitor your screen activity and detect when you\'re returning to your addiction, helping you stay on track.</string>
+    <string name="request_overlay_permission">I need this permission to display pop-ups that help you stay on track and prevent relapses.</string>
+</resources>
