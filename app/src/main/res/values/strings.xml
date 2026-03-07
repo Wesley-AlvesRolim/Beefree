@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Bee Free POC</string>
+    <string name="app_name">Bee Free</string>
     <string name="accessibility_service_label">BeFreeAccessibilityService</string>
     <string name="accessibility_service_description">A app to help user to get out of addiction</string>
     <string name="dont_do_this">Não Faça Isso</string>

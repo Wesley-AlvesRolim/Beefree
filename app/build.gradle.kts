@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.wesley.beefreepoc"
+    namespace = "com.wesley.beefree"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.wesley.beefreepoc"
+        applicationId = "com.wesley.beefree"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

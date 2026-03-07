@@ -13,7 +13,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BeeFreePOC">
+        android:theme="@style/Theme.BeeFree">
         <service android:name=".infrastructure.services.AccessibilityServiceActivity"
             android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
@@ -34,7 +34,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.BeeFreePOC">
+            android:theme="@style/Theme.BeeFree">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
