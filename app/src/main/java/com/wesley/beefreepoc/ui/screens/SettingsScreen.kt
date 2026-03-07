@@ -7,12 +7,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wesley.beefreepoc.ui.components.AccessibilitySettingsUI
 import com.wesley.beefreepoc.ui.components.OverlaySettingsUI
+import com.wesley.beefreepoc.ui.viewmodel.SettingsViewModel
 
 @Composable
 fun SettingsScreen() {
+    val context = LocalContext.current
+    val viewModel: SettingsViewModel =
+        viewModel {
+            SettingsViewModel(context)
+        }
+
     Column(
         modifier =
             Modifier
@@ -20,7 +29,7 @@ fun SettingsScreen() {
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
     ) {
-        AccessibilitySettingsUI()
-        OverlaySettingsUI()
+        AccessibilitySettingsUI(viewModel)
+        OverlaySettingsUI(viewModel)
     }
 }

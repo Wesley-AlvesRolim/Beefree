@@ -1,4 +1,4 @@
-package com.wesley.beefreepoc.services
+package com.wesley.beefreepoc.infrastructure.services
 
 import android.app.Service
 import android.content.Intent
@@ -21,6 +21,7 @@ class OverlayServiceActivity : Service() {
 
     var androidWindowManager: WindowManager? = null
     var floatyView: View? = null
+    private var lifecycleOwner: ComposeLifecycleOwner? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -32,31 +33,40 @@ class OverlayServiceActivity : Service() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        lifecycleOwner?.apply {
+            handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+            handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        }
         isRunning = false
         if (floatyView != null) {
             androidWindowManager?.removeView(floatyView)
             floatyView = null
         }
+        super.onDestroy()
     }
 
     private fun addOverlayView() {
+        lifecycleOwner =
+            ComposeLifecycleOwner().apply {
+                performRestore(null)
+                handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+                handleLifecycleEvent(Lifecycle.Event.ON_START)
+                handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            }
+
         val composeView =
             ComposeView(this).apply {
                 setContent {
                     OverlayUI(onCloseRequest = { stopSelf() })
                 }
-                val lifecycleOwner = ComposeLifecycleOwner()
-                lifecycleOwner.performRestore(null)
-                lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
                 setViewTreeLifecycleOwner(lifecycleOwner)
                 setViewTreeSavedStateRegistryOwner(lifecycleOwner)
             }
 
         val layoutParams =
             WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT,

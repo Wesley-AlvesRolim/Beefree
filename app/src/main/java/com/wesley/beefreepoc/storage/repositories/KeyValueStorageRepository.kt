@@ -1,8 +1,8 @@
-package com.wesley.beefreepoc.data.repository
+package com.wesley.beefreepoc.storage.repositories
 
 import com.wesley.beefreepoc.storage.ports.KeyValueStorage
 
-class StorageRepository(
+class KeyValueStorageRepository(
     private val keyValueStorage: KeyValueStorage,
 ) {
     fun saveOnboardingCompleted(completed: Boolean) {

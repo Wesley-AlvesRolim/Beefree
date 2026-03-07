@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -23,31 +21,34 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wesley.beefreepoc.R
 import com.wesley.beefreepoc.ui.theme.BeeFreePOCTheme
-import com.wesley.beefreepoc.utils.AccessibilityUtils
-import com.wesley.beefreepoc.utils.OverlayUtils
+import com.wesley.beefreepoc.ui.viewmodel.OnboardingViewModel
 
 @Composable
-fun OnboardingScreen(onFinish: () -> Unit) {
-    var currentScreen by remember { mutableStateOf(OnboardingStep.WELCOME) }
+fun OnboardingScreen(
+    onFinish: () -> Unit,
+    viewModel: OnboardingViewModel = viewModel(),
+) {
+    val currentStep by viewModel.currentStep.collectAsState()
 
-    when (currentScreen) {
-        OnboardingStep.WELCOME -> WelcomeScreen(onNext = { currentScreen = OnboardingStep.HELP })
+    when (currentStep) {
+        OnboardingStep.WELCOME -> WelcomeScreen(onNext = { viewModel.nextStep() })
         OnboardingStep.HELP ->
             HelpScreen(
-                onNext = { currentScreen = OnboardingStep.PERMISSION_SCREEN_MONITOR },
-                onBack = { currentScreen = OnboardingStep.WELCOME },
+                onNext = { viewModel.nextStep() },
+                onBack = { viewModel.previousStep() },
             )
         OnboardingStep.PERMISSION_SCREEN_MONITOR ->
             PermissionMonitorScreen(
-                onNext = { currentScreen = OnboardingStep.PERMISSION_SCREEN_OVERLAY },
-                onBack = { currentScreen = OnboardingStep.HELP },
+                onNext = { viewModel.nextStep() },
+                onBack = { viewModel.previousStep() },
             )
         OnboardingStep.PERMISSION_SCREEN_OVERLAY ->
             PermissionOverlayScreen(
                 onFinish = onFinish,
-                onBack = { currentScreen = OnboardingStep.PERMISSION_SCREEN_MONITOR },
+                onBack = { viewModel.previousStep() },
             )
     }
 }
@@ -124,10 +125,6 @@ fun PermissionMonitorScreen(
 ) {
     val context = LocalContext.current
 
-    fun requestScreenMonitorPermission() {
-        AccessibilityUtils.openAccessibilitySettings(context)
-    }
-
     Column(
         modifier =
             Modifier
@@ -153,7 +150,10 @@ fun PermissionMonitorScreen(
         Spacer(
             modifier = Modifier.padding(8.dp),
         )
-        Button(onClick = { requestScreenMonitorPermission() }) {
+        Button(onClick = {
+            com.wesley.beefreepoc.utils.AccessibilityUtils
+                .openAccessibilitySettings(context)
+        }) {
             Text("Request permission")
         }
         Spacer(
@@ -181,10 +181,6 @@ fun PermissionOverlayScreen(
 ) {
     val context = LocalContext.current
 
-    fun requestOverlayPermission() {
-        OverlayUtils.openSettingsToEnableTheOverlayPermission(context)
-    }
-
     Column(
         modifier =
             Modifier
@@ -210,7 +206,10 @@ fun PermissionOverlayScreen(
         Spacer(
             modifier = Modifier.padding(8.dp),
         )
-        Button(onClick = { requestOverlayPermission() }) {
+        Button(onClick = {
+            com.wesley.beefreepoc.utils.OverlayUtils
+                .openSettingsToEnableTheOverlayPermission(context)
+        }) {
             Text("Request permission")
         }
         Spacer(

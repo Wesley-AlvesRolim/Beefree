@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BeeFreePOC">
-        <service android:name=".services.AccessibilityServiceActivity"
+        <service android:name=".infrastructure.services.AccessibilityServiceActivity"
             android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:label="@string/accessibility_service_label">
@@ -27,7 +27,7 @@
         </service>
 
         <service
-            android:name=".services.OverlayServiceActivity"
+            android:name=".infrastructure.services.OverlayServiceActivity"
             android:exported="false" />
 
         <activity

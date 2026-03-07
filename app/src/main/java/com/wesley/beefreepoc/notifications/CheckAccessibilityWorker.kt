@@ -12,7 +12,7 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.wesley.beefreepoc.R
-import com.wesley.beefreepoc.services.AccessibilityServiceActivity
+import com.wesley.beefreepoc.infrastructure.services.AccessibilityServiceActivity
 import com.wesley.beefreepoc.utils.AccessibilityUtils
 import java.util.concurrent.TimeUnit
 
