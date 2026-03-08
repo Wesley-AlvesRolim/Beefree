@@ -23,7 +23,7 @@ class CheckAccessibilityWorker(
     override fun doWork(): Result {
         val context = applicationContext
         val isEnabled =
-            AccessibilityUtils.isAccessibilityServiceEnabled(
+            AccessibilityUtils.isAccessibilityServiceEnabledAlternative(
                 context,
                 AccessibilityServiceActivity::class.java,
             )
