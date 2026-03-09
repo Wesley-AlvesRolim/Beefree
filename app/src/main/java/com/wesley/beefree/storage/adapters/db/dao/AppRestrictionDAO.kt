@@ -21,6 +21,6 @@ interface AppRestrictionDAO {
     @Query("SELECT * FROM AppRestriction")
     fun getAll(): Flow<List<AppRestrictionEntity>>
 
-    @Query("SELECT * FROM AppRestriction WHERE app_package = :packageName")
+    @Query("SELECT * FROM AppRestriction WHERE app_package = :packageName ORDER BY id LIMIT 1")
     suspend fun getByPackageName(packageName: String): AppRestrictionEntity?
 }
