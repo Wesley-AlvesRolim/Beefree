@@ -51,7 +51,7 @@ class CheckAccessibilityWorker(
         val notification =
             NotificationCompat
                 .Builder(context, channelId)
-                .setSmallIcon(R.drawable.bee_logo)
+                .setSmallIcon(R.drawable.bee_mono)
                 .setContentTitle("Enable Accessibility")
                 .setContentText("Your Accessibility Service is disabled. Tap to enable.")
                 .setContentIntent(
