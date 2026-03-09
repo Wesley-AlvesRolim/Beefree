@@ -79,7 +79,6 @@ fun UserProfile.toEntity() =
 
 fun UserProfileAddictionEntity.toDomain() =
     UserProfileAddiction(
-        id = id,
         userProfileId = userProfileId,
         addictionTypeId = addictionTypeId,
         createdAt = createdAt,
@@ -87,7 +86,6 @@ fun UserProfileAddictionEntity.toDomain() =
 
 fun UserProfileAddiction.toEntity() =
     UserProfileAddictionEntity(
-        id = id,
         userProfileId = userProfileId,
         addictionTypeId = addictionTypeId,
         createdAt = createdAt,
