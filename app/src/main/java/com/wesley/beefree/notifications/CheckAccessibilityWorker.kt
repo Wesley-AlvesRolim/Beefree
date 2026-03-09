@@ -59,7 +59,7 @@ class CheckAccessibilityWorker(
                         context,
                         0,
                         intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        PendingIntent.FLAG_IMMUTABLE,
                     ),
                 ).setAutoCancel(true)
                 .build()
