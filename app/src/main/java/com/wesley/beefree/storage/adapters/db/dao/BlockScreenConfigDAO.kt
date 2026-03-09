@@ -11,7 +11,7 @@ interface BlockScreenConfigDAO {
     @Update
     suspend fun update(entity: BlockScreenConfigEntity)
 
-    @Query("SELECT * FROM BlockScreenConfig WHERE addiction_type_id = :addictionTypeId")
+    @Query("SELECT * FROM BlockScreenConfig WHERE addiction_type_id = :addictionTypeId LIMIT 1")
     suspend fun getByAddictionTypeId(addictionTypeId: Int): BlockScreenConfigEntity?
 
     @Query("SELECT * FROM BlockScreenConfig WHERE id = :id")
