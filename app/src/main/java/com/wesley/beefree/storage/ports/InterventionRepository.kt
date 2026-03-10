@@ -16,11 +16,11 @@ interface InterventionRepository {
 
     fun getActiveContacts(): Flow<List<SupportContact>>
 
-    suspend fun insertConfig(config: BlockScreenConfig): Long
+    suspend fun insertBlockScreenConfig(config: BlockScreenConfig): Long
 
-    suspend fun updateConfig(config: BlockScreenConfig)
+    suspend fun updateBlockScreenConfig(config: BlockScreenConfig)
 
-    suspend fun getConfigByAddictionType(addictionTypeId: Int): BlockScreenConfig?
+    suspend fun getBlockScreenConfigByAddictionType(addictionTypeId: Int): BlockScreenConfig?
 
     suspend fun insertMessage(message: MotivationalMessage): Long
 

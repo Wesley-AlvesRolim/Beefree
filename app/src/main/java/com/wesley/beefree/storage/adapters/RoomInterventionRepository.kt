@@ -31,13 +31,13 @@ class RoomInterventionRepository(
 
     override fun getActiveContacts(): Flow<List<SupportContact>> = contactDao.getActiveContacts().map { list -> list.map { it.toDomain() } }
 
-    override suspend fun insertConfig(config: BlockScreenConfig): Long = configDao.insert(config.toEntity())
+    override suspend fun insertBlockScreenConfig(config: BlockScreenConfig): Long = configDao.insert(config.toEntity())
 
-    override suspend fun updateConfig(config: BlockScreenConfig) {
+    override suspend fun updateBlockScreenConfig(config: BlockScreenConfig) {
         configDao.update(config.toEntity())
     }
 
-    override suspend fun getConfigByAddictionType(addictionTypeId: Int): BlockScreenConfig? =
+    override suspend fun getBlockScreenConfigByAddictionType(addictionTypeId: Int): BlockScreenConfig? =
         configDao.getByAddictionTypeId(addictionTypeId)?.toDomain()
 
     override suspend fun insertMessage(message: MotivationalMessage): Long = messageDao.insert(message.toEntity())
