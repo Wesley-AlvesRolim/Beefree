@@ -6,8 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-  workflow_dispatch:
-
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
@@ -20,15 +18,19 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Gradle Permissions
         run: chmod +x gradlew
 
       - name: Run Lint
-        run: ./gradlew lint
+        run: ./gradlew lintDebug --parallel --build-cache
 
       - name: Run Unit Tests
-        run: ./gradlew test
+        run: ./gradlew testDebugUnitTest --parallel --build-cache
 
   build:
     needs: lint-and-test
@@ -42,9 +44,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Gradle Permissions
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew assembleDebug

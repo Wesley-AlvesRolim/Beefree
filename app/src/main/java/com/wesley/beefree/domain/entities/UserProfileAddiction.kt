@@ -1,0 +1,7 @@
+package com.wesley.beefree.domain.entities
+
+data class UserProfileAddiction(
+    val userProfileId: Int,
+    val addictionTypeId: Int,
+    val createdAt: Long,
+)

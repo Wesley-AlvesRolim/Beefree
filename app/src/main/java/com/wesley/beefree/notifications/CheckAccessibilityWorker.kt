@@ -23,7 +23,7 @@ class CheckAccessibilityWorker(
     override fun doWork(): Result {
         val context = applicationContext
         val isEnabled =
-            AccessibilityUtils.isAccessibilityServiceEnabled(
+            AccessibilityUtils.isAccessibilityServiceEnabledAlternative(
                 context,
                 AccessibilityServiceActivity::class.java,
             )
@@ -51,7 +51,7 @@ class CheckAccessibilityWorker(
         val notification =
             NotificationCompat
                 .Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.bee_mono)
                 .setContentTitle("Enable Accessibility")
                 .setContentText("Your Accessibility Service is disabled. Tap to enable.")
                 .setContentIntent(
@@ -59,7 +59,7 @@ class CheckAccessibilityWorker(
                         context,
                         0,
                         intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        PendingIntent.FLAG_IMMUTABLE,
                     ),
                 ).setAutoCancel(true)
                 .build()
