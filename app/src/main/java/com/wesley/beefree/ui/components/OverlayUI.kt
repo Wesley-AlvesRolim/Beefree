@@ -24,7 +24,10 @@ import com.wesley.beefree.R
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 
 @Composable
-fun OverlayUI(onCloseRequest: () -> Unit = {}) {
+fun OverlayUI(
+    reason: String = "",
+    onCloseRequest: () -> Unit = {},
+) {
     val context = LocalContext.current
     Box(
         modifier =
@@ -51,6 +54,16 @@ fun OverlayUI(onCloseRequest: () -> Unit = {}) {
                 fontSize = 32.sp,
                 textAlign = TextAlign.Center,
             )
+
+            if (reason.isNotEmpty()) {
+                Text(
+                    text = reason,
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
         }
     }
 }
@@ -59,6 +72,6 @@ fun OverlayUI(onCloseRequest: () -> Unit = {}) {
 @Composable
 fun OverlayUIPreview() {
     BeeFreeTheme {
-        OverlayUI {}
+        OverlayUI(reason = "Triggered by keyword 'bets'") {}
     }
 }

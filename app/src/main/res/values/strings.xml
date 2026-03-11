@@ -5,4 +5,51 @@
     <string name="dont_do_this">Não Faça Isso</string>
     <string name="request_screen_monitor_permission">I need this permission to monitor your screen activity and detect when you\'re returning to your addiction, helping you stay on track.</string>
     <string name="request_overlay_permission">I need this permission to display pop-ups that help you stay on track and prevent relapses.</string>
+
+    <!-- Onboarding shared -->
+    <string name="onboarding_mascot_description">Mascote - Abelha</string>
+    <string name="onboarding_btn_continue">Continuar</string>
+    <string name="onboarding_btn_back">Voltar</string>
+    <string name="onboarding_btn_start">Começar</string>
+
+    <!-- Onboarding: Welcome -->
+    <string name="onboarding_welcome_title">Recupere o controle do seu tempo</string>
+    <string name="onboarding_welcome_body">Este aplicativo ajuda você a identificar e bloquear conteúdos que podem causar recaídas em vícios digitais.\n\nNosso objetivo é apoiar você na construção de hábitos mais saudáveis.</string>
+
+    <!-- Onboarding: How it works -->
+    <string name="onboarding_how_it_works_title">Como o aplicativo funciona</string>
+    <string name="onboarding_how_it_works_detect_title">🧠 Detecta conteúdos de risco</string>
+    <string name="onboarding_how_it_works_detect_body">O app analisa textos exibidos na tela para identificar conteúdos relacionados ao vício.</string>
+    <string name="onboarding_how_it_works_interrupt_title">🚫 Interrompe o consumo</string>
+    <string name="onboarding_how_it_works_interrupt_body">Quando algo for detectado, um bloqueio será exibido para ajudar você a evitar recaídas.</string>
+    <string name="onboarding_how_it_works_progress_title">📊 Mostra seu progresso</string>
+    <string name="onboarding_how_it_works_progress_body">Você poderá acompanhar seu progresso e evolução ao longo do tempo.</string>
+
+    <!-- Onboarding: Addiction selector -->
+    <string name="onboarding_addiction_selector_title">O que você quer evitar?</string>
+    <string name="onboarding_addiction_selector_subtitle">Selecione os tipos de conteúdo que podem gerar recaídas para você.</string>
+    <string name="onboarding_addiction_selector_hint">Você pode alterar isso depois nas configurações.</string>
+    <string name="onboarding_addiction_adult_content">Pornografia/Conteúdo Adulto</string>
+    <string name="onboarding_addiction_bets">Apostas/Cassinos Online</string>
+    <string name="onboarding_addiction_others">Outros</string>
+
+    <!-- Onboarding: Request permissions -->
+    <string name="onboarding_request_permissions_title">Permissão necessária</string>
+    <string name="onboarding_request_permissions_body">Para proteger você contra conteúdos de risco, o aplicativo precisa de duas permissões do sistema.</string>
+
+    <!-- Onboarding: Monitor permission -->
+    <string name="onboarding_monitor_permission_title">Acessibilidade</string>
+    <string name="onboarding_monitor_permission_body">Permite identificar textos exibidos na tela para detectar conteúdos relacionados ao vício.</string>
+    <string name="onboarding_monitor_permission_active">Acessibilidade Ativa</string>
+    <string name="onboarding_monitor_permission_enable">Ativar acessibilidade</string>
+
+    <!-- Onboarding: Overlay permission -->
+    <string name="onboarding_overlay_permission_title">Sobreposição</string>
+    <string name="onboarding_overlay_permission_body">Permite mostrar um bloqueio em tela cheia quando um conteúdo de risco for detectado.</string>
+    <string name="onboarding_overlay_permission_active">Sobreposição Ativa</string>
+    <string name="onboarding_overlay_permission_enable">Permitir sobreposição</string>
+
+    <!-- Onboarding: Finish -->
+    <string name="onboarding_finish_title">Tudo pronto!</string>
+    <string name="onboarding_finish_body">O monitoramento já está ativo.\n\nSempre que um conteúdo de risco for detectado, o aplicativo irá interromper para ajudar você a manter o controle.</string>
 </resources>
