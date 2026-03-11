@@ -1,4 +1,4 @@
-package com.wesley.beefree.ui.screens.onboading
+package com.wesley.beefree.ui.screens.onboarding
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,7 @@ import com.wesley.beefree.ui.components.OnboardingMascot
 import com.wesley.beefree.ui.components.OnboardingTitle
 
 @Composable
-fun OnBoardingHowItWorksScreen(onNext: () -> Unit) {
+fun OnboardingHowItWorksScreen(onNext: () -> Unit) {
     OnboardingLayout {
         OnboardingMascot()
         Spacer(modifier = Modifier.padding(8.dp))

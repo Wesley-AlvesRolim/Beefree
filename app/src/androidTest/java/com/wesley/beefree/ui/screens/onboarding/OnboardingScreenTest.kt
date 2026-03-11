@@ -1,4 +1,4 @@
-package com.wesley.beefree.ui.screens.onboading
+package com.wesley.beefree.ui.screens.onboarding
 
 import android.app.Application
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.wesley.beefree.ui.screens.onboading
+package com.wesley.beefree.ui.screens.onboarding
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding

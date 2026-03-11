@@ -1,4 +1,4 @@
-package com.wesley.beefree.ui.screens.onboading
+package com.wesley.beefree.ui.screens.onboarding
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,7 +28,6 @@ fun OnboardingAddictionSelectorScreen(
     selectedAddictions: Set<AddictionCategory>,
     onToggleAddiction: (AddictionCategory) -> Unit,
     onNext: () -> Unit,
-    onBack: () -> Unit,
 ) {
     OnboardingLayout {
         OnboardingMascot()

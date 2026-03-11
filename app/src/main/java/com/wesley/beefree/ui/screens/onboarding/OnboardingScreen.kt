@@ -1,4 +1,4 @@
-package com.wesley.beefree.ui.screens.onboading
+package com.wesley.beefree.ui.screens.onboarding
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -47,21 +47,20 @@ fun OnboardingScreen(
 
     when (currentStep) {
         OnboardingStep.WELCOME ->
-            OnBoardingWelcomeScreen(onNext = { viewModel.nextStep() })
+            OnboardingWelcomeScreen(onNext = { viewModel.nextStep() })
 
         OnboardingStep.HOW_IT_WORKS ->
-            OnBoardingHowItWorksScreen(onNext = { viewModel.nextStep() })
+            OnboardingHowItWorksScreen(onNext = { viewModel.nextStep() })
 
         OnboardingStep.ADDICTION_SELECTOR ->
             OnboardingAddictionSelectorScreen(
                 selectedAddictions = selectedAddictions,
                 onToggleAddiction = { viewModel.toggleAddiction(it) },
                 onNext = { viewModel.nextStep() },
-                onBack = { viewModel.previousStep() },
             )
 
         OnboardingStep.REQUEST_PERMISSIONS ->
-            OnBoardingRequestPermissionsScreen(
+            OnboardingRequestPermissionsScreen(
                 onNext = { viewModel.nextStep() },
                 onBack = { viewModel.previousStep() },
             )
@@ -85,7 +84,6 @@ fun OnboardingScreen(
         OnboardingStep.FINISH ->
             OnboardingFinishScreen(
                 onFinish = { viewModel.finishOnboarding(onFinish) },
-                onBack = { viewModel.previousStep() },
             )
     }
 }
