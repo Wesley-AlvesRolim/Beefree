@@ -50,10 +50,10 @@ open class OnboardingViewModelImpl(
 
     override val selectedAddictions: StateFlow<Set<AddictionCategory>> = _selectedAddictions.asStateFlow()
 
-    open val openIsAccessibilityEnabled = MutableStateFlow(false)
+    protected val openIsAccessibilityEnabled = MutableStateFlow(false)
     override val isAccessibilityEnabled: StateFlow<Boolean> = openIsAccessibilityEnabled.asStateFlow()
 
-    open val openIsOverlayEnabled = MutableStateFlow(false)
+    protected val openIsOverlayEnabled = MutableStateFlow(false)
     override val isOverlayEnabled: StateFlow<Boolean> = openIsOverlayEnabled.asStateFlow()
 
     override fun updatePermissions(context: Context) {
