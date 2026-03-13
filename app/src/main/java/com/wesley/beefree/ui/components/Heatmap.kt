@@ -22,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.wesley.beefree.domain.entities.RelapseHistory
 import java.util.Calendar
@@ -98,9 +97,9 @@ fun Heatmap(data: List<RelapseHistory>) {
 fun HeatmapSquare(count: Int) {
     val color =
         if (count == 0) {
-            Color(0xFFFFD54F) // Bee Yellow (Clean day)
+            MaterialTheme.colorScheme.primary
         } else {
-            Color.LightGray // Gray (Relapse day)
+            MaterialTheme.colorScheme.outlineVariant
         }
 
     Box(
