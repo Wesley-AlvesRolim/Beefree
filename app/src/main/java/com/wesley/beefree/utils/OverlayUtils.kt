@@ -6,11 +6,17 @@ import android.provider.Settings
 import com.wesley.beefree.infrastructure.services.OverlayServiceActivity
 
 object OverlayUtils {
-    fun startOverlayService(context: Context) {
+    fun startOverlayService(
+        context: Context,
+        reason: String = "",
+    ) {
         if (OverlayServiceActivity.isRunning) {
             return
         }
-        val intent = Intent(context, OverlayServiceActivity::class.java)
+        val intent =
+            Intent(context, OverlayServiceActivity::class.java).apply {
+                putExtra("EXTRA_REASON", reason)
+            }
         context.startService(intent)
     }
 

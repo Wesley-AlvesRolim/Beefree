@@ -10,7 +10,7 @@ class OverlayInterventionModule(
 ) {
     init {
         eventBus.subscribe(InterventionTriggered::class.java) { event ->
-            interventionUI.show()
+            interventionUI.show(event.reason)
         }
     }
 }
