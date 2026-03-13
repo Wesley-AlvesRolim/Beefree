@@ -7,11 +7,11 @@ import com.wesley.beefree.domain.events.ScreenContentCaptured
 
 class KeywordsDetectionEngine(
     override val eventBus: EventBus,
-    private val blockedKeywords: List<String>,
+    private val keywordsByAddictionType: Map<Int, List<String>>,
 ) : DetectionEngine<ScreenContentCaptured> {
-    private val blockedRegexList =
-        blockedKeywords.map { keyword ->
-            Regex(keyword, RegexOption.IGNORE_CASE)
+    private val regexByAddictionType: Map<Int, List<Pair<String, Regex>>> =
+        keywordsByAddictionType.mapValues { (_, keywords) ->
+            keywords.map { keyword -> keyword to Regex(keyword, RegexOption.IGNORE_CASE) }
         }
 
     init {
@@ -25,10 +25,19 @@ class KeywordsDetectionEngine(
             if (text.isBlank()) {
                 continue
             }
-            for (regex in blockedRegexList) {
-                if (regex.containsMatchIn(text)) {
-                    eventBus.publish(InterventionTriggered(text))
-                    return
+            for ((addictionTypeId, regexList) in regexByAddictionType) {
+                for ((keyword, regex) in regexList) {
+                    if (regex.containsMatchIn(text)) {
+                        eventBus.publish(
+                            InterventionTriggered(
+                                reason = text,
+                                keyword = keyword,
+                                addictionTypeId = addictionTypeId,
+                                appPackage = event.packageName,
+                            ),
+                        )
+                        return
+                    }
                 }
             }
         }

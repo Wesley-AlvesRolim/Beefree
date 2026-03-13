@@ -12,8 +12,8 @@ class KeywordsDetectionEngineTest {
     @Test
     fun `should publish InterventionTriggered when a blocked keyword is detected`() {
         val eventBus = InMemoryEventBus()
-        val blockedKeywords = listOf("bet", "porn")
-        KeywordsDetectionEngine(eventBus, blockedKeywords)
+        val keywordsByAddictionType = mapOf(1 to listOf("bet", "porn"))
+        KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
 
         var receivedEvent: InterventionTriggered? = null
         eventBus.subscribe(InterventionTriggered::class.java) {
@@ -26,13 +26,16 @@ class KeywordsDetectionEngineTest {
 
         assertNotNull(receivedEvent)
         assertEquals(reasonContent, receivedEvent?.reason)
+        assertEquals("bet", receivedEvent?.keyword)
+        assertEquals(1, receivedEvent?.addictionTypeId)
+        assertEquals("com.example.app", receivedEvent?.appPackage)
     }
 
     @Test
     fun `should NOT publish InterventionTriggered when no blocked keyword is detected`() {
         val eventBus = InMemoryEventBus()
-        val blockedKeywords = listOf("bet", "porn")
-        KeywordsDetectionEngine(eventBus, blockedKeywords)
+        val keywordsByAddictionType = mapOf(1 to listOf("bet", "porn"))
+        KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
 
         var receivedEvent: InterventionTriggered? = null
         eventBus.subscribe(InterventionTriggered::class.java) {
@@ -48,8 +51,8 @@ class KeywordsDetectionEngineTest {
     @Test
     fun `should be case-insensitive when detecting blocked keywords`() {
         val eventBus = InMemoryEventBus()
-        val blockedKeywords = listOf("BET")
-        KeywordsDetectionEngine(eventBus, blockedKeywords)
+        val keywordsByAddictionType = mapOf(1 to listOf("BET"))
+        KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
 
         var receivedEvent: InterventionTriggered? = null
         eventBus.subscribe(InterventionTriggered::class.java) {

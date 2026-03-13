@@ -6,6 +6,7 @@ import android.view.accessibility.AccessibilityEvent
 import com.wesley.beefree.data.keywords.getBetsKeyWords
 import com.wesley.beefree.data.keywords.getPornKeywords
 import com.wesley.beefree.domain.detection.KeywordsDetectionEngine
+import com.wesley.beefree.domain.entities.AddictionTypeEnum
 import com.wesley.beefree.infrastructure.bus.adapters.InMemoryEventBus
 import com.wesley.beefree.infrastructure.dispatcher.AccessibilityEventDispatcher
 import com.wesley.beefree.infrastructure.intervention.OverlayInterventionModule
@@ -27,8 +28,12 @@ class AccessibilityServiceActivity : AccessibilityService() {
         repository = KeyValueStorageRepository(SharedPreferencesKeyValueStorage(this))
         dispatcher = AccessibilityEventDispatcher(eventBus, repository)
 
-        val blockedKeywords = (getPornKeywords() + getBetsKeyWords())
-        keyWordsDetectionEngine = KeywordsDetectionEngine(eventBus, blockedKeywords)
+        val keywordsByAddictionType =
+            mapOf(
+                AddictionTypeEnum.ADULT_CONTENT.ordinal to getPornKeywords(),
+                AddictionTypeEnum.BETS.ordinal to getBetsKeyWords(),
+            )
+        keyWordsDetectionEngine = KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
 
         val interventionUI = AndroidOverlayInterventionUI(this)
         interventionModule = OverlayInterventionModule(eventBus, interventionUI)
