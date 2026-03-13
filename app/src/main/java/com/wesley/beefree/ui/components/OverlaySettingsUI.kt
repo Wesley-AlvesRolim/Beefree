@@ -6,9 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.wesley.beefree.R
 import com.wesley.beefree.ui.viewmodel.SettingsViewModel
 
 @Composable
@@ -45,14 +47,14 @@ fun OverlaySettingsContent(
     }
 
     if (isPermissionEnabled) {
-        Text("Overlay permission is ENABLED")
+        Text(stringResource(R.string.overlay_permission_enabled_status))
         Button(onClick = onStartService) {
-            Text("Start overlay")
+            Text(stringResource(R.string.overlay_service_start))
         }
     } else {
-        Text("Overlay permission is DISABLED. Please enable it in settings.")
+        Text(stringResource(R.string.overlay_permission_disabled_status))
         Button(onClick = onOpenSettings) {
-            Text("Go to Permissions Settings")
+            Text(stringResource(R.string.overlay_go_to_settings))
         }
     }
 }

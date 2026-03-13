@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.wesley.beefree.R
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.SettingsViewModel
 
@@ -100,7 +102,7 @@ fun SettingsScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Configurações", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.Bold) },
             )
         },
     ) { padding ->
@@ -117,39 +119,39 @@ fun SettingsScreenContent(
             ) {
                 Column(Modifier.padding(16.dp)) {
                     Text(
-                        "Monitoramento Ativo",
+                        stringResource(R.string.settings_monitoring_section_title),
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                     )
                     Spacer(Modifier.height(16.dp))
                     SwitchRow(
-                        "Conteúdo adulto",
+                        stringResource(R.string.settings_adult_content_label),
                         monitorAdult,
                     ) { monitorAdult = it }
                     SwitchRow(
-                        "Apostas online",
+                        stringResource(R.string.settings_bets_label),
                         monitorBets,
                     ) { monitorBets = it }
                 }
             }
 
-            Section("Personalização") {
+            Section(stringResource(R.string.settings_customization_section_title)) {
                 ListItem(
-                    headlineContent = { Text("Mensagem de Bloqueio") },
-                    supportingContent = { Text("Edite o texto e a imagem da tela de alerta") },
+                    headlineContent = { Text(stringResource(R.string.settings_block_message_title)) },
+                    supportingContent = { Text(stringResource(R.string.settings_block_message_subtitle)) },
                     leadingContent = { Icon(Icons.Default.Edit, null) },
                     modifier = Modifier.background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp)),
                 )
             }
 
             Section(
-                title = "Rede de Apoio (WhatsApp)",
+                title = stringResource(R.string.settings_support_network_section_title),
                 action = {
                     IconButton(onClick = {}) {
                         Icon(
                             Icons.Default.AddCircle,
-                            "Adicionar",
+                            stringResource(R.string.settings_add_contact),
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     }
@@ -159,12 +161,12 @@ fun SettingsScreenContent(
                     headlineContent = { Text("João Primo") },
                     supportingContent = { Text("(85) 00000-0000") },
                     leadingContent = { Icon(Icons.Default.Person, null) },
-                    trailingContent = { Icon(Icons.Default.Delete, "Remover") },
+                    trailingContent = { Icon(Icons.Default.Delete, stringResource(R.string.settings_remove_contact)) },
                     modifier = Modifier.background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp)),
                 )
             }
 
-            Section("Privacidade") {
+            Section(stringResource(R.string.settings_privacy_section_title)) {
                 Button(
                     onClick = {},
                     Modifier
@@ -174,14 +176,14 @@ fun SettingsScreenContent(
                     shape = RoundedCornerShape(12.dp),
                 ) {
                     Icon(Icons.Default.Share, null, Modifier.padding(end = 8.dp))
-                    Text("Exportar meus dados", color = MaterialTheme.colorScheme.onPrimary)
+                    Text(stringResource(R.string.settings_export_data), color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
 
-            Section("Permissões") {
+            Section(stringResource(R.string.settings_permissions_section_title)) {
                 Column(Modifier.padding(16.dp)) {
                     SwitchRow(
-                        "Leitura de tela",
+                        stringResource(R.string.settings_screen_reader_label),
                         isAccessibilityEnabled && isAccessibilityStarted,
                     ) {
                         if (isAccessibilityEnabled) {
@@ -191,7 +193,7 @@ fun SettingsScreenContent(
                         }
                     }
                     SwitchRow(
-                        "Bloqueio de tela",
+                        stringResource(R.string.settings_screen_blocker_label),
                         isOverlayPermissionEnabled,
                     ) { onOpenOverlaySettings() }
                 }

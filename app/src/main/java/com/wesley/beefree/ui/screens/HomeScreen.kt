@@ -15,9 +15,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.RelapseHistory
 import com.wesley.beefree.ui.components.Heatmap
 import com.wesley.beefree.ui.components.MotivationalCard
@@ -50,7 +52,7 @@ fun HomeScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Bem-vindo ao BeeFree",
+            text = stringResource(R.string.home_welcome_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 24.dp),
@@ -61,7 +63,7 @@ fun HomeScreenContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Seu progresso nos últimos 30 dias",
+            text = stringResource(R.string.home_progress_section_title),
             style = MaterialTheme.typography.titleLarge,
             modifier =
                 Modifier

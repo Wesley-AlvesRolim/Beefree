@@ -1,5 +1,6 @@
 package com.wesley.beefree.ui.navigation
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -13,6 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.wesley.beefree.R
 import com.wesley.beefree.ui.screens.HomeScreen
 import com.wesley.beefree.ui.screens.SettingsScreen
 import com.wesley.beefree.ui.viewmodel.HomeViewModel
@@ -20,12 +22,12 @@ import com.wesley.beefree.ui.viewmodel.SettingsViewModel
 
 sealed class Screen(
     val route: String,
-    val label: String,
+    @StringRes val labelRes: Int,
     val icon: ImageVector,
 ) {
-    object Home : Screen("home", "Início", Icons.Default.Home)
+    object Home : Screen("home", R.string.nav_home, Icons.Default.Home)
 
-    object Settings : Screen("settings", "Configurações", Icons.Default.Settings)
+    object Settings : Screen("settings", R.string.settings_title, Icons.Default.Settings)
 }
 
 @Composable

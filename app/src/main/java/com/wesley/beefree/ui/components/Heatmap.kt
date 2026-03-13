@@ -22,7 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.RelapseHistory
 import java.util.Calendar
 
@@ -79,15 +81,15 @@ fun Heatmap(data: List<RelapseHistory>) {
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("Legenda:", style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.heatmap_legend_label), style = MaterialTheme.typography.bodySmall)
                 Spacer(modifier = Modifier.size(8.dp))
                 HeatmapSquare(0)
                 Spacer(modifier = Modifier.size(4.dp))
-                Text("Sem recaída", style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.heatmap_no_relapse), style = MaterialTheme.typography.bodySmall)
                 Spacer(modifier = Modifier.size(12.dp))
                 HeatmapSquare(1)
                 Spacer(modifier = Modifier.size(4.dp))
-                Text("Recaída", style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.heatmap_relapse), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
