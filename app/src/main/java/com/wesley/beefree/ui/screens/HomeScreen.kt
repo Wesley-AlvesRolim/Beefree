@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.wesley.beefree.domain.entities.RelapseHistory
 import com.wesley.beefree.ui.components.Heatmap
 import com.wesley.beefree.ui.components.MotivationalCard
 import com.wesley.beefree.ui.components.StatsSummary
@@ -29,6 +30,17 @@ fun HomeScreen(viewModel: HomeViewModel) {
     val relapseHistory by viewModel.relapseHistory.collectAsState()
     val motivationalMessage by viewModel.motivationalMessage.collectAsState()
 
+    HomeScreenContent(
+        relapseHistory = relapseHistory,
+        motivationalMessage = motivationalMessage,
+    )
+}
+
+@Composable
+fun HomeScreenContent(
+    relapseHistory: List<RelapseHistory>,
+    motivationalMessage: String,
+) {
     Column(
         modifier =
             Modifier
@@ -69,6 +81,9 @@ fun HomeScreen(viewModel: HomeViewModel) {
 @Composable
 fun HomeScreenPreview() {
     BeeFreeTheme {
-        HomeScreen()
+        HomeScreenContent(
+            relapseHistory = emptyList(),
+            motivationalMessage = "Um dia de cada vez. Você está no controle.",
+        )
     }
 }
