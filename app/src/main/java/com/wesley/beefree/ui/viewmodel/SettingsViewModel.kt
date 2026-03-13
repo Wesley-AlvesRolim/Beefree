@@ -3,6 +3,7 @@ package com.wesley.beefree.ui.viewmodel
 import android.content.Context
 import android.provider.Settings
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.wesley.beefree.infrastructure.services.AccessibilityServiceActivity
 import com.wesley.beefree.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
@@ -14,9 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class SettingsViewModel(
     private val context: Context,
+    private val storageRepository: KeyValueStorageRepository,
 ) : ViewModel() {
-    private val storageRepository = KeyValueStorageRepository(SharedPreferencesKeyValueStorage(context))
-
     private val _isAccessibilityServiceEnabled = MutableStateFlow(false)
     val isAccessibilityServiceEnabled: StateFlow<Boolean> = _isAccessibilityServiceEnabled.asStateFlow()
 
@@ -56,5 +56,19 @@ class SettingsViewModel(
 
     fun startOverlayService() {
         OverlayUtils.startOverlayService(context)
+    }
+
+    companion object {
+        fun factory(context: Context): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    val appContext = context.applicationContext
+                    @Suppress("UNCHECKED_CAST")
+                    return SettingsViewModel(
+                        appContext,
+                        KeyValueStorageRepository(SharedPreferencesKeyValueStorage(appContext)),
+                    ) as T
+                }
+            }
     }
 }

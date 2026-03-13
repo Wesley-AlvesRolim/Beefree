@@ -15,11 +15,7 @@ import com.wesley.beefree.ui.components.OverlaySettingsUI
 import com.wesley.beefree.ui.viewmodel.SettingsViewModel
 
 @Composable
-fun SettingsScreen() {
-    val context = LocalContext.current
-    val viewModel: SettingsViewModel =
-        viewModel {
-            SettingsViewModel(context)
+fun SettingsScreen(viewModel: SettingsViewModel) {
         }
 
     Column(

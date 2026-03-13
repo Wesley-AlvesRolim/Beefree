@@ -10,16 +10,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wesley.beefree.ui.theme.BeeFreeTheme
-import com.wesley.beefree.ui.viewmodel.OnboardingViewModelImpl
+import com.wesley.beefree.ui.viewmodel.mocks.OnboardingViewModelMock
 import com.wesley.beefree.ui.viewmodel.ports.OnboardingStep
 import com.wesley.beefree.ui.viewmodel.ports.OnboardingViewModelPort
 
 @Composable
 fun OnboardingScreen(
     onFinish: () -> Unit,
-    viewModel: OnboardingViewModelPort = viewModel<OnboardingViewModelImpl>(),
+    viewModel: OnboardingViewModelPort,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = rememberUpdatedState(newValue = LocalLifecycleOwner.current)
@@ -92,6 +91,6 @@ fun OnboardingScreen(
 @Composable
 fun OnboardingScreenPreview() {
     BeeFreeTheme {
-        OnboardingScreen(onFinish = {})
+        OnboardingScreen(onFinish = {}, viewModel = OnboardingViewModelMock())
     }
 }

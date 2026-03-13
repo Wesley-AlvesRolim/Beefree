@@ -2,13 +2,16 @@ package com.wesley.beefree.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.wesley.beefree.domain.entities.RelapseHistory
+import com.wesley.beefree.storage.ports.AddictionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.Calendar
 import java.util.Random
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val addictionRepository: AddictionRepository,
+) : ViewModel() {
     private val _relapseHistory = MutableStateFlow<List<RelapseHistory>>(emptyList())
     val relapseHistory: StateFlow<List<RelapseHistory>> = _relapseHistory.asStateFlow()
 

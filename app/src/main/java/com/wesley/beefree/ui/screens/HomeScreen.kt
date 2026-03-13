@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wesley.beefree.ui.components.Heatmap
 import com.wesley.beefree.ui.components.MotivationalCard
 import com.wesley.beefree.ui.components.StatsSummary
@@ -26,7 +25,7 @@ import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.HomeViewModel
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(viewModel: HomeViewModel) {
     val relapseHistory by viewModel.relapseHistory.collectAsState()
     val motivationalMessage by viewModel.motivationalMessage.collectAsState()
 

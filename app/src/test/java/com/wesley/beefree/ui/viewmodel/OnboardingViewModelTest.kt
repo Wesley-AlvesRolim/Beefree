@@ -1,42 +1,19 @@
 package com.wesley.beefree.ui.viewmodel
 
-import android.app.Application
-import android.content.SharedPreferences
+import com.wesley.beefree.ui.viewmodel.mocks.OnboardingViewModelMock
 import com.wesley.beefree.ui.viewmodel.ports.AddictionCategory
 import com.wesley.beefree.ui.viewmodel.ports.OnboardingStep
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 
 class OnboardingViewModelTest {
-    private lateinit var application: Application
-    private lateinit var sharedPreferences: SharedPreferences
-
-    @Before
-    fun setup() {
-        sharedPreferences =
-            mock {
-                on { getString(anyString(), anyString()) } doReturn ""
-                on { getInt(anyString(), anyInt()) } doReturn 0
-                on { getLong(anyString(), anyInt().toLong()) } doReturn 0L
-                on { getBoolean(anyString(), org.mockito.kotlin.any()) } doReturn false
-            }
-        application =
-            mock {
-                on { getSharedPreferences(anyString(), anyInt()) } doReturn sharedPreferences
-                on { applicationContext } doReturn it
-            }
-    }
+    private fun viewModel() = OnboardingViewModelMock()
 
     @Test
     fun `toggleAddiction should add and remove addiction from selection`() {
-        val viewModel = OnboardingViewModelImpl(application)
+        val viewModel = viewModel()
 
         assertTrue(viewModel.selectedAddictions.value.isEmpty())
 
@@ -49,7 +26,7 @@ class OnboardingViewModelTest {
 
     @Test
     fun `toggleAddiction should allow multiple selections`() {
-        val viewModel = OnboardingViewModelImpl(application)
+        val viewModel = viewModel()
 
         viewModel.toggleAddiction(AddictionCategory.ADULT_CONTENT)
         viewModel.toggleAddiction(AddictionCategory.BETS)
@@ -61,7 +38,7 @@ class OnboardingViewModelTest {
 
     @Test
     fun `nextStep should navigate correctly`() {
-        val viewModel = OnboardingViewModelImpl(application)
+        val viewModel = viewModel()
         viewModel.moveToStep(OnboardingStep.WELCOME)
 
         viewModel.nextStep()
@@ -85,7 +62,7 @@ class OnboardingViewModelTest {
 
     @Test
     fun `previousStep should navigate correctly`() {
-        val viewModel = OnboardingViewModelImpl(application)
+        val viewModel = viewModel()
         viewModel.moveToStep(OnboardingStep.FINISH)
 
         viewModel.previousStep()

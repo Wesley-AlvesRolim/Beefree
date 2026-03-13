@@ -8,11 +8,15 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.wesley.beefree.ui.screens.HomeScreen
 import com.wesley.beefree.ui.screens.SettingsScreen
+import com.wesley.beefree.ui.viewmodel.HomeViewModel
+import com.wesley.beefree.ui.viewmodel.SettingsViewModel
 
 sealed class Screen(
     val route: String,
@@ -29,12 +33,18 @@ fun Routes(
     navController: NavHostController,
     innerPadding: PaddingValues,
 ) {
+    val context = LocalContext.current
+    val homeViewModel: HomeViewModel =
+        viewModel(factory = HomeViewModel.factory(context.applicationContext as android.app.Application))
+    val settingsViewModel: SettingsViewModel =
+        viewModel(factory = SettingsViewModel.factory(context))
+
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route,
         modifier = Modifier.padding(innerPadding),
     ) {
-        composable(Screen.Home.route) { HomeScreen() }
-        composable(Screen.Settings.route) { SettingsScreen() }
+        composable(Screen.Home.route) { HomeScreen(homeViewModel) }
+        composable(Screen.Settings.route) { SettingsScreen(settingsViewModel) }
     }
 }
