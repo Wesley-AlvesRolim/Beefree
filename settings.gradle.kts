@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Bee Free"
+rootProject.name = "BeeFree"
 include(":app")
