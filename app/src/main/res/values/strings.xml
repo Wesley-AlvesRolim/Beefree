@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">BeeFree</string>
-    <string name="accessibility_service_label">BeFreeAccessibilityService</string>
-    <string name="accessibility_service_description">A app to help user to get out of addiction</string>
-    <string name="dont_do_this">Não Faça Isso</string>
-    <string name="request_screen_monitor_permission">I need this permission to monitor your screen activity and detect when you\'re returning to your addiction, helping you stay on track.</string>
-    <string name="request_overlay_permission">I need this permission to display pop-ups that help you stay on track and prevent relapses.</string>
+    <string name="accessibility_service_label">Serviço de Acessibilidade BeeFree</string>
+    <string name="accessibility_service_description">O BeeFree utiliza este serviço para identificar conteúdos relacionados a vícios digitais exibidos na tela, permitindo que o aplicativo bloqueie acessos de risco e ajude você a manter o foco na sua recuperação.</string>
+    <string name="dont_do_this">Não faça isso</string>
+    <string name="request_screen_monitor_permission">Esta permissão é necessária para monitorar a atividade da tela e detectar conteúdos que podem levar a uma recaída, ajudando você a manter o compromisso com sua meta.</string>
+    <string name="request_overlay_permission">Esta permissão permite exibir alertas em tela cheia para interromper o acesso a conteúdos de risco e evitar recaídas.</string>
 
     <!-- Onboarding shared -->
     <string name="onboarding_mascot_description">Mascote - Abelha</string>
@@ -48,6 +48,55 @@
     <string name="onboarding_overlay_permission_body">Permite mostrar um bloqueio em tela cheia quando um conteúdo de risco for detectado.</string>
     <string name="onboarding_overlay_permission_active">Sobreposição Ativa</string>
     <string name="onboarding_overlay_permission_enable">Permitir sobreposição</string>
+
+    <!-- Home screen -->
+    <string name="home_welcome_title">Bem-vindo ao BeeFree</string>
+    <string name="home_progress_section_title">Seu progresso nos últimos 30 dias</string>
+
+    <!-- Settings screen -->
+    <string name="settings_title">Configurações</string>
+    <string name="settings_monitoring_section_title">Monitoramento Ativo</string>
+    <string name="settings_adult_content_label">Conteúdo adulto</string>
+    <string name="settings_bets_label">Apostas online</string>
+    <string name="settings_customization_section_title">Personalização</string>
+    <string name="settings_block_message_title">Mensagem de Bloqueio</string>
+    <string name="settings_block_message_subtitle">Edite o texto e a imagem da tela de alerta</string>
+    <string name="settings_support_network_section_title">Rede de Apoio (WhatsApp)</string>
+    <string name="settings_add_contact">Adicionar</string>
+    <string name="settings_remove_contact">Remover</string>
+    <string name="settings_privacy_section_title">Privacidade</string>
+    <string name="settings_export_data">Exportar meus dados</string>
+    <string name="settings_permissions_section_title">Permissões</string>
+    <string name="settings_screen_reader_label">Leitura de tela</string>
+    <string name="settings_screen_blocker_label">Bloqueio de tela</string>
+
+    <!-- Accessibility settings component -->
+    <string name="accessibility_service_enabled_status">O Serviço de Acessibilidade está ATIVADO</string>
+    <string name="accessibility_service_stop">Parar serviço</string>
+    <string name="accessibility_service_start">Iniciar serviço</string>
+    <string name="accessibility_service_disabled_status">O Serviço de Acessibilidade está DESATIVADO. Por favor, ative-o nas configurações.</string>
+    <string name="accessibility_go_to_settings">Ir para Configurações de Acessibilidade</string>
+
+    <!-- Overlay settings component -->
+    <string name="overlay_permission_enabled_status">A permissão de sobreposição está ATIVADA</string>
+    <string name="overlay_service_start">Iniciar sobreposição</string>
+    <string name="overlay_permission_disabled_status">A permissão de sobreposição está DESATIVADA. Por favor, ative-a nas configurações.</string>
+    <string name="overlay_go_to_settings">Ir para Configurações de Sobreposição</string>
+
+    <!-- Overlay UI -->
+    <string name="overlay_close_description">Fechar alerta</string>
+
+    <!-- Stats summary -->
+    <string name="stats_total_30d">Total (30d)</string>
+    <string name="stats_this_week">Esta Semana</string>
+
+    <!-- Heatmap -->
+    <string name="heatmap_legend_label">Legenda:</string>
+    <string name="heatmap_no_relapse">Sem recaída</string>
+    <string name="heatmap_relapse">Recaída</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Início</string>
 
     <!-- Onboarding: Finish -->
     <string name="onboarding_finish_title">Tudo pronto!</string>

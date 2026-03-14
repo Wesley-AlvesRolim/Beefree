@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,7 +24,7 @@ fun MotivationalCard(message: String) {
         modifier = Modifier.fillMaxWidth(),
         colors =
             CardDefaults.cardColors(
-                containerColor = Color(0xFFFFD54F), // Bee Yellow
+                containerColor = MaterialTheme.colorScheme.primary,
             ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
@@ -37,13 +36,13 @@ fun MotivationalCard(message: String) {
                 text = "\"",
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onPrimary,
             )
             Text(
                 text = message,
                 style = MaterialTheme.typography.bodyLarge,
                 fontStyle = FontStyle.Italic,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onPrimary,
                 textAlign = TextAlign.Center,
             )
             Spacer(modifier = Modifier.height(8.dp))

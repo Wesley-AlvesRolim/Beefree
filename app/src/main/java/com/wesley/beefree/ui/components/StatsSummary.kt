@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.RelapseHistory
 import java.util.Calendar
 
@@ -28,8 +30,8 @@ fun StatsSummary(data: List<RelapseHistory>) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        StatItem(label = "Total (30d)", value = total.toString())
-        StatItem(label = "Esta Semana", value = lastWeekCount.toString())
+        StatItem(label = stringResource(R.string.stats_total_30d), value = total.toString())
+        StatItem(label = stringResource(R.string.stats_this_week), value = lastWeekCount.toString())
     }
 }
 

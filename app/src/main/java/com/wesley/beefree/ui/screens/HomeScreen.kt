@@ -15,10 +15,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.wesley.beefree.R
+import com.wesley.beefree.domain.entities.RelapseHistory
 import com.wesley.beefree.ui.components.Heatmap
 import com.wesley.beefree.ui.components.MotivationalCard
 import com.wesley.beefree.ui.components.StatsSummary
@@ -26,10 +28,21 @@ import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.HomeViewModel
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(viewModel: HomeViewModel) {
     val relapseHistory by viewModel.relapseHistory.collectAsState()
     val motivationalMessage by viewModel.motivationalMessage.collectAsState()
 
+    HomeScreenContent(
+        relapseHistory = relapseHistory,
+        motivationalMessage = motivationalMessage,
+    )
+}
+
+@Composable
+fun HomeScreenContent(
+    relapseHistory: List<RelapseHistory>,
+    motivationalMessage: String,
+) {
     Column(
         modifier =
             Modifier
@@ -39,7 +52,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Bem-vindo ao BeeFree",
+            text = stringResource(R.string.home_welcome_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 24.dp),
@@ -50,7 +63,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Seu progresso nos últimos 30 dias",
+            text = stringResource(R.string.home_progress_section_title),
             style = MaterialTheme.typography.titleLarge,
             modifier =
                 Modifier
@@ -70,6 +83,9 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 @Composable
 fun HomeScreenPreview() {
     BeeFreeTheme {
-        HomeScreen()
+        HomeScreenContent(
+            relapseHistory = emptyList(),
+            motivationalMessage = "Um dia de cada vez. Você está no controle.",
+        )
     }
 }

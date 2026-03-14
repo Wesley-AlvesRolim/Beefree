@@ -19,9 +19,9 @@ class OverlayInterventionModuleTest {
 
         verify(eventBus).subscribe(eq(InterventionTriggered::class.java), lambdaCaptor.capture())
 
-        val event = InterventionTriggered("test reason")
+        val event = InterventionTriggered(reason = "test reason", keyword = "test reason", addictionTypeId = 1)
         lambdaCaptor.firstValue.invoke(event)
 
-        verify(interventionUI).show()
+        verify(interventionUI).show("test reason")
     }
 }

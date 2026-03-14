@@ -3,7 +3,8 @@ package com.wesley.beefree.ui.viewmodel
 import android.app.Application
 import android.content.Context
 import android.provider.Settings
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.data.keywords.getBetsKeyWords
 import com.wesley.beefree.data.keywords.getPornKeywords
@@ -13,6 +14,7 @@ import com.wesley.beefree.infrastructure.services.AccessibilityServiceActivity
 import com.wesley.beefree.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.storage.adapters.db.AppDatabase
+import com.wesley.beefree.storage.ports.AddictionRepository
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.viewmodel.ports.AddictionCategory
 import com.wesley.beefree.ui.viewmodel.ports.OnboardingStep
@@ -25,24 +27,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 open class OnboardingViewModelImpl(
-    application: Application,
-) : AndroidViewModel(application),
+    private val keyValueStorageRepository: KeyValueStorageRepository,
+    private val addictionRepository: AddictionRepository,
+) : ViewModel(),
     OnboardingViewModelPort {
-    private val keyValueStorageRepository: KeyValueStorageRepository =
-        KeyValueStorageRepository(SharedPreferencesKeyValueStorage(application))
-
-    private val addictionRepository: RoomAddictionRepository
-
-    init {
-        val database = AppDatabase.getDatabase(application)
-        addictionRepository =
-            RoomAddictionRepository(
-                database.addictionTypeDao(),
-                database.addictionKeywordDao(),
-                database.relapseHistoryDao(),
-            )
-    }
-
     private val _currentStep = MutableStateFlow(OnboardingStep.WELCOME)
     override val currentStep: StateFlow<OnboardingStep> = _currentStep.asStateFlow()
 
@@ -147,5 +135,23 @@ open class OnboardingViewModelImpl(
             keyValueStorageRepository.saveOnboardingCompleted(true)
             onFinish()
         }
+    }
+
+    companion object {
+        fun factory(application: Application): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    val database = AppDatabase.getDatabase(application)
+                    @Suppress("UNCHECKED_CAST")
+                    return OnboardingViewModelImpl(
+                        KeyValueStorageRepository(SharedPreferencesKeyValueStorage(application)),
+                        RoomAddictionRepository(
+                            database.addictionTypeDao(),
+                            database.addictionKeywordDao(),
+                            database.relapseHistoryDao(),
+                        ),
+                    ) as T
+                }
+            }
     }
 }

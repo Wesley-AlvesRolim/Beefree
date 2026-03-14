@@ -14,6 +14,8 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.wesley.beefree.ui.components.OverlayUI
 import com.wesley.beefree.utils.ComposeLifecycleOwner
 
+const val OVERLAY_TRIGGERED_BY_REASON = "OVERLAY_TRIGGERED_BY_REASON"
+
 class OverlayServiceActivity : Service() {
     companion object {
         var isRunning = false
@@ -22,14 +24,26 @@ class OverlayServiceActivity : Service() {
     var androidWindowManager: WindowManager? = null
     var floatyView: View? = null
     private var lifecycleOwner: ComposeLifecycleOwner? = null
+    private var reason: String = ""
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
+        reason = intent?.getStringExtra(OVERLAY_TRIGGERED_BY_REASON) ?: ""
+        if (floatyView == null) {
+            addOverlayView()
+        }
+        return START_STICKY
+    }
 
     override fun onCreate() {
         super.onCreate()
         isRunning = true
         androidWindowManager = getSystemService(WindowManager::class.java)
-        addOverlayView()
     }
 
     override fun onDestroy() {
@@ -57,7 +71,10 @@ class OverlayServiceActivity : Service() {
         val composeView =
             ComposeView(this).apply {
                 setContent {
-                    OverlayUI(onCloseRequest = { stopSelf() })
+                    OverlayUI(
+                        reason = reason,
+                        onCloseRequest = { stopSelf() },
+                    )
                 }
                 setViewTreeLifecycleOwner(lifecycleOwner)
                 setViewTreeSavedStateRegistryOwner(lifecycleOwner)

@@ -2,6 +2,7 @@ package com.wesley.beefree.infrastructure.dispatcher
 
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import com.wesley.beefree.data.apps.BRAZILIAN_BANK_PACKAGE_NAMES
 import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.events.ScreenContentCaptured
 import com.wesley.beefree.infrastructure.services.OverlayServiceActivity
@@ -62,6 +63,19 @@ class AccessibilityEventDispatcherTest {
     fun `should NOT publish anything when screen reader status is disabled`() {
         whenever(repository.getTheScreenReaderStatus()).thenReturn(false)
         val event: AccessibilityEvent = mock()
+        val rootNode: AccessibilityNodeInfo = mock()
+
+        dispatcher.dispatch(event, rootNode)
+
+        verify(eventBus, never()).publish(any())
+    }
+
+    @Test
+    fun `should NOT publish anything when event is from a bank app`() {
+        val bankPackageName = BRAZILIAN_BANK_PACKAGE_NAMES.random()
+        val event: AccessibilityEvent = mock()
+        whenever(event.packageName).thenReturn(bankPackageName)
+
         val rootNode: AccessibilityNodeInfo = mock()
 
         dispatcher.dispatch(event, rootNode)

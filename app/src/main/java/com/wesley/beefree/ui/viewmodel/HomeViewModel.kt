@@ -1,14 +1,25 @@
 package com.wesley.beefree.ui.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.domain.entities.RelapseHistory
+import com.wesley.beefree.storage.adapters.RoomAddictionRepository
+import com.wesley.beefree.storage.adapters.db.AppDatabase
+import com.wesley.beefree.storage.ports.AddictionRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.util.Calendar
-import java.util.Random
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val addictionRepository: AddictionRepository,
+) : ViewModel() {
     private val _relapseHistory = MutableStateFlow<List<RelapseHistory>>(emptyList())
     val relapseHistory: StateFlow<List<RelapseHistory>> = _relapseHistory.asStateFlow()
 
@@ -16,34 +27,26 @@ class HomeViewModel : ViewModel() {
     val motivationalMessage: StateFlow<String> = _motivationalMessage.asStateFlow()
 
     init {
-        loadData()
-    }
-
-    private fun loadData() {
-        _relapseHistory.value = generateDummyData()
-        _motivationalMessage.value = getRandomMotivationalMessage()
-    }
-
-    private fun generateDummyData(): List<RelapseHistory> {
-        val data = mutableListOf<RelapseHistory>()
-        val cal = Calendar.getInstance()
-        val random = Random()
-
-        for (i in 0 until 50) {
-            val daysAgo = random.nextInt(30)
-            val tempCal = cal.clone() as Calendar
-            tempCal.add(Calendar.DAY_OF_YEAR, -daysAgo)
-            data.add(
-                RelapseHistory(
-                    id = i,
-                    addictionTypeId = i,
-                    keywordDetected = "Betano",
-                    relapseAt = tempCal.time.time,
-                    updatedAt = tempCal.time.time,
-                ),
-            )
+        viewModelScope.launch {
+            loadData()
         }
-        return data
+    }
+
+    private suspend fun loadData() {
+        withContext(Dispatchers.IO) {
+            _relapseHistory.value = getTheLast30DaysOfHistory()
+            _motivationalMessage.value = getRandomMotivationalMessage()
+        }
+    }
+
+    private suspend fun getTheLast30DaysOfHistory(): List<RelapseHistory> {
+        val relapseHistory = addictionRepository.getRelapseHistory().first()
+
+        val thirtyDaysAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)
+
+        return relapseHistory
+            .filter { it.relapseAt >= thirtyDaysAgo }
+            .sortedByDescending { it.relapseAt }
     }
 
     private fun getRandomMotivationalMessage(): String {
@@ -58,5 +61,22 @@ class HomeViewModel : ViewModel() {
                 "Não olhe para trás, você não está indo para lá.",
             )
         return messages.random()
+    }
+
+    companion object {
+        fun factory(application: Application): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    val database = AppDatabase.getDatabase(application)
+                    @Suppress("UNCHECKED_CAST")
+                    return HomeViewModel(
+                        RoomAddictionRepository(
+                            database.addictionTypeDao(),
+                            database.addictionKeywordDao(),
+                            database.relapseHistoryDao(),
+                        ),
+                    ) as T
+                }
+            }
     }
 }

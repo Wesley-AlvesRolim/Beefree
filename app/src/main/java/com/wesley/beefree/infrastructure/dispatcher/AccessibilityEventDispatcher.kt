@@ -3,6 +3,7 @@ package com.wesley.beefree.infrastructure.dispatcher
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import com.wesley.beefree.data.apps.BRAZILIAN_BANK_PACKAGE_NAMES
 import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.events.EventDispatcher
 import com.wesley.beefree.domain.events.ScreenContentCaptured
@@ -17,7 +18,7 @@ class AccessibilityEventDispatcher(
         event: AccessibilityEvent?,
         vararg args: Any?,
     ) {
-        if (cannotDispatchTheEvent()) return
+        if (cannotDispatchTheEvent(event)) return
         val nodes = args.filterIsInstance<AccessibilityNodeInfo>()
         if (nodes.firstOrNull() == null) {
             return
@@ -32,7 +33,16 @@ class AccessibilityEventDispatcher(
         }
     }
 
-    private fun cannotDispatchTheEvent(): Boolean = OverlayServiceActivity.isRunning || repository?.getTheScreenReaderStatus() == false
+    private fun cannotDispatchTheEvent(event: AccessibilityEvent?): Boolean {
+        if (OverlayServiceActivity.isRunning) return true
+        if (repository?.getTheScreenReaderStatus() == false) return true
+
+        if (event?.packageName != null && BRAZILIAN_BANK_PACKAGE_NAMES.contains(event.packageName.toString())) {
+            return true
+        }
+
+        return false
+    }
 
     private fun extractText(
         node: AccessibilityNodeInfo,

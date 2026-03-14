@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,7 +41,7 @@ fun OverlayUI(
             onClick = onCloseRequest,
             modifier = Modifier.align(Alignment.TopEnd),
         ) {
-            Icon(Icons.Filled.Close, contentDescription = "Close overlay", tint = Color.White)
+            Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.overlay_close_description), tint = Color.White)
         }
 
         Column(

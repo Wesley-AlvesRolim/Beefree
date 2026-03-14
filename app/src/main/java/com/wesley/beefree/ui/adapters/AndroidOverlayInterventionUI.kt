@@ -7,7 +7,7 @@ import com.wesley.beefree.utils.OverlayUtils
 class AndroidOverlayInterventionUI(
     private val context: Context,
 ) : InterventionUI {
-    override fun show() {
-        OverlayUtils.startOverlayService(context)
+    override fun show(reason: String) {
+        OverlayUtils.startOverlayService(context, reason)
     }
 }

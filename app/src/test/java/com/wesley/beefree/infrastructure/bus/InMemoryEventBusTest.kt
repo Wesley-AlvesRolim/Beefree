@@ -16,7 +16,7 @@ class InMemoryEventBusTest {
             receivedEvent = it
         }
 
-        val event = InterventionTriggered("Test reason")
+        val event = InterventionTriggered("Test reason", "keyword", 1, "package")
         eventBus.publish(event)
 
         assertEquals(event, receivedEvent)
@@ -32,7 +32,7 @@ class InMemoryEventBusTest {
         }
 
         eventBus.publish(ScreenContentCaptured(listOf("safe"), "com.package"))
-        eventBus.publish(InterventionTriggered("Reason"))
+        eventBus.publish(InterventionTriggered("Reason", "keyword", 1, "package"))
 
         assertEquals(1, receivedCount)
     }
