@@ -14,7 +14,7 @@ class RelapseRecorderModule(
     private val coroutineScope: CoroutineScope,
     private val currentTimeProvider: () -> Long = { System.currentTimeMillis() },
 ) {
-    private val eventIntervalMs = 5000
+    private val eventIntervalMs = 5000L
     private val lastRelapseRecordedAt = AtomicLong(-5000)
 
     init {
