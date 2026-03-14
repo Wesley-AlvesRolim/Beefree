@@ -76,10 +76,8 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         isAccessibilityEnabled = isAccessibilityEnabled,
         isAccessibilityStarted = isAccessibilityStarted,
         isOverlayPermissionEnabled = isOverlayPermissionEnabled,
-        onUpdateStatuses = { viewModel.updateStatuses() },
         onToggleAccessibility = { viewModel.toggleAccessibilityService() },
         onOpenAccessibilitySettings = { viewModel.openAccessibilitySettings() },
-        onStartOverlayService = { viewModel.startOverlayService() },
         onOpenOverlaySettings = { viewModel.openOverlaySettings() },
     )
 }
@@ -90,10 +88,8 @@ fun SettingsScreenContent(
     isAccessibilityEnabled: Boolean,
     isAccessibilityStarted: Boolean,
     isOverlayPermissionEnabled: Boolean,
-    onUpdateStatuses: () -> Unit,
     onToggleAccessibility: () -> Unit,
     onOpenAccessibilitySettings: () -> Unit,
-    onStartOverlayService: () -> Unit,
     onOpenOverlaySettings: () -> Unit,
 ) {
     var monitorAdult by remember { mutableStateOf(true) }
@@ -247,10 +243,8 @@ fun SettingsScreenPreview() {
             isAccessibilityEnabled = true,
             isAccessibilityStarted = false,
             isOverlayPermissionEnabled = true,
-            onUpdateStatuses = {},
             onToggleAccessibility = {},
             onOpenAccessibilitySettings = {},
-            onStartOverlayService = {},
             onOpenOverlaySettings = {},
         )
     }
