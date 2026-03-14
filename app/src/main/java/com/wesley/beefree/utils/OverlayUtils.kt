@@ -3,6 +3,7 @@ package com.wesley.beefree.utils
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import com.wesley.beefree.infrastructure.services.OVERLAY_TRIGGERED_BY_REASON
 import com.wesley.beefree.infrastructure.services.OverlayServiceActivity
 
 object OverlayUtils {
@@ -15,7 +16,7 @@ object OverlayUtils {
         }
         val intent =
             Intent(context, OverlayServiceActivity::class.java).apply {
-                putExtra("EXTRA_REASON", reason)
+                putExtra(OVERLAY_TRIGGERED_BY_REASON, reason)
             }
         context.startService(intent)
     }

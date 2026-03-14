@@ -14,6 +14,8 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.wesley.beefree.ui.components.OverlayUI
 import com.wesley.beefree.utils.ComposeLifecycleOwner
 
+const val OVERLAY_TRIGGERED_BY_REASON = "OVERLAY_TRIGGERED_BY_REASON"
+
 class OverlayServiceActivity : Service() {
     companion object {
         var isRunning = false
@@ -31,7 +33,7 @@ class OverlayServiceActivity : Service() {
         flags: Int,
         startId: Int,
     ): Int {
-        reason = intent?.getStringExtra("EXTRA_REASON") ?: ""
+        reason = intent?.getStringExtra(OVERLAY_TRIGGERED_BY_REASON) ?: ""
         if (floatyView == null) {
             addOverlayView()
         }
