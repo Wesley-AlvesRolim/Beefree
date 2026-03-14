@@ -69,8 +69,8 @@ class RelapseRecorderModuleTest {
             subscriber.invoke(firstEvent)
 
             currentTime = 5999
-            val secondEventThatShouldNotBeTrigged = InterventionTriggered("reason2", "key2", 1, "app1")
-            subscriber.invoke(secondEventThatShouldNotBeTrigged)
+            val secondEventThatShouldNotBeTriggered = InterventionTriggered("reason2", "key2", 1, "app1")
+            subscriber.invoke(secondEventThatShouldNotBeTriggered)
 
             verify(addictionRepository, times(1)).insertRelapse(any())
         }
