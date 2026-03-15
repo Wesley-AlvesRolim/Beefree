@@ -3,6 +3,7 @@ package com.wesley.beefree.infrastructure.dispatcher
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.wesley.beefree.data.apps.BRAZILIAN_BANK_PACKAGE_NAMES
+import com.wesley.beefree.data.apps.HELP_APPS_PACKAGE_NAMES
 import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.events.ScreenContentCaptured
 import com.wesley.beefree.infrastructure.services.OverlayServiceActivity
@@ -75,6 +76,19 @@ class AccessibilityEventDispatcherTest {
         val bankPackageName = BRAZILIAN_BANK_PACKAGE_NAMES.random()
         val event: AccessibilityEvent = mock()
         whenever(event.packageName).thenReturn(bankPackageName)
+
+        val rootNode: AccessibilityNodeInfo = mock()
+
+        dispatcher.dispatch(event, rootNode)
+
+        verify(eventBus, never()).publish(any())
+    }
+
+    @Test
+    fun `should NOT publish anything when event is from a help app`() {
+        val helpPackageName = HELP_APPS_PACKAGE_NAMES.random()
+        val event: AccessibilityEvent = mock()
+        whenever(event.packageName).thenReturn(helpPackageName)
 
         val rootNode: AccessibilityNodeInfo = mock()
 
