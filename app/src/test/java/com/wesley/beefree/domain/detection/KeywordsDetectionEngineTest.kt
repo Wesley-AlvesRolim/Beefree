@@ -20,7 +20,8 @@ class KeywordsDetectionEngineTest {
             receivedEvent = it
         }
 
-        val reasonContent = keywordsByAddictionType[1]?.joinToString(", ", limit = 3, truncated = "...")
+        val reasonContent =
+            keywordsByAddictionType[1]?.joinToString(", ", limit = 3, truncated = "...")
         val captureEvent = ScreenContentCaptured(listOf(reasonContent!!), "com.example.app")
         eventBus.publish(captureEvent)
 
@@ -59,12 +60,15 @@ class KeywordsDetectionEngineTest {
             receivedEvent = it
         }
 
-        val reasonContent = keywordsByAddictionType[1]?.joinToString(", ", limit = 3, truncated = "...")
+        val reasonContent =
+            keywordsByAddictionType[1]
+                ?.joinToString(", ", limit = 3, truncated = "...")
+                ?.lowercase()
         val captureEvent = ScreenContentCaptured(listOf(reasonContent!!), "com.example.app")
         eventBus.publish(captureEvent)
 
         assertNotNull(receivedEvent)
-        assertEquals(reasonContent.lowercase(), receivedEvent?.reason)
+        assertEquals(reasonContent, receivedEvent?.reason)
     }
 
     @Test

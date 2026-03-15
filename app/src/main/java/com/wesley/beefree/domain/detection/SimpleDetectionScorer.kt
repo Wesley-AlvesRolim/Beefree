@@ -37,12 +37,7 @@ class SimpleDetectionScorer : DetectionScorer {
         if (lastIntervention == null || isTriggered()) {
             lastIntervention =
                 InterventionTriggered(
-                    reason =
-                        matchedKeywords.joinToString(
-                            separator = ", ",
-                            limit = 3,
-                            truncated = "...",
-                        ),
+                    reason = reason,
                     keyword = keyword,
                     addictionTypeId = addictionTypeId,
                     appPackage = appPackage,

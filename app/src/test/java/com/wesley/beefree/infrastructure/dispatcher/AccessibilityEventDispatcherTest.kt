@@ -73,6 +73,7 @@ class AccessibilityEventDispatcherTest {
 
     @Test
     fun `should NOT publish anything when event is from a bank app`() {
+        assertFalse(BRAZILIAN_BANK_PACKAGE_NAMES.isEmpty())
         val bankPackageName = BRAZILIAN_BANK_PACKAGE_NAMES.random()
         val event: AccessibilityEvent = mock()
         whenever(event.packageName).thenReturn(bankPackageName)
@@ -86,6 +87,7 @@ class AccessibilityEventDispatcherTest {
 
     @Test
     fun `should NOT publish anything when event is from a help app`() {
+        assertFalse(HELP_APPS_PACKAGE_NAMES.isEmpty())
         val helpPackageName = HELP_APPS_PACKAGE_NAMES.random()
         val event: AccessibilityEvent = mock()
         whenever(event.packageName).thenReturn(helpPackageName)
