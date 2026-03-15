@@ -22,12 +22,15 @@ class KeywordsDetectionEngine(
     }
 
     override fun detect(event: ScreenContentCaptured) {
-        findFirstMatchingScore(event)
-            ?.let { scorer.getIntervention() }
-            ?.let {
-                eventBus.publish(it)
-                scorer.reset()
-            }
+        try {
+            findFirstMatchingScore(event)
+                ?.let { scorer.getIntervention() }
+                ?.let {
+                    eventBus.publish(it)
+                }
+        } finally {
+            scorer.reset()
+        }
     }
 
     private fun findFirstMatchingScore(event: ScreenContentCaptured): MatchResult? =
