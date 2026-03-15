@@ -23,24 +23,24 @@ class KeywordsDetectionEngine(
 
     override fun detect(event: ScreenContentCaptured) {
         try {
-            findFirstMatchingScore(event)
-                ?.let { scorer.getIntervention() }
-                ?.let {
-                    eventBus.publish(it)
-                }
+            findAllMatches(event)
+            scorer.getIntervention()?.let {
+                eventBus.publish(it)
+            }
         } finally {
             scorer.reset()
         }
     }
 
-    private fun findFirstMatchingScore(event: ScreenContentCaptured): MatchResult? =
+    private fun findAllMatches(event: ScreenContentCaptured) {
         event.texts
             .asSequence()
             .filter { it.isNotBlank() }
             .flatMap { text -> findMatchesInText(text) }
-            .firstOrNull { match ->
+            .forEach { match ->
                 scorer.addMatch(match.text, match.keyword, match.typeId, event.packageName)
             }
+    }
 
     private fun findMatchesInText(text: String): Sequence<MatchResult> =
         regexByAddictionType.asSequence().flatMap { (typeId, regexes) ->
