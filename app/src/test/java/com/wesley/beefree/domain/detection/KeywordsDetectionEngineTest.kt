@@ -86,14 +86,51 @@ class KeywordsDetectionEngineTest {
         engine.detect(ScreenContentCaptured(listOf("k2"), "pkg"))
         assertEquals(0, triggerCount)
 
-        engine.detect(ScreenContentCaptured(listOf("k3"), "pkg"))
+        engine.detect(ScreenContentCaptured(listOf("k1", "k2", "k3"), "pkg"))
         assertEquals(1, triggerCount)
 
         engine.detect(ScreenContentCaptured(listOf("k4"), "pkg"))
-        engine.detect(ScreenContentCaptured(listOf("k5"), "pkg"))
         assertEquals(1, triggerCount)
 
-        engine.detect(ScreenContentCaptured(listOf("k6"), "pkg"))
+        engine.detect(ScreenContentCaptured(listOf("k4", "k5", "k6"), "pkg"))
         assertEquals(2, triggerCount)
+    }
+
+    @Test
+    fun `should reset scorer even if an exception occurs during detection`() {
+        val eventBus = InMemoryEventBus()
+        val mockScorer =
+            mock<DetectionScorer> {
+                on {
+                    addMatch(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                    )
+                } doThrow RuntimeException("Failure during detection")
+            }
+        val keywordsByAddictionType = mapOf(1 to listOf("bet"))
+        val engine = KeywordsDetectionEngine(eventBus, keywordsByAddictionType, mockScorer)
+
+        try {
+            engine.detect(ScreenContentCaptured(listOf("bet"), "pkg"))
+        } catch (e: Exception) {
+        }
+
+        verify(mockScorer, times(1)).reset()
+    }
+
+    @Test
+    fun `should reset scorer after every detection attempt`() {
+        val eventBus = InMemoryEventBus()
+        val mockScorer = mock<DetectionScorer>()
+        val engine = KeywordsDetectionEngine(eventBus, emptyMap(), mockScorer)
+
+        engine.detect(ScreenContentCaptured(listOf("Safe"), "pkg"))
+        verify(mockScorer, times(1)).reset()
+
+        engine.detect(ScreenContentCaptured(listOf("Another Safe"), "pkg"))
+        verify(mockScorer, times(2)).reset()
     }
 }
