@@ -1,5 +1,6 @@
 package com.wesley.beefree.domain.detection
 
+import com.wesley.beefree.domain.detection.ports.DetectionScorer
 import com.wesley.beefree.domain.events.InterventionTriggered
 import com.wesley.beefree.domain.events.ScreenContentCaptured
 import com.wesley.beefree.infrastructure.bus.adapters.InMemoryEventBus
@@ -7,6 +8,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 class KeywordsDetectionEngineTest {
     @Test
