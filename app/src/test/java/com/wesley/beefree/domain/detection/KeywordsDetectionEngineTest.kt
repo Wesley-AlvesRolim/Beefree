@@ -1,5 +1,6 @@
 package com.wesley.beefree.domain.detection
 
+import com.wesley.beefree.domain.detection.ports.DetectionScorer
 import com.wesley.beefree.domain.events.InterventionTriggered
 import com.wesley.beefree.domain.events.ScreenContentCaptured
 import com.wesley.beefree.infrastructure.bus.adapters.InMemoryEventBus
@@ -7,12 +8,17 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 class KeywordsDetectionEngineTest {
     @Test
     fun `should publish InterventionTriggered when a blocked keyword is detected`() {
         val eventBus = InMemoryEventBus()
-        val keywordsByAddictionType = mapOf(1 to listOf("bet", "porn"))
+        val keywordsByAddictionType = mapOf(1 to listOf("bet", "another_bet", "famous_bet"))
         KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
 
         var receivedEvent: InterventionTriggered? = null
@@ -20,13 +26,14 @@ class KeywordsDetectionEngineTest {
             receivedEvent = it
         }
 
-        val reasonContent = "This is a bet site"
-        val captureEvent = ScreenContentCaptured(listOf(reasonContent), "com.example.app")
+        val reasonContent =
+            keywordsByAddictionType[1]?.joinToString(", ", limit = 3, truncated = "...")
+        val captureEvent = ScreenContentCaptured(listOf(reasonContent!!), "com.example.app")
         eventBus.publish(captureEvent)
 
         assertNotNull(receivedEvent)
         assertEquals(reasonContent, receivedEvent?.reason)
-        assertEquals("bet", receivedEvent?.keyword)
+        assertEquals(keywordsByAddictionType[1]?.last(), receivedEvent?.keyword)
         assertEquals(1, receivedEvent?.addictionTypeId)
         assertEquals("com.example.app", receivedEvent?.appPackage)
     }
@@ -51,7 +58,7 @@ class KeywordsDetectionEngineTest {
     @Test
     fun `should be case-insensitive when detecting blocked keywords`() {
         val eventBus = InMemoryEventBus()
-        val keywordsByAddictionType = mapOf(1 to listOf("BET"))
+        val keywordsByAddictionType = mapOf(1 to listOf("BET", "ANOTHER_BET", "FAMOUS_BET"))
         KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
 
         var receivedEvent: InterventionTriggered? = null
@@ -59,11 +66,77 @@ class KeywordsDetectionEngineTest {
             receivedEvent = it
         }
 
-        val reasonContent = "This is a bet site"
-        val captureEvent = ScreenContentCaptured(listOf(reasonContent), "com.example.app")
+        val reasonContent =
+            keywordsByAddictionType[1]
+                ?.joinToString(", ", limit = 3, truncated = "...")
+                ?.lowercase()
+        val captureEvent = ScreenContentCaptured(listOf(reasonContent!!), "com.example.app")
         eventBus.publish(captureEvent)
 
         assertNotNull(receivedEvent)
         assertEquals(reasonContent, receivedEvent?.reason)
+    }
+
+    @Test
+    fun `should reset scorer after triggering intervention`() {
+        val eventBus = InMemoryEventBus()
+        val keywordsByAddictionType = mapOf(1 to listOf("k1", "k2", "k3", "k4", "k5", "k6"))
+        val engine = KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
+
+        var triggerCount = 0
+        eventBus.subscribe(InterventionTriggered::class.java) {
+            triggerCount++
+        }
+
+        engine.detect(ScreenContentCaptured(listOf("k1"), "pkg"))
+        engine.detect(ScreenContentCaptured(listOf("k2"), "pkg"))
+        assertEquals(0, triggerCount)
+
+        engine.detect(ScreenContentCaptured(listOf("k1", "k2", "k3"), "pkg"))
+        assertEquals(1, triggerCount)
+
+        engine.detect(ScreenContentCaptured(listOf("k4"), "pkg"))
+        assertEquals(1, triggerCount)
+
+        engine.detect(ScreenContentCaptured(listOf("k4", "k5", "k6"), "pkg"))
+        assertEquals(2, triggerCount)
+    }
+
+    @Test
+    fun `should reset scorer even if an exception occurs during detection`() {
+        val eventBus = InMemoryEventBus()
+        val mockScorer =
+            mock<DetectionScorer> {
+                on {
+                    addMatch(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                    )
+                } doThrow RuntimeException("Failure during detection")
+            }
+        val keywordsByAddictionType = mapOf(1 to listOf("bet"))
+        val engine = KeywordsDetectionEngine(eventBus, keywordsByAddictionType, mockScorer)
+
+        try {
+            engine.detect(ScreenContentCaptured(listOf("bet"), "pkg"))
+        } catch (e: Exception) {
+        }
+
+        verify(mockScorer, times(1)).reset()
+    }
+
+    @Test
+    fun `should reset scorer after every detection attempt`() {
+        val eventBus = InMemoryEventBus()
+        val mockScorer = mock<DetectionScorer>()
+        val engine = KeywordsDetectionEngine(eventBus, emptyMap(), mockScorer)
+
+        engine.detect(ScreenContentCaptured(listOf("Safe"), "pkg"))
+        verify(mockScorer, times(1)).reset()
+
+        engine.detect(ScreenContentCaptured(listOf("Another Safe"), "pkg"))
+        verify(mockScorer, times(2)).reset()
     }
 }

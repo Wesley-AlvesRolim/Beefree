@@ -2,12 +2,13 @@ package com.wesley.beefree.domain.detection
 
 import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.detection.ports.DetectionEngine
-import com.wesley.beefree.domain.events.InterventionTriggered
+import com.wesley.beefree.domain.detection.ports.DetectionScorer
 import com.wesley.beefree.domain.events.ScreenContentCaptured
 
 class KeywordsDetectionEngine(
     override val eventBus: EventBus,
     private val keywordsByAddictionType: Map<Int, List<String>>,
+    private val scorer: DetectionScorer = SimpleDetectionScorer(),
 ) : DetectionEngine<ScreenContentCaptured> {
     private val regexByAddictionType: Map<Int, List<Pair<String, Regex>>> =
         keywordsByAddictionType.mapValues { (_, keywords) ->
@@ -21,25 +22,37 @@ class KeywordsDetectionEngine(
     }
 
     override fun detect(event: ScreenContentCaptured) {
-        for (text in event.texts) {
-            if (text.isBlank()) {
-                continue
+        try {
+            findAllMatches(event)
+            scorer.getIntervention()?.let {
+                eventBus.publish(it)
             }
-            for ((addictionTypeId, regexList) in regexByAddictionType) {
-                for ((keyword, regex) in regexList) {
-                    if (regex.containsMatchIn(text)) {
-                        eventBus.publish(
-                            InterventionTriggered(
-                                reason = text,
-                                keyword = keyword,
-                                addictionTypeId = addictionTypeId,
-                                appPackage = event.packageName,
-                            ),
-                        )
-                        return
-                    }
-                }
-            }
+        } finally {
+            scorer.reset()
         }
     }
+
+    private fun findAllMatches(event: ScreenContentCaptured) {
+        event.texts
+            .asSequence()
+            .filter { it.isNotBlank() }
+            .flatMap { text -> findMatchesInText(text) }
+            .forEach { match ->
+                scorer.addMatch(match.text, match.keyword, match.typeId, event.packageName)
+            }
+    }
+
+    private fun findMatchesInText(text: String): Sequence<MatchResult> =
+        regexByAddictionType.asSequence().flatMap { (typeId, regexes) ->
+            regexes
+                .asSequence()
+                .filter { (_, regex) -> regex.containsMatchIn(text) }
+                .map { (keyword, _) -> MatchResult(text, keyword, typeId) }
+        }
+
+    private data class MatchResult(
+        val text: String,
+        val keyword: String,
+        val typeId: Int,
+    )
 }
