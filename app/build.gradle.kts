@@ -75,6 +75,9 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.core.ktx)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
     androidTestImplementation(libs.androidx.junit)
