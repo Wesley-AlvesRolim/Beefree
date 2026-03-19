@@ -101,4 +101,7 @@
     <!-- Onboarding: Finish -->
     <string name="onboarding_finish_title">Tudo pronto!</string>
     <string name="onboarding_finish_body">O monitoramento já está ativo.\n\nSempre que um conteúdo de risco for detectado, o aplicativo irá interromper para ajudar você a manter o controle.</string>
+
+    <!-- Errors -->
+    <string name="export_data_error">Falha ao exportar os seus dados!</string>
 </resources>
