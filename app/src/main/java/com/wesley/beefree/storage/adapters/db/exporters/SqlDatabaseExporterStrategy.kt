@@ -33,11 +33,11 @@ class SqlDatabaseExporterStrategy(
               AND name NOT LIKE 'sqlite_sequence'
               AND name NOT LIKE 'room_master_table'
             """.trimIndent()
-        val cursor = db.query(query)
-        while (cursor.moveToNext()) {
-            tables.add(cursor.getString(0))
+        db.query(query).use { cursor ->
+            while (cursor.moveToNext()) {
+                tables.add(cursor.getString(0))
+            }
         }
-        cursor.close()
         return tables
     }
 
@@ -46,13 +46,14 @@ class SqlDatabaseExporterStrategy(
         table: String,
         writer: OutputStreamWriter,
     ) {
-        val cursor = db.query("SELECT sql FROM sqlite_master WHERE type='table' AND name='$table'")
-        if (cursor.moveToFirst()) {
-            val schema = cursor.getString(0)
-            writer.write("-- Table: $table\n")
-            writer.write("$schema;\n\n")
+        val query = "SELECT sql FROM sqlite_master WHERE type='table' AND name = ?"
+        db.query(query, arrayOf(table)).use { cursor ->
+            if (cursor.moveToFirst()) {
+                val schema = cursor.getString(0)
+                writer.write("-- Table: $table\n")
+                writer.write("$schema;\n\n")
+            }
         }
-        cursor.close()
     }
 
     private fun writeTableData(
@@ -60,37 +61,45 @@ class SqlDatabaseExporterStrategy(
         table: String,
         writer: OutputStreamWriter,
     ) {
-        val cursor = db.query("SELECT * FROM $table")
+        val cursor = db.query("SELECT * FROM `$table`")
         val columnNames = cursor.columnNames
         while (cursor.moveToNext()) {
             val values = mutableListOf<String>()
             for (i in 0 until cursor.columnCount) {
-                if (cursor.isNull(i)) {
-                    values.add("NULL")
-                } else {
-                    when (cursor.getType(i)) {
-                        Cursor.FIELD_TYPE_INTEGER -> values.add(cursor.getLong(i).toString())
-                        Cursor.FIELD_TYPE_FLOAT -> values.add(cursor.getDouble(i).toString())
-                        Cursor.FIELD_TYPE_BLOB ->
-                            values.add(
-                                "X'${
-                                    cursor.getBlob(i).joinToString("") { "%02x".format(it) }
-                                }'",
-                            )
-
-                        else -> {
-                            val value = cursor.getString(i).replace("'", "''")
-                            values.add("'$value'")
-                        }
-                    }
-                }
+                values.add(
+                    getColumnValue(cursor, i),
+                )
             }
-            val insert = "INSERT INTO $table (${columnNames.joinToString(", ")}) VALUES (${
-                values.joinToString(", ")
-            });\n"
+            val insert =
+                "INSERT INTO `$table` (${
+                    columnNames.joinToString(", ") { "`$it`" }
+                }) VALUES (${values.joinToString(", ")});\n"
             writer.write(insert)
         }
         writer.write("\n")
         cursor.close()
+    }
+
+    private fun getColumnValue(
+        cursor: Cursor,
+        columnIndex: Int,
+    ): String {
+        var value: String? = null
+        when (cursor.getType(columnIndex)) {
+            Cursor.FIELD_TYPE_NULL -> value = "NULL"
+            Cursor.FIELD_TYPE_INTEGER -> value = cursor.getLong(columnIndex).toString()
+            Cursor.FIELD_TYPE_FLOAT -> value = cursor.getDouble(columnIndex).toString()
+            Cursor.FIELD_TYPE_BLOB ->
+                value =
+                    "X'${
+                        cursor.getBlob(columnIndex).joinToString("") { "%02x".format(it) }
+                    }'"
+
+            else -> {
+                val stringRawValue = cursor.getString(columnIndex).replace("'", "''")
+                value = "'$stringRawValue'"
+            }
+        }
+        return value
     }
 }
