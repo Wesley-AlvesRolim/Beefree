@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -29,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -58,6 +60,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     val isAccessibilityEnabled by viewModel.isAccessibilityServiceEnabled.collectAsState()
     val isAccessibilityStarted by viewModel.isAccessibilityServiceStarted.collectAsState()
     val isOverlayPermissionEnabled by viewModel.isOverlayPermissionEnabled.collectAsState()
+    val errorText by viewModel.errorMessage.collectAsState(null)
 
     DisposableEffect(lifecycleOwner) {
         val observer =
@@ -72,6 +75,20 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         }
     }
 
+    errorText?.let { uiText ->
+        AlertDialog(
+            onDismissRequest = { viewModel.resetError() },
+            confirmButton = {
+                TextButton(onClick = { viewModel.resetError() }) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            },
+            text = {
+                Text(uiText)
+            },
+        )
+    }
+
     SettingsScreenContent(
         isAccessibilityEnabled = isAccessibilityEnabled,
         isAccessibilityStarted = isAccessibilityStarted,
@@ -79,6 +96,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         onToggleAccessibility = { viewModel.toggleAccessibilityService() },
         onOpenAccessibilitySettings = { viewModel.openAccessibilitySettings() },
         onOpenOverlaySettings = { viewModel.openOverlaySettings() },
+        onExportData = { viewModel.exportData() },
     )
 }
 
@@ -91,6 +109,7 @@ fun SettingsScreenContent(
     onToggleAccessibility: () -> Unit,
     onOpenAccessibilitySettings: () -> Unit,
     onOpenOverlaySettings: () -> Unit,
+    onExportData: () -> Unit,
 ) {
     var monitorAdult by remember { mutableStateOf(true) }
     var monitorBets by remember { mutableStateOf(false) }
@@ -98,7 +117,12 @@ fun SettingsScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.Bold) },
+                title = {
+                    Text(
+                        stringResource(R.string.settings_title),
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
             )
         },
     ) { padding ->
@@ -137,7 +161,11 @@ fun SettingsScreenContent(
                     headlineContent = { Text(stringResource(R.string.settings_block_message_title)) },
                     supportingContent = { Text(stringResource(R.string.settings_block_message_subtitle)) },
                     leadingContent = { Icon(Icons.Default.Edit, null) },
-                    modifier = Modifier.background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp)),
+                    modifier =
+                        Modifier.background(
+                            MaterialTheme.colorScheme.surface,
+                            RoundedCornerShape(12.dp),
+                        ),
                 )
             }
 
@@ -157,14 +185,23 @@ fun SettingsScreenContent(
                     headlineContent = { Text("João Primo") },
                     supportingContent = { Text("(85) 00000-0000") },
                     leadingContent = { Icon(Icons.Default.Person, null) },
-                    trailingContent = { Icon(Icons.Default.Delete, stringResource(R.string.settings_remove_contact)) },
-                    modifier = Modifier.background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp)),
+                    trailingContent = {
+                        Icon(
+                            Icons.Default.Delete,
+                            stringResource(R.string.settings_remove_contact),
+                        )
+                    },
+                    modifier =
+                        Modifier.background(
+                            MaterialTheme.colorScheme.surface,
+                            RoundedCornerShape(12.dp),
+                        ),
                 )
             }
 
             Section(stringResource(R.string.settings_privacy_section_title)) {
                 Button(
-                    onClick = {},
+                    onClick = onExportData,
                     Modifier
                         .fillMaxWidth()
                         .height(50.dp),
@@ -172,7 +209,10 @@ fun SettingsScreenContent(
                     shape = RoundedCornerShape(12.dp),
                 ) {
                     Icon(Icons.Default.Share, null, Modifier.padding(end = 8.dp))
-                    Text(stringResource(R.string.settings_export_data), color = MaterialTheme.colorScheme.onPrimary)
+                    Text(
+                        stringResource(R.string.settings_export_data),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
                 }
             }
 
@@ -246,6 +286,7 @@ fun SettingsScreenPreview() {
             onToggleAccessibility = {},
             onOpenAccessibilitySettings = {},
             onOpenOverlaySettings = {},
+            onExportData = {},
         )
     }
 }
