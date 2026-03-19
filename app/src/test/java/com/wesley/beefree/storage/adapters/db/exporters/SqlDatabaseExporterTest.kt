@@ -63,10 +63,10 @@ class SqlDatabaseExporterTest {
             assertTrue(content.contains("CREATE TABLE `AddictionTypes`"))
             assertTrue(content.contains("CREATE TABLE `AddictionKeywords`"))
 
-            assertTrue(content.contains("INSERT INTO AddictionTypes"))
+            assertTrue(content.contains("INSERT INTO `AddictionTypes`"))
             assertTrue(content.contains("'Pornography'"))
 
-            assertTrue(content.contains("INSERT INTO AddictionKeywords"))
+            assertTrue(content.contains("INSERT INTO `AddictionKeywords`"))
             assertTrue(content.contains("'porn'"))
             assertTrue(content.contains("'onlyfans'"))
         }
