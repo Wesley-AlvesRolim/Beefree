@@ -25,6 +25,6 @@ fun OnboardingFinishScreen(onFinish: () -> Unit) {
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(onNext = onFinish)
+        OnboardingNavigationRow(text = stringResource(R.string.onboarding_btn_start), onNext = onFinish)
     }
 }

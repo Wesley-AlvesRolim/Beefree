@@ -131,13 +131,14 @@ fun OnboardingTitle(text: String) {
 fun OnboardingNavigationRow(
     onNext: () -> Unit,
     nextEnabled: Boolean = true,
+    text: String = stringResource(R.string.onboarding_btn_continue),
 ) {
     BeeButtonPrimary(
         onClick = onNext,
         enabled = nextEnabled,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        BeeLabelLarge(stringResource(R.string.onboarding_btn_continue), color = MaterialTheme.colorScheme.onPrimary)
+        BeeLabelLarge(text, color = MaterialTheme.colorScheme.onPrimary)
     }
 }
 
