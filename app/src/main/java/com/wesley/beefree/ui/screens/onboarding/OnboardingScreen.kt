@@ -1,16 +1,25 @@
 package com.wesley.beefree.ui.screens.onboarding
 
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.wesley.beefree.R
 import com.wesley.beefree.domain.onboarding.StepType
+import com.wesley.beefree.ui.components.designsystem.BeeBodyMedium
+import com.wesley.beefree.ui.components.designsystem.BeeButtonGhost
+import com.wesley.beefree.ui.components.designsystem.BeeLabelMedium
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.mocks.OnboardingViewModelMock
 import com.wesley.beefree.ui.viewmodel.ports.OnboardingViewModelPort
@@ -22,6 +31,22 @@ fun OnboardingScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = rememberUpdatedState(newValue = LocalLifecycleOwner.current)
+
+    var finishError by remember { mutableStateOf<Throwable?>(null) }
+
+    finishError?.let {
+        AlertDialog(
+            onDismissRequest = { finishError = null },
+            confirmButton = {
+                BeeButtonGhost(onClick = { finishError = null }) {
+                    BeeLabelMedium(stringResource(android.R.string.ok))
+                }
+            },
+            text = {
+                BeeBodyMedium(stringResource(R.string.onboarding_save_error))
+            },
+        )
+    }
 
     val currentStep by viewModel.currentStep.collectAsState()
     val answers by viewModel.answers.collectAsState()
@@ -171,7 +196,14 @@ fun OnboardingScreen(
             )
 
         StepType.FINISH ->
-            OnboardingFinishScreen(onFinish = { viewModel.finishOnboarding(onFinish) })
+            OnboardingFinishScreen(
+                onFinish = {
+                    viewModel.finishOnboarding(
+                        onFinish = onFinish,
+                        onError = { finishError = it },
+                    )
+                },
+            )
     }
 }
 

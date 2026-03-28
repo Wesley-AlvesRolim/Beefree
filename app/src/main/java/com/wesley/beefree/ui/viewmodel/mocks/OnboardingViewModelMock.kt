@@ -39,7 +39,10 @@ class OnboardingViewModelMock : OnboardingViewModelPort {
 
     override fun openOverlaySettings(context: Context) {}
 
-    override fun finishOnboarding(onFinish: () -> Unit) {
+    override fun finishOnboarding(
+        onFinish: () -> Unit,
+        onError: (Throwable) -> Unit,
+    ) {
         onFinish()
     }
 }

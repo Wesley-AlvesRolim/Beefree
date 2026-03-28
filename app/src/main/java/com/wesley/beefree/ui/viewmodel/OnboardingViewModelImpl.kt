@@ -91,15 +91,20 @@ open class OnboardingViewModelImpl(
         OverlayUtils.openSettingsToEnableTheOverlayPermission(context)
     }
 
-    override fun finishOnboarding(onFinish: () -> Unit) {
+    override fun finishOnboarding(
+        onFinish: () -> Unit,
+        onError: (Throwable) -> Unit,
+    ) {
         viewModelScope.launch {
             val profile = _clinicalProfile.value
             Log.d(
                 "OnboardingProfile",
                 "Clinical profile on finish: treatment=${profile?.treatmentProfile}, incongruence=${profile?.incongruenceLevel}",
             )
-            saveOnboardingDataUseCase.execute(_answers.value)
-            onFinish()
+            saveOnboardingDataUseCase
+                .execute(_answers.value)
+                .onSuccess { onFinish() }
+                .onFailure { onError(it) }
         }
     }
 

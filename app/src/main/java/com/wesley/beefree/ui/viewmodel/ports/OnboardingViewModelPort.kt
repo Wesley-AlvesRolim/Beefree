@@ -27,5 +27,8 @@ interface OnboardingViewModelPort {
 
     fun openOverlaySettings(context: Context)
 
-    fun finishOnboarding(onFinish: () -> Unit)
+    fun finishOnboarding(
+        onFinish: () -> Unit,
+        onError: (Throwable) -> Unit,
+    )
 }
