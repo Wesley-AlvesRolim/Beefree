@@ -1,86 +1,118 @@
 package com.wesley.beefree.ui.viewmodel
 
+import com.wesley.beefree.domain.onboarding.AddictionProfile
+import com.wesley.beefree.domain.onboarding.StepType
 import com.wesley.beefree.ui.viewmodel.mocks.OnboardingViewModelMock
-import com.wesley.beefree.ui.viewmodel.ports.AddictionCategory
-import com.wesley.beefree.ui.viewmodel.ports.OnboardingStep
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class OnboardingViewModelTest {
     private fun viewModel() = OnboardingViewModelMock()
 
-    @Test
-    fun `toggleAddiction should add and remove addiction from selection`() {
-        val viewModel = viewModel()
-
-        assertTrue(viewModel.selectedAddictions.value.isEmpty())
-
-        viewModel.toggleAddiction(AddictionCategory.ADULT_CONTENT)
-        assertTrue(viewModel.selectedAddictions.value.contains(AddictionCategory.ADULT_CONTENT))
-
-        viewModel.toggleAddiction(AddictionCategory.ADULT_CONTENT)
-        assertFalse(viewModel.selectedAddictions.value.contains(AddictionCategory.ADULT_CONTENT))
+    private fun OnboardingViewModelMock.advanceToAddictionSelector() {
+        repeat(3) { next() }
     }
 
     @Test
-    fun `toggleAddiction should allow multiple selections`() {
-        val viewModel = viewModel()
-
-        viewModel.toggleAddiction(AddictionCategory.ADULT_CONTENT)
-        viewModel.toggleAddiction(AddictionCategory.BETS)
-
-        assertTrue(viewModel.selectedAddictions.value.contains(AddictionCategory.ADULT_CONTENT))
-        assertTrue(viewModel.selectedAddictions.value.contains(AddictionCategory.BETS))
-        assertEquals(2, viewModel.selectedAddictions.value.size)
+    fun `starts at WELCOME step`() {
+        assertEquals(StepType.WELCOME, viewModel().currentStep.value.type)
     }
 
     @Test
-    fun `nextStep should navigate correctly`() {
-        val viewModel = viewModel()
-        viewModel.moveToStep(OnboardingStep.WELCOME)
-
-        viewModel.nextStep()
-        assertEquals(OnboardingStep.HOW_IT_WORKS, viewModel.currentStep.value)
-
-        viewModel.nextStep()
-        assertEquals(OnboardingStep.ADDICTION_SELECTOR, viewModel.currentStep.value)
-
-        viewModel.nextStep()
-        assertEquals(OnboardingStep.REQUEST_PERMISSIONS, viewModel.currentStep.value)
-
-        viewModel.nextStep()
-        assertEquals(OnboardingStep.REQUEST_PERMISSION_SCREEN_MONITOR, viewModel.currentStep.value)
-
-        viewModel.nextStep()
-        assertEquals(OnboardingStep.REQUEST_PERMISSION_SCREEN_OVERLAY, viewModel.currentStep.value)
-
-        viewModel.nextStep()
-        assertEquals(OnboardingStep.FINISH, viewModel.currentStep.value)
+    fun `next navigates from WELCOME to PRESENTATION`() {
+        val vm = viewModel()
+        vm.next()
+        assertEquals(StepType.PRESENTATION, vm.currentStep.value.type)
     }
 
     @Test
-    fun `previousStep should navigate correctly`() {
-        val viewModel = viewModel()
-        viewModel.moveToStep(OnboardingStep.FINISH)
+    fun `previous at first step stays at WELCOME`() {
+        val vm = viewModel()
+        vm.previous()
+        assertEquals(StepType.WELCOME, vm.currentStep.value.type)
+    }
 
-        viewModel.previousStep()
-        assertEquals(OnboardingStep.REQUEST_PERMISSION_SCREEN_OVERLAY, viewModel.currentStep.value)
+    @Test
+    fun `updateAnswer updates the answers state`() {
+        val vm = viewModel()
+        vm.updateAnswer { copy(userName = "Wesley") }
+        assertEquals("Wesley", vm.answers.value.userName)
+    }
 
-        viewModel.previousStep()
-        assertEquals(OnboardingStep.REQUEST_PERMISSION_SCREEN_MONITOR, viewModel.currentStep.value)
+    @Test
+    fun `after selecting PPU and advancing past selector, enters GENDER`() {
+        val vm = viewModel()
+        vm.updateAnswer { copy(addictionProfile = AddictionProfile.PPU) }
+        vm.advanceToAddictionSelector()
+        vm.next()
 
-        viewModel.previousStep()
-        assertEquals(OnboardingStep.REQUEST_PERMISSIONS, viewModel.currentStep.value)
+        assertEquals(StepType.GENDER, vm.currentStep.value.type)
+    }
 
-        viewModel.previousStep()
-        assertEquals(OnboardingStep.ADDICTION_SELECTOR, viewModel.currentStep.value)
+    @Test
+    fun `after selecting GAMBLING and advancing past selector, enters GENDER`() {
+        val vm = viewModel()
+        vm.updateAnswer { copy(addictionProfile = AddictionProfile.GAMBLING) }
+        vm.advanceToAddictionSelector()
+        vm.next()
 
-        viewModel.previousStep()
-        assertEquals(OnboardingStep.HOW_IT_WORKS, viewModel.currentStep.value)
+        assertEquals(StepType.GENDER, vm.currentStep.value.type)
+    }
 
-        viewModel.previousStep()
-        assertEquals(OnboardingStep.WELCOME, viewModel.currentStep.value)
+    @Test
+    fun `PPU path shows PPCS6_FORM as second step after GENDER`() {
+        val vm = viewModel()
+        vm.updateAnswer { copy(addictionProfile = AddictionProfile.PPU) }
+        vm.advanceToAddictionSelector()
+        vm.next()
+        vm.next()
+
+        assertEquals(StepType.PPCS6_FORM, vm.currentStep.value.type)
+    }
+
+    @Test
+    fun `PPU path shows FREQUENCY_FORM after EMA_FORM`() {
+        val vm = viewModel()
+        vm.updateAnswer { copy(addictionProfile = AddictionProfile.PPU) }
+        vm.advanceToAddictionSelector()
+        vm.next()
+        vm.next()
+        vm.next()
+        vm.next()
+
+        assertEquals(StepType.FREQUENCY_FORM, vm.currentStep.value.type)
+    }
+
+    @Test
+    fun `GAMBLING path shows PGSI_FORM as second step after GENDER`() {
+        val vm = viewModel()
+        vm.updateAnswer { copy(addictionProfile = AddictionProfile.GAMBLING) }
+        vm.advanceToAddictionSelector()
+        vm.next()
+        vm.next()
+
+        assertEquals(StepType.PGSI_FORM, vm.currentStep.value.type)
+    }
+
+    @Test
+    fun `answers accumulate correctly across multiple updates`() {
+        val vm = viewModel()
+        vm.updateAnswer { copy(userName = "Wesley") }
+        vm.updateAnswer { copy(addictionProfile = AddictionProfile.PPU) }
+        vm.updateAnswer { copy(gender = "Masculino") }
+
+        val answers = vm.answers.value
+        assertEquals("Wesley", answers.userName)
+        assertEquals(AddictionProfile.PPU, answers.addictionProfile)
+        assertEquals("Masculino", answers.gender)
+    }
+
+    @Test
+    fun `finishOnboarding calls onFinish callback`() {
+        val vm = viewModel()
+        var finished = false
+        vm.finishOnboarding { finished = true }
+        assertNotNull(finished)
     }
 }
