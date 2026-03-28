@@ -10,9 +10,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.wesley.beefree.domain.onboarding.StepType
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.mocks.OnboardingViewModelMock
-import com.wesley.beefree.ui.viewmodel.ports.OnboardingStep
 import com.wesley.beefree.ui.viewmodel.ports.OnboardingViewModelPort
 
 @Composable
@@ -24,7 +24,9 @@ fun OnboardingScreen(
     val lifecycleOwner = rememberUpdatedState(newValue = LocalLifecycleOwner.current)
 
     val currentStep by viewModel.currentStep.collectAsState()
-    val selectedAddictions by viewModel.selectedAddictions.collectAsState()
+    val answers by viewModel.answers.collectAsState()
+    val scaleResult by viewModel.scaleResult.collectAsState()
+    val clinicalProfile by viewModel.clinicalProfile.collectAsState()
     val isAccessibilityEnabled by viewModel.isAccessibilityEnabled.collectAsState()
     val isOverlayEnabled by viewModel.isOverlayEnabled.collectAsState()
 
@@ -32,58 +34,144 @@ fun OnboardingScreen(
         val lifecycle = lifecycleOwner.value.lifecycle
         val observer =
             LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_RESUME) {
-                    viewModel.updatePermissions(context)
-                }
+                if (event == Lifecycle.Event.ON_RESUME) viewModel.updatePermissions(context)
             }
-
         lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycle.removeObserver(observer)
-        }
+        onDispose { lifecycle.removeObserver(observer) }
     }
 
-    when (currentStep) {
-        OnboardingStep.WELCOME ->
-            OnboardingWelcomeScreen(onNext = { viewModel.nextStep() })
+    when (currentStep.type) {
+        StepType.WELCOME ->
+            OnboardingWelcomeScreen(onNext = { viewModel.next() })
 
-        OnboardingStep.HOW_IT_WORKS ->
-            OnboardingHowItWorksScreen(onNext = { viewModel.nextStep() })
+        StepType.PRESENTATION ->
+            OnboardingHowItWorksScreen(onNext = { viewModel.next() })
 
-        OnboardingStep.ADDICTION_SELECTOR ->
+        StepType.ASK_NAME ->
+            OnboardingAskNameScreen(
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
+            )
+
+        StepType.ADDICTION_SELECTOR ->
             OnboardingAddictionSelectorScreen(
-                selectedAddictions = selectedAddictions,
-                onToggleAddiction = { viewModel.toggleAddiction(it) },
-                onNext = { viewModel.nextStep() },
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
             )
 
-        OnboardingStep.REQUEST_PERMISSIONS ->
+        StepType.GENDER ->
+            OnboardingGenderScreen(
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
+            )
+
+        StepType.PPCS6_FORM ->
+            OnboardingPpcs6Screen(
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
+            )
+
+        StepType.EMA_FORM ->
+            OnboardingEmaScreen(
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
+            )
+
+        StepType.FREQUENCY_FORM ->
+            OnboardingFrequencyScreen(
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
+            )
+
+        StepType.PGSI_FORM ->
+            OnboardingPgsiScreen(
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
+            )
+
+        StepType.SYMPTOMS ->
+            OnboardingSymptomsScreen(
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
+            )
+
+        StepType.NEURODIVERGENCE ->
+            OnboardingNeurodivergenceScreen(
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
+            )
+
+        StepType.HOBBIES ->
+            OnboardingHobbiesScreen(
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
+            )
+
+        StepType.GOALS ->
+            OnboardingGoalsScreen(
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
+            )
+
+        StepType.SCORE_RESULT ->
+            OnboardingScoreResultScreen(
+                scaleResult = scaleResult,
+                clinicalProfile = clinicalProfile,
+                onNext = { viewModel.next() },
+            )
+
+        StepType.CORE_VALUES ->
+            OnboardingCoreValuesScreen(
+                answers = answers,
+                onUpdate = { viewModel.updateAnswer(it) },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
+            )
+
+        StepType.REQUEST_PERMISSIONS ->
             OnboardingRequestPermissionsScreen(
-                onNext = { viewModel.nextStep() },
-                onBack = { viewModel.previousStep() },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
             )
 
-        OnboardingStep.REQUEST_PERMISSION_SCREEN_MONITOR ->
+        StepType.REQUEST_PERMISSION_MONITOR ->
             RequestMonitorPermissionScreen(
                 isAccessibilityEnabled = isAccessibilityEnabled,
                 onOpenSettings = { viewModel.openAccessibilitySettings(context) },
-                onNext = { viewModel.nextStep() },
-                onBack = { viewModel.previousStep() },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
             )
 
-        OnboardingStep.REQUEST_PERMISSION_SCREEN_OVERLAY ->
+        StepType.REQUEST_PERMISSION_OVERLAY ->
             RequestPermissionOverlayScreen(
                 isOverlayEnabled = isOverlayEnabled,
                 onOpenSettings = { viewModel.openOverlaySettings(context) },
-                onNext = { viewModel.nextStep() },
-                onBack = { viewModel.previousStep() },
+                onNext = { viewModel.next() },
+                onBack = { viewModel.previous() },
             )
 
-        OnboardingStep.FINISH ->
-            OnboardingFinishScreen(
-                onFinish = { viewModel.finishOnboarding(onFinish) },
-            )
+        StepType.FINISH ->
+            OnboardingFinishScreen(onFinish = { viewModel.finishOnboarding(onFinish) })
     }
 }
 
