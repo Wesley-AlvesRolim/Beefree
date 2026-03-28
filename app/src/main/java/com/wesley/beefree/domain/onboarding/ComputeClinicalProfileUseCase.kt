@@ -17,7 +17,7 @@ class ComputeClinicalProfileUseCase {
         return ClinicalProfile(incongruenceLevel = incongruenceLevel, treatmentProfile = treatmentProfile)
     }
 
-    private fun computeIncongruenceLevel(answers: OnboardingAnswers): IncongruenceLevel {
+    internal fun computeIncongruenceLevel(answers: OnboardingAnswers): IncongruenceLevel {
         val frequency = answers.frequencyAnswer
         val moralDisapproval = (answers.emaAnswers.firstOrNull() ?: 0) + 1
         val score = frequency * moralDisapproval

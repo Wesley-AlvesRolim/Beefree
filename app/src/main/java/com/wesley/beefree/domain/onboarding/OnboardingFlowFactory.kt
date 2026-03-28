@@ -56,11 +56,6 @@ object OnboardingFlowFactory {
             ),
         )
 
-    private fun requiresCoreValues(answers: OnboardingAnswers): Boolean {
-        val frequency = answers.frequencyAnswer
-        val moralDisapproval = (answers.emaAnswers.firstOrNull() ?: 0) + 1
-        val score = frequency * moralDisapproval
-        val percentage = score.toFloat() / 35f
-        return percentage >= 0.30f
-    }
+    private fun requiresCoreValues(answers: OnboardingAnswers): Boolean =
+        ComputeClinicalProfileUseCase().computeIncongruenceLevel(answers) != IncongruenceLevel.BAIXA
 }
