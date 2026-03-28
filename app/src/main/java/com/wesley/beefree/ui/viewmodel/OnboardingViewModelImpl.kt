@@ -10,14 +10,14 @@ import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.domain.onboarding.ClinicalProfile
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.domain.onboarding.OnboardingStep
+import com.wesley.beefree.domain.onboarding.ScaleResult
+import com.wesley.beefree.domain.onboarding.StepType
 import com.wesley.beefree.domain.onboarding.engine.CompositeOnboardingFlowEngine
 import com.wesley.beefree.domain.onboarding.engine.OnboardingFlowFactory
+import com.wesley.beefree.domain.onboarding.ports.OnboardingFlowEngine
 import com.wesley.beefree.domain.onboarding.usecases.ComputeClinicalProfileUseCase
 import com.wesley.beefree.domain.onboarding.usecases.ComputeScoreUseCase
 import com.wesley.beefree.domain.onboarding.usecases.SaveOnboardingDataUseCase
-import com.wesley.beefree.domain.onboarding.ScaleResult
-import com.wesley.beefree.domain.onboarding.StepType
-import com.wesley.beefree.domain.onboarding.ports.OnboardingFlowEngine
 import com.wesley.beefree.infrastructure.services.AccessibilityServiceActivity
 import com.wesley.beefree.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.storage.adapters.SharedPreferencesKeyValueStorage

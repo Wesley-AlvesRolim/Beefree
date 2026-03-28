@@ -3,9 +3,9 @@ package com.wesley.beefree.ui.viewmodel.mocks
 import android.content.Context
 import com.wesley.beefree.domain.onboarding.ClinicalProfile
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
+import com.wesley.beefree.domain.onboarding.ScaleResult
 import com.wesley.beefree.domain.onboarding.engine.CompositeOnboardingFlowEngine
 import com.wesley.beefree.domain.onboarding.engine.OnboardingFlowFactory
-import com.wesley.beefree.domain.onboarding.ScaleResult
 import com.wesley.beefree.ui.viewmodel.ports.OnboardingViewModelPort
 import kotlinx.coroutines.flow.MutableStateFlow
 
