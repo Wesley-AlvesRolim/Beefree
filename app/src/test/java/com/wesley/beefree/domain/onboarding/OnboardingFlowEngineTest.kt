@@ -21,8 +21,9 @@ class OnboardingFlowEngineTest {
 
     @Test
     fun `isFirst is true at WELCOME`() {
-        assertEquals(StepType.WELCOME, engine().currentStep.type)
-        assertTrue(engine().isFirst)
+        val engine = engine()
+        assertEquals(StepType.WELCOME, engine.currentStep.type)
+        assertTrue(engine.isFirst)
     }
 
     @Test
