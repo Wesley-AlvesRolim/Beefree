@@ -1,6 +1,6 @@
-package com.wesley.beefree.domain.onboarding
+package com.wesley.beefree.domain.onboarding.scoring
 
-import com.wesley.beefree.domain.onboarding.scoring.Ppcs6Scorer
+import com.wesley.beefree.domain.onboarding.RiskLevel
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

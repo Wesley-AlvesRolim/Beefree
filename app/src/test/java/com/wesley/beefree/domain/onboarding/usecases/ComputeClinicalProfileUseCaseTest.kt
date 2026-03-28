@@ -1,5 +1,9 @@
-package com.wesley.beefree.domain.onboarding
+package com.wesley.beefree.domain.onboarding.usecases
 
+import com.wesley.beefree.domain.onboarding.AddictionProfile
+import com.wesley.beefree.domain.onboarding.IncongruenceLevel
+import com.wesley.beefree.domain.onboarding.OnboardingAnswers
+import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

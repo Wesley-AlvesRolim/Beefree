@@ -1,5 +1,11 @@
-package com.wesley.beefree.domain.onboarding
+package com.wesley.beefree.domain.onboarding.usecases
 
+import com.wesley.beefree.domain.onboarding.AddictionProfile
+import com.wesley.beefree.domain.onboarding.ClinicalProfile
+import com.wesley.beefree.domain.onboarding.IncongruenceLevel
+import com.wesley.beefree.domain.onboarding.OnboardingAnswers
+import com.wesley.beefree.domain.onboarding.RiskLevel
+import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.domain.onboarding.scoring.Ppcs6Scorer
 
 class ComputeClinicalProfileUseCase {

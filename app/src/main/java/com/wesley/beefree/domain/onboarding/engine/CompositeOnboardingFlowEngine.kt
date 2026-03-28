@@ -1,5 +1,10 @@
-package com.wesley.beefree.domain.onboarding
+package com.wesley.beefree.domain.onboarding.engine
 
+import com.wesley.beefree.domain.onboarding.OnboardingAnswers
+import com.wesley.beefree.domain.onboarding.OnboardingBranch
+import com.wesley.beefree.domain.onboarding.OnboardingNode
+import com.wesley.beefree.domain.onboarding.OnboardingSequence
+import com.wesley.beefree.domain.onboarding.OnboardingStep
 import com.wesley.beefree.domain.onboarding.ports.OnboardingFlowEngine
 
 class CompositeOnboardingFlowEngine(

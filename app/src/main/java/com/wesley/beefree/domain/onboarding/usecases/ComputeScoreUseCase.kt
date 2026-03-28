@@ -1,5 +1,8 @@
-package com.wesley.beefree.domain.onboarding
+package com.wesley.beefree.domain.onboarding.usecases
 
+import com.wesley.beefree.domain.onboarding.AddictionProfile
+import com.wesley.beefree.domain.onboarding.OnboardingAnswers
+import com.wesley.beefree.domain.onboarding.ScaleResult
 import com.wesley.beefree.domain.onboarding.scoring.PgsiScorer
 import com.wesley.beefree.domain.onboarding.scoring.Ppcs6Scorer
 

@@ -4,7 +4,6 @@ import com.wesley.beefree.domain.onboarding.AddictionProfile
 import com.wesley.beefree.domain.onboarding.StepType
 import com.wesley.beefree.ui.viewmodel.mocks.OnboardingViewModelMock
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class OnboardingViewModelTest {

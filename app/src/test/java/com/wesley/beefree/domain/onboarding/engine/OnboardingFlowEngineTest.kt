@@ -1,5 +1,8 @@
-package com.wesley.beefree.domain.onboarding
+package com.wesley.beefree.domain.onboarding.engine
 
+import com.wesley.beefree.domain.onboarding.AddictionProfile
+import com.wesley.beefree.domain.onboarding.OnboardingAnswers
+import com.wesley.beefree.domain.onboarding.StepType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

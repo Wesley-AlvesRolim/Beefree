@@ -1,6 +1,8 @@
-package com.wesley.beefree.domain.onboarding
+package com.wesley.beefree.domain.onboarding.usecases
 
 import com.wesley.beefree.domain.entities.AddictionType
+import com.wesley.beefree.domain.onboarding.AddictionProfile
+import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.storage.ports.AddictionRepository
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
 import kotlinx.coroutines.runBlocking

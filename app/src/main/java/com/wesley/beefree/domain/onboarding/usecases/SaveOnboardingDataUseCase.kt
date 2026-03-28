@@ -1,10 +1,12 @@
-package com.wesley.beefree.domain.onboarding
+package com.wesley.beefree.domain.onboarding.usecases
 
 import com.wesley.beefree.data.keywords.getBetsKeyWords
 import com.wesley.beefree.data.keywords.getPornKeywords
 import com.wesley.beefree.domain.entities.AddictionKeyword
 import com.wesley.beefree.domain.entities.AddictionType
 import com.wesley.beefree.domain.entities.AddictionTypeEnum
+import com.wesley.beefree.domain.onboarding.AddictionProfile
+import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.storage.ports.AddictionRepository
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
 
