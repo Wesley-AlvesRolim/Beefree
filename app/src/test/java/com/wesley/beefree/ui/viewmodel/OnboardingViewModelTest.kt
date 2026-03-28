@@ -113,6 +113,6 @@ class OnboardingViewModelTest {
         val vm = viewModel()
         var finished = false
         vm.finishOnboarding(onFinish = { finished = true }, onError = {})
-        assertNotNull(finished)
+        assertEquals(true, finished)
     }
 }
