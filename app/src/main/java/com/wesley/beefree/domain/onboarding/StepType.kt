@@ -1,0 +1,23 @@
+package com.wesley.beefree.domain.onboarding
+
+enum class StepType {
+    WELCOME,
+    PRESENTATION,
+    ASK_NAME,
+    ADDICTION_SELECTOR,
+    GENDER,
+    PPCS6_FORM,
+    EMA_FORM,
+    FREQUENCY_FORM,
+    PGSI_FORM,
+    SYMPTOMS,
+    NEURODIVERGENCE,
+    HOBBIES,
+    GOALS,
+    SCORE_RESULT,
+    CORE_VALUES,
+    REQUEST_PERMISSIONS,
+    REQUEST_PERMISSION_MONITOR,
+    REQUEST_PERMISSION_OVERLAY,
+    FINISH,
+}
