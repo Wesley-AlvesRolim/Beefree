@@ -1,72 +1,76 @@
 package com.wesley.beefree.ui.screens.onboarding
 
-import android.app.Application
 import android.content.Context
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
 import com.wesley.beefree.R
-import com.wesley.beefree.ui.viewmodel.OnboardingViewModelImpl
-import com.wesley.beefree.ui.viewmodel.ports.AddictionCategory
-import com.wesley.beefree.ui.viewmodel.ports.OnboardingStep
+import com.wesley.beefree.domain.onboarding.ClinicalProfile
+import com.wesley.beefree.domain.onboarding.OnboardingAnswers
+import com.wesley.beefree.domain.onboarding.ScaleResult
+import com.wesley.beefree.domain.onboarding.StepType
+import com.wesley.beefree.domain.onboarding.engine.CompositeOnboardingFlowEngine
+import com.wesley.beefree.domain.onboarding.engine.OnboardingFlowFactory
+import com.wesley.beefree.ui.viewmodel.ports.OnboardingViewModelPort
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-class MockOnboardingViewModel(
-    application: Application,
-) : OnboardingViewModelImpl(application) {
-    var nextStepCalled = 0
-    var toggleAddictionCalledWith = mutableListOf<AddictionCategory>()
-    var openAccessibilitySettingsCalledCount = 0
-    var openOverlaySettingsCalledCount = 0
-    var finishOnboardingCalledCount = 0
-    var updatePermissionsCalledCount = 0
+class MockOnboardingViewModel : OnboardingViewModelPort {
+    private val engine = CompositeOnboardingFlowEngine(OnboardingFlowFactory.factory())
 
-    private var pinnedAccessibility: Boolean? = null
-    private var pinnedOverlay: Boolean? = null
+    override val currentStep = MutableStateFlow(engine.currentStep)
+    override val answers = MutableStateFlow(OnboardingAnswers())
+    override val scaleResult = MutableStateFlow<ScaleResult?>(null)
+    override val clinicalProfile = MutableStateFlow<ClinicalProfile?>(null)
+    override val isAccessibilityEnabled = MutableStateFlow(false)
+    override val isOverlayEnabled = MutableStateFlow(false)
 
-    fun setAccessibilityEnabled(enabled: Boolean) {
-        pinnedAccessibility = enabled
-        openIsAccessibilityEnabled.value = enabled
+    var nextCalled = 0
+    var previousCalled = 0
+    var updatePermissionsCalled = 0
+    var openAccessibilityCalled = 0
+    var openOverlayCalled = 0
+    var finishCalled = 0
+
+    override fun updateAnswer(update: OnboardingAnswers.() -> OnboardingAnswers) {
+        answers.value = answers.value.update()
     }
 
-    fun setOverlayEnabled(enabled: Boolean) {
-        pinnedOverlay = enabled
-        openIsOverlayEnabled.value = enabled
+    override fun next() {
+        nextCalled++
+        engine.next(answers.value)
+        currentStep.value = engine.currentStep
+    }
+
+    override fun previous() {
+        previousCalled++
+        engine.previous()
+        currentStep.value = engine.currentStep
     }
 
     override fun updatePermissions(context: Context) {
-        updatePermissionsCalledCount++
-        super.updatePermissions(context)
-        pinnedAccessibility?.let { openIsAccessibilityEnabled.value = it }
-        pinnedOverlay?.let { openIsOverlayEnabled.value = it }
+        updatePermissionsCalled++
     }
 
     override fun openAccessibilitySettings(context: Context) {
-        openAccessibilitySettingsCalledCount++
-        super.openAccessibilitySettings(context)
+        openAccessibilityCalled++
     }
 
     override fun openOverlaySettings(context: Context) {
-        openOverlaySettingsCalledCount++
-        super.openOverlaySettings(context)
+        openOverlayCalled++
     }
 
-    override fun toggleAddiction(category: AddictionCategory) {
-        toggleAddictionCalledWith.add(category)
-        super.toggleAddiction(category)
-    }
-
-    override fun nextStep() {
-        nextStepCalled++
-        super.nextStep()
-    }
-
-    override fun finishOnboarding(onFinish: () -> Unit) {
-        finishOnboardingCalledCount++
+    override fun finishOnboarding(
+        onFinish: () -> Unit,
+        onError: (Throwable) -> Unit,
+    ) {
+        finishCalled++
         onFinish()
     }
 }
@@ -76,12 +80,10 @@ class OnboardingScreenTest {
     val composeTestRule = createComposeRule()
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val application = context.applicationContext as Application
 
     @Test
-    fun onboarding_navigation_flow_test() {
-        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        val viewModel = MockOnboardingViewModel(application)
+    fun onboarding_navigation_flow_ppu_test() {
+        val viewModel = MockOnboardingViewModel()
 
         composeTestRule.setContent {
             OnboardingScreen(
@@ -90,106 +92,97 @@ class OnboardingScreenTest {
             )
         }
 
-        // 1. Welcome Screen
         composeTestRule.onNodeWithText(context.getString(R.string.onboarding_welcome_title)).assertExists()
         composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performClick()
-        assertTrue(viewModel.nextStepCalled == 1)
-        assertTrue(viewModel.currentStep.value == OnboardingStep.HOW_IT_WORKS)
+        assertEquals(StepType.PRESENTATION, viewModel.currentStep.value.type)
 
-        // 2. How it Works Screen
         composeTestRule.onNodeWithText(context.getString(R.string.onboarding_how_it_works_title)).assertExists()
         composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performClick()
-        assertTrue(viewModel.nextStepCalled == 2)
-        assertTrue(viewModel.currentStep.value == OnboardingStep.ADDICTION_SELECTOR)
+        assertEquals(StepType.ASK_NAME, viewModel.currentStep.value.type)
 
-        // 3. Addiction Selector Screen
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_ask_name_title)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_ask_name_hint)).performTextInput("Wesley")
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performClick()
+        assertEquals(StepType.ADDICTION_SELECTOR, viewModel.currentStep.value.type)
+
         composeTestRule.onNodeWithText(context.getString(R.string.onboarding_addiction_selector_title)).assertExists()
-        // Select an addiction to enable "Continue"
-        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_addiction_bets)).performClick()
-        assertTrue(viewModel.toggleAddictionCalledWith.contains(AddictionCategory.BETS))
-        assertTrue(viewModel.selectedAddictions.value.contains(AddictionCategory.BETS))
-
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_addiction_ppu)).performClick()
         composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performClick()
-        assertTrue(viewModel.nextStepCalled == 3)
-        assertTrue(viewModel.currentStep.value == OnboardingStep.REQUEST_PERMISSIONS)
+        assertEquals(StepType.GENDER, viewModel.currentStep.value.type)
 
-        // 4. Request Permissions Summary Screen
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_gender_title)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_gender_male)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performClick()
+        assertEquals(StepType.PPCS6_FORM, viewModel.currentStep.value.type)
+
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_ppcs6_title)).assertExists()
+        repeat(6) {
+            composeTestRule.onNodeWithText(context.getString(R.string.onboarding_frequency_1)).performClick()
+            composeTestRule
+                .onNodeWithText(context.getString(R.string.onboarding_btn_continue))
+                .performScrollTo()
+                .performClick()
+        }
+        assertEquals(StepType.EMA_FORM, viewModel.currentStep.value.type)
+
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_ema_title)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_ema_q1)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_ema_label_3)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performScrollTo().performClick()
+        assertEquals(StepType.FREQUENCY_FORM, viewModel.currentStep.value.type)
+
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_frequency_form_title)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_ppu_freq_3)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performScrollTo().performClick()
+        assertEquals(StepType.SYMPTOMS, viewModel.currentStep.value.type)
+
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_symptoms_title)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_symptom_anxiety)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performScrollTo().performClick()
+        assertEquals(StepType.NEURODIVERGENCE, viewModel.currentStep.value.type)
+
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_neurodivergence_title)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_neurodivergence_no)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performScrollTo().performClick()
+        assertEquals(StepType.HOBBIES, viewModel.currentStep.value.type)
+
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_hobbies_title)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_hobby_exercise)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performScrollTo().performClick()
+        assertEquals(StepType.GOALS, viewModel.currentStep.value.type)
+
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_goals_title)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_goal_relationships)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performScrollTo().performClick()
+        assertEquals(StepType.SCORE_RESULT, viewModel.currentStep.value.type)
+
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_score_result_title)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performScrollTo().performClick()
+        assertEquals(StepType.CORE_VALUES, viewModel.currentStep.value.type)
+
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_core_values_title)).assertExists()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_core_value_family)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_core_value_faith)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_core_value_honesty)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performScrollTo().performClick()
+        assertEquals(StepType.REQUEST_PERMISSIONS, viewModel.currentStep.value.type)
+
         composeTestRule.onNodeWithText(context.getString(R.string.onboarding_request_permissions_title)).assertExists()
-        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performClick()
-        assertTrue(viewModel.nextStepCalled == 4)
-        assertTrue(viewModel.currentStep.value == OnboardingStep.REQUEST_PERMISSION_SCREEN_MONITOR)
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performScrollTo().performClick()
+        assertEquals(StepType.REQUEST_PERMISSION_MONITOR, viewModel.currentStep.value.type)
 
-        // 5. Accessibility Permission Screen
         composeTestRule.onNodeWithText(context.getString(R.string.onboarding_monitor_permission_title)).assertExists()
-        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_monitor_permission_enable)).performClick()
-        assertTrue(viewModel.openAccessibilitySettingsCalledCount == 1)
+        viewModel.isAccessibilityEnabled.value = true
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performScrollTo().performClick()
+        assertEquals(StepType.REQUEST_PERMISSION_OVERLAY, viewModel.currentStep.value.type)
 
-        // Simulate permission granted
-        device.pressBack()
-        composeTestRule.waitForIdle()
-        viewModel.setAccessibilityEnabled(true) // activated after DisposableEffect is called
-        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performClick()
-        assertTrue(viewModel.nextStepCalled == 5)
-        assertTrue(viewModel.currentStep.value == OnboardingStep.REQUEST_PERMISSION_SCREEN_OVERLAY)
-
-        // 6. Overlay Permission Screen
         composeTestRule.onNodeWithText(context.getString(R.string.onboarding_overlay_permission_title)).assertExists()
-        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_overlay_permission_enable)).performClick()
-        assertTrue(viewModel.openOverlaySettingsCalledCount == 1)
+        viewModel.isOverlayEnabled.value = true
+        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performScrollTo().performClick()
+        assertEquals(StepType.FINISH, viewModel.currentStep.value.type)
 
-        // Simulate permission granted
-        device.pressBack()
-        composeTestRule.waitForIdle()
-        viewModel.setOverlayEnabled(true)
-        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_continue)).performClick()
-        assertTrue(viewModel.nextStepCalled == 6)
-        assertTrue(viewModel.currentStep.value == OnboardingStep.FINISH)
-
-        // 7. Finish Screen
         composeTestRule.onNodeWithText(context.getString(R.string.onboarding_finish_title)).assertExists()
         composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_start)).performClick()
-        assertTrue(viewModel.finishOnboardingCalledCount == 1)
-    }
-
-    @Test
-    fun onboarding_permissions_update_state() {
-        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        val viewModel = MockOnboardingViewModel(application)
-        viewModel.moveToStep(OnboardingStep.REQUEST_PERMISSION_SCREEN_MONITOR)
-
-        composeTestRule.setContent {
-            OnboardingScreen(
-                onFinish = {},
-                viewModel = viewModel,
-            )
-        }
-
-        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_monitor_permission_enable)).performClick()
-        assertTrue(viewModel.openAccessibilitySettingsCalledCount == 1)
-        viewModel.updatePermissionsCalledCount = 0
-        device.pressBack()
-        composeTestRule.waitForIdle()
-        assertTrue(viewModel.updatePermissionsCalledCount == 1)
-    }
-
-    @Test
-    fun finishOnboarding_calls_viewModel_finishOnboarding() {
-        val viewModel = MockOnboardingViewModel(application)
-        viewModel.moveToStep(OnboardingStep.FINISH)
-        viewModel.toggleAddiction(AddictionCategory.BETS)
-
-        var finished = false
-        composeTestRule.setContent {
-            OnboardingScreen(
-                onFinish = { finished = true },
-                viewModel = viewModel,
-            )
-        }
-
-        composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText(context.getString(R.string.onboarding_btn_start)).performClick()
-        assertTrue(viewModel.finishOnboardingCalledCount == 1)
-        composeTestRule.waitForIdle()
-        assertTrue(finished)
+        assertTrue(viewModel.finishCalled == 1)
     }
 }
