@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.wesley.beefree.R
+import com.wesley.beefree.domain.onboarding.NeurodivergenceAnswer
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.ui.components.OnboardingLayout
 import com.wesley.beefree.ui.components.OnboardingMascot
@@ -33,21 +34,24 @@ fun OnboardingNeurodivergenceScreen(
         ) {
             OnboardingSelectableOption(
                 text = stringResource(R.string.onboarding_neurodivergence_yes),
-                isSelected = answers.hasNeurodivergence == true,
-                onClick = { onUpdate { copy(hasNeurodivergence = true) } },
+                isSelected = answers.neurodivergenceAnswer == NeurodivergenceAnswer.YES,
+                onClick = { onUpdate { copy(neurodivergenceAnswer = NeurodivergenceAnswer.YES) } },
             )
             OnboardingSelectableOption(
                 text = stringResource(R.string.onboarding_neurodivergence_no),
-                isSelected = answers.hasNeurodivergence == false,
-                onClick = { onUpdate { copy(hasNeurodivergence = false) } },
+                isSelected = answers.neurodivergenceAnswer == NeurodivergenceAnswer.NO,
+                onClick = { onUpdate { copy(neurodivergenceAnswer = NeurodivergenceAnswer.NO) } },
             )
             OnboardingSelectableOption(
                 text = stringResource(R.string.onboarding_neurodivergence_prefer_not),
-                isSelected = answers.hasNeurodivergence == null && answers.gender.isNotBlank(),
-                onClick = { onUpdate { copy(hasNeurodivergence = null) } },
+                isSelected = answers.neurodivergenceAnswer == NeurodivergenceAnswer.PREFER_NOT_SAY,
+                onClick = { onUpdate { copy(neurodivergenceAnswer = NeurodivergenceAnswer.PREFER_NOT_SAY) } },
             )
         }
         Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(onNext = onNext)
+        OnboardingNavigationRow(
+            onNext = onNext,
+            nextEnabled = answers.neurodivergenceAnswer != NeurodivergenceAnswer.NOT_ANSWERED,
+        )
     }
 }

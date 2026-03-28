@@ -9,7 +9,7 @@ data class OnboardingAnswers(
     val frequencyAnswer: Int = 0,
     val pgsiAnswers: List<Int> = emptyList(),
     val symptoms: List<String> = emptyList(),
-    val hasNeurodivergence: Boolean? = null,
+    val neurodivergenceAnswer: NeurodivergenceAnswer = NeurodivergenceAnswer.NOT_ANSWERED,
     val hobbies: List<String> = emptyList(),
     val goals: List<String> = emptyList(),
     val coreValues: List<String> = emptyList(),
