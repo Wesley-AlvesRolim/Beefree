@@ -248,4 +248,5 @@
 
     <!-- Errors -->
     <string name="export_data_error">Falha ao exportar os seus dados!</string>
+    <string name="onboarding_save_error">Falha ao salvar os seus dados. Tente novamente.</string>
 </resources>
