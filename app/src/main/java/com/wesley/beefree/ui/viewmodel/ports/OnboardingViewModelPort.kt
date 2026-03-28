@@ -1,29 +1,25 @@
 package com.wesley.beefree.ui.viewmodel.ports
 
 import android.content.Context
+import com.wesley.beefree.domain.onboarding.ClinicalProfile
+import com.wesley.beefree.domain.onboarding.OnboardingAnswers
+import com.wesley.beefree.domain.onboarding.OnboardingStep
+import com.wesley.beefree.domain.onboarding.ScaleResult
 import kotlinx.coroutines.flow.StateFlow
-
-enum class OnboardingStep {
-    WELCOME,
-    HOW_IT_WORKS,
-    ADDICTION_SELECTOR,
-    REQUEST_PERMISSIONS,
-    REQUEST_PERMISSION_SCREEN_MONITOR,
-    REQUEST_PERMISSION_SCREEN_OVERLAY,
-    FINISH,
-}
-
-enum class AddictionCategory {
-    ADULT_CONTENT,
-    BETS,
-    OTHERS,
-}
 
 interface OnboardingViewModelPort {
     val currentStep: StateFlow<OnboardingStep>
-    val selectedAddictions: StateFlow<Set<AddictionCategory>>
+    val answers: StateFlow<OnboardingAnswers>
+    val scaleResult: StateFlow<ScaleResult?>
+    val clinicalProfile: StateFlow<ClinicalProfile?>
     val isAccessibilityEnabled: StateFlow<Boolean>
     val isOverlayEnabled: StateFlow<Boolean>
+
+    fun updateAnswer(update: OnboardingAnswers.() -> OnboardingAnswers)
+
+    fun next()
+
+    fun previous()
 
     fun updatePermissions(context: Context)
 
@@ -31,13 +27,8 @@ interface OnboardingViewModelPort {
 
     fun openOverlaySettings(context: Context)
 
-    fun toggleAddiction(category: AddictionCategory)
-
-    fun moveToStep(step: OnboardingStep)
-
-    fun nextStep()
-
-    fun previousStep()
-
-    fun finishOnboarding(onFinish: () -> Unit)
+    fun finishOnboarding(
+        onFinish: () -> Unit,
+        onError: (Throwable) -> Unit,
+    )
 }

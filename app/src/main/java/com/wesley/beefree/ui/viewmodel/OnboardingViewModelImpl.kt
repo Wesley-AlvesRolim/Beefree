@@ -3,21 +3,26 @@ package com.wesley.beefree.ui.viewmodel
 import android.app.Application
 import android.content.Context
 import android.provider.Settings
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.wesley.beefree.data.keywords.getBetsKeyWords
-import com.wesley.beefree.data.keywords.getPornKeywords
-import com.wesley.beefree.domain.entities.AddictionKeyword
-import com.wesley.beefree.domain.entities.AddictionType
+import com.wesley.beefree.domain.onboarding.ClinicalProfile
+import com.wesley.beefree.domain.onboarding.OnboardingAnswers
+import com.wesley.beefree.domain.onboarding.OnboardingStep
+import com.wesley.beefree.domain.onboarding.ScaleResult
+import com.wesley.beefree.domain.onboarding.StepType
+import com.wesley.beefree.domain.onboarding.engine.CompositeOnboardingFlowEngine
+import com.wesley.beefree.domain.onboarding.engine.OnboardingFlowFactory
+import com.wesley.beefree.domain.onboarding.ports.OnboardingFlowEngine
+import com.wesley.beefree.domain.onboarding.usecases.ComputeClinicalProfileUseCase
+import com.wesley.beefree.domain.onboarding.usecases.ComputeScoreUseCase
+import com.wesley.beefree.domain.onboarding.usecases.SaveOnboardingDataUseCase
 import com.wesley.beefree.infrastructure.services.AccessibilityServiceActivity
 import com.wesley.beefree.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.storage.adapters.db.AppDatabase
-import com.wesley.beefree.storage.ports.AddictionRepository
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
-import com.wesley.beefree.ui.viewmodel.ports.AddictionCategory
-import com.wesley.beefree.ui.viewmodel.ports.OnboardingStep
 import com.wesley.beefree.ui.viewmodel.ports.OnboardingViewModelPort
 import com.wesley.beefree.utils.AccessibilityUtils
 import com.wesley.beefree.utils.OverlayUtils
@@ -27,22 +32,47 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 open class OnboardingViewModelImpl(
-    private val keyValueStorageRepository: KeyValueStorageRepository,
-    private val addictionRepository: AddictionRepository,
+    private val engine: OnboardingFlowEngine,
+    private val saveOnboardingDataUseCase: SaveOnboardingDataUseCase,
+    private val computeScoreUseCase: ComputeScoreUseCase,
+    private val computeClinicalProfileUseCase: ComputeClinicalProfileUseCase,
 ) : ViewModel(),
     OnboardingViewModelPort {
-    private val _currentStep = MutableStateFlow(OnboardingStep.WELCOME)
+    private val _currentStep = MutableStateFlow(engine.currentStep)
     override val currentStep: StateFlow<OnboardingStep> = _currentStep.asStateFlow()
 
-    private val _selectedAddictions = MutableStateFlow<Set<AddictionCategory>>(emptySet())
+    private val _answers = MutableStateFlow(OnboardingAnswers())
+    override val answers: StateFlow<OnboardingAnswers> = _answers.asStateFlow()
 
-    override val selectedAddictions: StateFlow<Set<AddictionCategory>> = _selectedAddictions.asStateFlow()
+    private val _scaleResult = MutableStateFlow<ScaleResult?>(null)
+    override val scaleResult: StateFlow<ScaleResult?> = _scaleResult.asStateFlow()
+
+    private val _clinicalProfile = MutableStateFlow<ClinicalProfile?>(null)
+    override val clinicalProfile: StateFlow<ClinicalProfile?> = _clinicalProfile.asStateFlow()
 
     protected val openIsAccessibilityEnabled = MutableStateFlow(false)
     override val isAccessibilityEnabled: StateFlow<Boolean> = openIsAccessibilityEnabled.asStateFlow()
 
     protected val openIsOverlayEnabled = MutableStateFlow(false)
     override val isOverlayEnabled: StateFlow<Boolean> = openIsOverlayEnabled.asStateFlow()
+
+    override fun updateAnswer(update: OnboardingAnswers.() -> OnboardingAnswers) {
+        _answers.value = _answers.value.update()
+    }
+
+    override fun next() {
+        engine.next(_answers.value)
+        _currentStep.value = engine.currentStep
+        if (engine.currentStep.type == StepType.SCORE_RESULT) {
+            computeScore()
+            computeClinicalProfile()
+        }
+    }
+
+    override fun previous() {
+        engine.previous()
+        _currentStep.value = engine.currentStep
+    }
 
     override fun updatePermissions(context: Context) {
         openIsAccessibilityEnabled.value =
@@ -61,80 +91,29 @@ open class OnboardingViewModelImpl(
         OverlayUtils.openSettingsToEnableTheOverlayPermission(context)
     }
 
-    override fun toggleAddiction(category: AddictionCategory) {
-        val current = _selectedAddictions.value
-        if (current.contains(category)) {
-            _selectedAddictions.value = current - category
-        } else {
-            _selectedAddictions.value = current + category
-        }
-    }
-
-    override fun moveToStep(step: OnboardingStep) {
-        _currentStep.value = step
-    }
-
-    override fun nextStep() {
-        val next =
-            when (_currentStep.value) {
-                OnboardingStep.WELCOME -> OnboardingStep.HOW_IT_WORKS
-                OnboardingStep.HOW_IT_WORKS -> OnboardingStep.ADDICTION_SELECTOR
-                OnboardingStep.ADDICTION_SELECTOR -> OnboardingStep.REQUEST_PERMISSIONS
-                OnboardingStep.REQUEST_PERMISSIONS -> OnboardingStep.REQUEST_PERMISSION_SCREEN_MONITOR
-                OnboardingStep.REQUEST_PERMISSION_SCREEN_MONITOR -> OnboardingStep.REQUEST_PERMISSION_SCREEN_OVERLAY
-                OnboardingStep.REQUEST_PERMISSION_SCREEN_OVERLAY -> OnboardingStep.FINISH
-                OnboardingStep.FINISH -> OnboardingStep.FINISH
-            }
-        _currentStep.value = next
-    }
-
-    override fun previousStep() {
-        val prev =
-            when (_currentStep.value) {
-                OnboardingStep.WELCOME -> OnboardingStep.WELCOME
-                OnboardingStep.HOW_IT_WORKS -> OnboardingStep.WELCOME
-                OnboardingStep.ADDICTION_SELECTOR -> OnboardingStep.HOW_IT_WORKS
-                OnboardingStep.REQUEST_PERMISSIONS -> OnboardingStep.ADDICTION_SELECTOR
-                OnboardingStep.REQUEST_PERMISSION_SCREEN_MONITOR -> OnboardingStep.REQUEST_PERMISSIONS
-                OnboardingStep.REQUEST_PERMISSION_SCREEN_OVERLAY -> OnboardingStep.REQUEST_PERMISSION_SCREEN_MONITOR
-                OnboardingStep.FINISH -> OnboardingStep.REQUEST_PERMISSION_SCREEN_OVERLAY
-            }
-        _currentStep.value = prev
-    }
-
-    override fun finishOnboarding(onFinish: () -> Unit) {
+    override fun finishOnboarding(
+        onFinish: () -> Unit,
+        onError: (Throwable) -> Unit,
+    ) {
         viewModelScope.launch {
-            val now = System.currentTimeMillis()
-            _selectedAddictions.value.forEach { category ->
-                val (name, keywords) =
-                    when (category) {
-                        AddictionCategory.ADULT_CONTENT -> "Adult Content" to getPornKeywords()
-                        AddictionCategory.BETS -> "Bets" to getBetsKeyWords()
-                        AddictionCategory.OTHERS -> "Others" to emptyList()
-                    }
-
-                val addictionTypeId =
-                    addictionRepository.insertAddictionType(
-                        AddictionType(
-                            name = name,
-                            isMonitoringEnabled = true,
-                            createdAt = now,
-                            updatedAt = now,
-                        ),
-                    )
-
-                keywords.forEach { keyword ->
-                    addictionRepository.insertKeyword(
-                        AddictionKeyword(
-                            addictionTypeId = addictionTypeId.toInt(),
-                            keyword = keyword,
-                        ),
-                    )
-                }
-            }
-            keyValueStorageRepository.saveOnboardingCompleted(true)
-            onFinish()
+            val profile = _clinicalProfile.value
+            Log.d(
+                "OnboardingProfile",
+                "Clinical profile on finish: treatment=${profile?.treatmentProfile}, incongruence=${profile?.incongruenceLevel}",
+            )
+            saveOnboardingDataUseCase
+                .execute(_answers.value)
+                .onSuccess { onFinish() }
+                .onFailure { onError(it) }
         }
+    }
+
+    private fun computeScore() {
+        _scaleResult.value = computeScoreUseCase.execute(_answers.value)
+    }
+
+    private fun computeClinicalProfile() {
+        _clinicalProfile.value = computeClinicalProfileUseCase.execute(_answers.value)
     }
 
     companion object {
@@ -142,14 +121,21 @@ open class OnboardingViewModelImpl(
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     val database = AppDatabase.getDatabase(application)
-                    @Suppress("UNCHECKED_CAST")
-                    return OnboardingViewModelImpl(
-                        KeyValueStorageRepository(SharedPreferencesKeyValueStorage(application)),
+                    val addictionRepository =
                         RoomAddictionRepository(
                             database.addictionTypeDao(),
                             database.addictionKeywordDao(),
                             database.relapseHistoryDao(),
-                        ),
+                        )
+                    val keyValueStorageRepository =
+                        KeyValueStorageRepository(SharedPreferencesKeyValueStorage(application))
+                    @Suppress("UNCHECKED_CAST")
+                    return OnboardingViewModelImpl(
+                        engine = CompositeOnboardingFlowEngine(OnboardingFlowFactory.factory()),
+                        saveOnboardingDataUseCase =
+                            SaveOnboardingDataUseCase(addictionRepository, keyValueStorageRepository),
+                        computeScoreUseCase = ComputeScoreUseCase(),
+                        computeClinicalProfileUseCase = ComputeClinicalProfileUseCase(),
                     ) as T
                 }
             }

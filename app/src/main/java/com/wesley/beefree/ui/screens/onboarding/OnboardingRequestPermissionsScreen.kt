@@ -1,38 +1,33 @@
 package com.wesley.beefree.ui.screens.onboarding
 
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.wesley.beefree.R
 import com.wesley.beefree.ui.components.OnboardingLayout
 import com.wesley.beefree.ui.components.OnboardingMascot
 import com.wesley.beefree.ui.components.OnboardingNavigationRow
 import com.wesley.beefree.ui.components.OnboardingTitle
+import com.wesley.beefree.ui.components.designsystem.*
 
 @Composable
 fun OnboardingRequestPermissionsScreen(
     onNext: () -> Unit,
     onBack: () -> Unit,
 ) {
-    OnboardingLayout {
+    OnboardingLayout(onBack = onBack) {
         OnboardingMascot()
-        Spacer(modifier = Modifier.padding(8.dp))
+        Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_request_permissions_title))
-        Spacer(modifier = Modifier.padding(24.dp))
-        Text(
+        Spacer(modifier = Modifier.height(BeeSpacing.XL))
+        BeeBodyLarge(
             text = stringResource(R.string.onboarding_request_permissions_body),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Left,
+            textAlign = TextAlign.Center,
         )
-        Spacer(modifier = Modifier.padding(16.dp))
-        OnboardingNavigationRow(onBack = onBack, onNext = onNext)
+        Spacer(modifier = Modifier.height(BeeSpacing.XL))
+        OnboardingNavigationRow(onNext = onNext)
     }
 }
