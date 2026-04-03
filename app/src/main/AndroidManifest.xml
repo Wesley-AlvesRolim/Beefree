@@ -33,6 +33,13 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.InterventionActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.BeeFree" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
