@@ -21,32 +21,39 @@ class SaveOnboardingDataUseCase(
 
         return runCatching {
             val now = System.currentTimeMillis()
-            val (name, keywords) =
-                when (profile) {
-                    AddictionProfile.PPU -> AddictionTypeEnum.ADULT_CONTENT.name to getPornKeywords()
-                    AddictionProfile.GAMBLING -> AddictionTypeEnum.BETS.name to getBetsKeyWords()
+
+            val addictionConfigs =
+                listOf(
+                    AddictionProfile.PPU to (AddictionTypeEnum.ADULT_CONTENT.name to getPornKeywords()),
+                    AddictionProfile.GAMBLING to (AddictionTypeEnum.BETS.name to getBetsKeyWords()),
+                )
+
+            addictionConfigs.forEach { (typeProfile, data) ->
+                val (name, keywords) = data
+                val isEnabled = typeProfile == profile
+
+                val addictionTypeId =
+                    addictionRepository.insertAddictionType(
+                        AddictionType(
+                            name = name,
+                            isMonitoringEnabled = isEnabled,
+                            createdAt = now,
+                            updatedAt = now,
+                        ),
+                    )
+
+                keywords.forEach { keyword ->
+                    addictionRepository.insertKeyword(
+                        AddictionKeyword(
+                            addictionTypeId = addictionTypeId.toInt(),
+                            keyword = keyword,
+                        ),
+                    )
                 }
-
-            val addictionTypeId =
-                addictionRepository.insertAddictionType(
-                    AddictionType(
-                        name = name,
-                        isMonitoringEnabled = true,
-                        createdAt = now,
-                        updatedAt = now,
-                    ),
-                )
-
-            keywords.forEach { keyword ->
-                addictionRepository.insertKeyword(
-                    AddictionKeyword(
-                        addictionTypeId = addictionTypeId.toInt(),
-                        keyword = keyword,
-                    ),
-                )
             }
 
             keyValueStorageRepository.saveOnboardingCompleted(true)
+            keyValueStorageRepository.saveTheScreenReaderStatus(true)
         }
     }
 }
