@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BeeFree">
         <service android:name=".infrastructure.services.AccessibilityServiceActivity"
-            android:exported="true"
+            android:exported="false"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:label="@string/accessibility_service_label">
             <meta-data
