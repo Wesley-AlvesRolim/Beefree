@@ -16,4 +16,8 @@ data class InterventionTriggered(
     val appPackage: String? = null,
 ) : DomainEvent()
 
+data class InterventionUIPending(
+    val reason: String,
+) : DomainEvent()
+
 object BankingAppForegrounded : DomainEvent()

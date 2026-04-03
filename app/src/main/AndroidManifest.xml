@@ -35,8 +35,8 @@
         <activity
             android:name=".ui.InterventionActivity"
             android:exported="false"
+            android:launchMode="singleInstance"
             android:excludeFromRecents="true"
-            android:taskAffinity=""
             android:theme="@style/Theme.BeeFree" />
 
         <activity
