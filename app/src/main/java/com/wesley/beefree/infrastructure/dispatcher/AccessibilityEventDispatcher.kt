@@ -12,6 +12,7 @@ import com.wesley.beefree.domain.events.EventDispatcher
 import com.wesley.beefree.domain.events.ScreenContentCaptured
 import com.wesley.beefree.infrastructure.services.OverlayServiceActivity
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
+import com.wesley.beefree.ui.InterventionActivity
 
 class AccessibilityEventDispatcher(
     private val eventBus: EventBus,
@@ -40,9 +41,6 @@ class AccessibilityEventDispatcher(
     }
 
     private fun cannotDispatchTheEvent(event: AccessibilityEvent?): Boolean {
-        if (OverlayServiceActivity.isRunning) return true
-        if (repository?.getTheScreenReaderStatus() == false) return true
-
         if (event?.packageName != null && BRAZILIAN_BANK_PACKAGE_NAMES.contains(event.packageName.toString())) {
             if (OverlayServiceActivity.isRunning) eventBus.publish(BankingAppForegrounded)
             return true
@@ -51,6 +49,10 @@ class AccessibilityEventDispatcher(
         if (event?.packageName != null && HELP_APPS_PACKAGE_NAMES.contains(event.packageName.toString())) {
             return true
         }
+
+        if (OverlayServiceActivity.isRunning || InterventionActivity.isRunning) return true
+
+        if (repository?.getTheScreenReaderStatus() == false) return true
 
         return false
     }
