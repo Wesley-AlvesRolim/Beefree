@@ -10,4 +10,8 @@ class AndroidOverlayInterventionUI(
     override fun show(reason: String) {
         OverlayUtils.startOverlayService(context, reason)
     }
+
+    override fun hide() {
+        OverlayUtils.stopOverlayService(context)
+    }
 }

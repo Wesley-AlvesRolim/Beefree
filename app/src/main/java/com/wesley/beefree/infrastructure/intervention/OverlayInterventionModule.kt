@@ -1,6 +1,7 @@
 package com.wesley.beefree.infrastructure.intervention
 
 import com.wesley.beefree.domain.bus.ports.EventBus
+import com.wesley.beefree.domain.events.BankingAppForegrounded
 import com.wesley.beefree.domain.events.InterventionTriggered
 import com.wesley.beefree.domain.intervention.ports.InterventionUI
 
@@ -11,6 +12,9 @@ class OverlayInterventionModule(
     init {
         eventBus.subscribe(InterventionTriggered::class.java) { event ->
             interventionUI.show(event.reason)
+        }
+        eventBus.subscribe(BankingAppForegrounded::class.java) {
+            interventionUI.hide()
         }
     }
 }

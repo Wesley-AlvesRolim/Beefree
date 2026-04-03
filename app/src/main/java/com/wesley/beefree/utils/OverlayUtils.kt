@@ -21,6 +21,10 @@ object OverlayUtils {
         context.startService(intent)
     }
 
+    fun stopOverlayService(context: Context) {
+        context.stopService(Intent(context, OverlayServiceActivity::class.java))
+    }
+
     fun openSettingsToEnableTheOverlayPermission(context: Context) {
         val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
         context.startActivity(intent)
