@@ -6,6 +6,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 import com.wesley.beefree.data.apps.BRAZILIAN_BANK_PACKAGE_NAMES
 import com.wesley.beefree.data.apps.HELP_APPS_PACKAGE_NAMES
 import com.wesley.beefree.domain.bus.ports.EventBus
+import com.wesley.beefree.domain.detection.ports.WindowContentProvider
 import com.wesley.beefree.domain.events.BankingAppForegrounded
 import com.wesley.beefree.domain.events.EventDispatcher
 import com.wesley.beefree.domain.events.ScreenContentCaptured
@@ -21,17 +22,20 @@ class AccessibilityEventDispatcher(
         vararg args: Any?,
     ) {
         if (cannotDispatchTheEvent(event)) return
-        val nodes = args.filterIsInstance<AccessibilityNodeInfo>()
-        if (nodes.firstOrNull() == null) {
-            return
-        }
 
-        val texts = mutableListOf<String>()
-        extractText(nodes.first(), texts)
-        event?.packageName?.let {
-            eventBus.publish(ScreenContentCaptured(texts, it.toString()))
-        } ?: run {
-            eventBus.publish(ScreenContentCaptured(texts, null))
+        val provider = args.filterIsInstance<WindowContentProvider>().firstOrNull() ?: return
+        val rootNode = provider.getRootNode() ?: return
+
+        try {
+            val texts = mutableListOf<String>()
+            extractText(rootNode, texts)
+            event?.packageName?.let {
+                eventBus.publish(ScreenContentCaptured(texts, it.toString()))
+            } ?: run {
+                eventBus.publish(ScreenContentCaptured(texts, null))
+            }
+        } finally {
+            rootNode.recycle()
         }
     }
 

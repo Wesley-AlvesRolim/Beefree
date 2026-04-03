@@ -6,6 +6,7 @@ import android.view.accessibility.AccessibilityEvent
 import com.wesley.beefree.data.keywords.getBetsKeyWords
 import com.wesley.beefree.data.keywords.getPornKeywords
 import com.wesley.beefree.domain.detection.KeywordsDetectionEngine
+import com.wesley.beefree.domain.detection.ports.WindowContentProvider
 import com.wesley.beefree.domain.entities.AddictionTypeEnum
 import com.wesley.beefree.domain.intervention.ports.DeviceActionProvider
 import com.wesley.beefree.infrastructure.bus.adapters.InMemoryEventBus
@@ -26,6 +27,7 @@ import kotlinx.coroutines.SupervisorJob
 class AccessibilityServiceActivity :
     AccessibilityService(),
     DeviceActionProvider,
+    WindowContentProvider,
     CoroutineScope {
     private val tag = "AccessibilityServiceActivity"
     private var keyValueStorageRepository: KeyValueStorageRepository? = null
@@ -72,11 +74,10 @@ class AccessibilityServiceActivity :
         performGlobalAction(GLOBAL_ACTION_BACK)
     }
 
+    override fun getRootNode(): AccessibilityNodeInfo? = rootInActiveWindow
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        Log.d(tag, "Event: $event")
-        val rootNode = rootInActiveWindow
-        dispatcher.dispatch(event, rootNode)
-        rootNode?.recycle()
+        dispatcher.dispatch(event, this)
     }
 
     override fun onInterrupt() {
