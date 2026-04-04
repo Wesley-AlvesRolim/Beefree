@@ -2,10 +2,16 @@ package com.wesley.beefree.infrastructure.intervention
 
 import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.events.InterventionTriggered
+import com.wesley.beefree.domain.events.InterventionUIPending
 import com.wesley.beefree.domain.intervention.ports.DeviceActionProvider
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.kotlin.*
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class DeviceGoBackInterventionTest {
     private val eventBus: EventBus = mock()
     private val deviceActionProvider: DeviceActionProvider = mock()
@@ -13,15 +19,40 @@ class DeviceGoBackInterventionTest {
 
     @Test
     fun `should perform go back when InterventionTriggered event is published`() {
-        val lambdaCaptor = argumentCaptor<(InterventionTriggered) -> Unit>()
+        runBlocking {
+            val lambdaCaptor = argumentCaptor<(InterventionTriggered) -> Unit>()
 
-        module = DeviceGoBackIntervention(eventBus, deviceActionProvider)
+            module = DeviceGoBackIntervention(eventBus, deviceActionProvider)
 
-        verify(eventBus).subscribe(eq(InterventionTriggered::class.java), lambdaCaptor.capture())
+            verify(eventBus).subscribe(
+                eq(InterventionTriggered::class.java),
+                lambdaCaptor.capture(),
+            )
 
-        val event = InterventionTriggered(reason = "test reason", keyword = "test keyword", addictionTypeId = 1)
-        lambdaCaptor.firstValue.invoke(event)
+            val event =
+                InterventionTriggered(
+                    reason = "test reason",
+                    keyword = "test keyword",
+                    addictionTypeId = 1,
+                )
+            lambdaCaptor.firstValue.invoke(event)
 
-        verify(deviceActionProvider).performGoBack()
+            verify(deviceActionProvider).performGoBack()
+
+            val startTime = System.currentTimeMillis()
+            while (System.currentTimeMillis() - startTime < 1000) {
+                try {
+                    verify(eventBus).publish(any<InterventionUIPending>())
+                    verify(eventBus).publish(
+                        argThat {
+                            this is InterventionUIPending && this.reason == event.reason
+                        },
+                    )
+                    break
+                } catch (e: Throwable) {
+                    delay(50)
+                }
+            }
+        }
     }
 }
