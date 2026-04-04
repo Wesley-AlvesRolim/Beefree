@@ -66,6 +66,44 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun motivationalMessageDao(): MotivationalMessageDAO
 
+    abstract fun onboardingScaleAnswerDao(): OnboardingScaleAnswerDAO
+
+    abstract fun userProfileOnboardingResultDao(): UserProfileOnboardingResultDAO
+
+    abstract fun userCoreValueDao(): UserCoreValueDAO
+
+    abstract fun userHobbyDao(): UserHobbyDAO
+
+    abstract fun userObjectiveDao(): UserObjectiveDAO
+
+    abstract fun userSymptomDao(): UserSymptomDAO
+
+    abstract fun dailyCheckInDao(): DailyCheckInDAO
+
+    abstract fun weeklyCheckInDao(): WeeklyCheckInDAO
+
+    abstract fun triggerMappingDao(): TriggerMappingDAO
+
+    abstract fun interventionLogDao(): InterventionLogDAO
+
+    abstract fun thoughtRecordDao(): ThoughtRecordDAO
+
+    abstract fun urgeSurfingSessionDao(): UrgeSurfingSessionDAO
+
+    abstract fun microActivityDao(): MicroActivityDAO
+
+    abstract fun dailyMicroActivityLogDao(): DailyMicroActivityLogDAO
+
+    abstract fun dailyLessonDao(): DailyLessonDAO
+
+    abstract fun userLessonProgressDao(): UserLessonProgressDAO
+
+    abstract fun holisticMetricsDao(): HolisticMetricsDAO
+
+    abstract fun riskPredictionDao(): RiskPredictionDAO
+
+    abstract fun notificationLogDao(): NotificationLogDAO
+
     companion object {
         @Volatile
         private var databaseInstance: AppDatabase? = null
