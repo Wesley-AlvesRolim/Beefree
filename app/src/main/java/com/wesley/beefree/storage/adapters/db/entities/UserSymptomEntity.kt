@@ -4,11 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "UserProfile")
-data class UserProfileEntity(
+@Entity(tableName = "UserSymptoms")
+data class UserSymptomEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
-    @ColumnInfo(name = "profile_name") val profileName: String,
-    @ColumnInfo(name = "gender") val gender: String? = null,
+    @ColumnInfo(name = "user_profile_id") val userProfileId: Int,
+    @ColumnInfo(name = "symptom_code") val symptomCode: String,
     @ColumnInfo(name = "created_at") val createdAt: Long,
-    @ColumnInfo(name = "updated_at") val updatedAt: Long,
 )
