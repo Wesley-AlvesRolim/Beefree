@@ -246,6 +246,10 @@
     <string name="onboarding_finish_title">Sua jornada começa agora</string>
     <string name="onboarding_finish_body">Você deu um passo corajoso.\n\nO aplicativo está pronto para te apoiar: identificando riscos, oferecendo ferramentas no momento certo e acompanhando sua evolução rumo a uma vida mais alinhada com o que você realmente valoriza.</string>
 
+    <!-- Settings: Banking compatibility -->
+    <string name="settings_banking_warning_title">Compatibilidade com apps bancários</string>
+    <string name="settings_banking_warning_body">Alguns aplicativos bancários podem bloquear transações enquanto o monitoramento de tela estiver ativo. Se isso ocorrer, desative temporariamente o serviço de acessibilidade antes de acessar seu banco.</string>
+
     <!-- Errors -->
     <string name="export_data_error">Falha ao exportar os seus dados!</string>
     <string name="onboarding_save_error">Falha ao salvar os seus dados. Tente novamente.</string>
