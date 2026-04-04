@@ -77,6 +77,32 @@ class RelapseRecorderModuleTest {
     }
 
     @Test
+    fun `should save only the phrase containing the keyword, not the full text`() {
+        runBlocking {
+            currentTime = 1000
+            val event =
+                InterventionTriggered(
+                    reason = "Safe sentence. I bet you something bad. Another safe sentence.",
+                    keyword = "bet",
+                    addictionTypeId = 1,
+                    appPackage = "com.example.app",
+                )
+            subscriber.invoke(event)
+
+            verify(addictionRepository).insertRelapse(
+                RelapseHistory(
+                    addictionTypeId = 1,
+                    keywordDetected = "bet",
+                    detectedText = "I bet you something bad.",
+                    appPackage = "com.example.app",
+                    relapseAt = event.timestamp,
+                    updatedAt = event.timestamp,
+                ),
+            )
+        }
+    }
+
+    @Test
     fun `should save relapse again after 5 seconds have passed`() {
         runBlocking {
             currentTime = 1000
