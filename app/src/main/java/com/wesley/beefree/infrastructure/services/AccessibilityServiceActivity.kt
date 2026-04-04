@@ -59,7 +59,8 @@ class AccessibilityServiceActivity :
         keyWordsDetectionEngine = KeywordsDetectionEngine(eventBus, emptyMap())
         launch {
             addictionRepository!!.getAllAddictionTypes().collect { types ->
-                keyWordsDetectionEngine.updateKeywords(buildKeywordsMap(types, addictionRepository!!))
+                val keywords = buildKeywordsMap(types, addictionRepository!!)
+                keyWordsDetectionEngine.updateKeywords(keywords)
             }
         }
 
@@ -77,6 +78,7 @@ class AccessibilityServiceActivity :
     override fun getRootNode(): AccessibilityNodeInfo? = rootInActiveWindow
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        Log.d(tag, "onAccessibilityEvent: ${event?.packageName}")
         dispatcher.dispatch(event, this)
     }
 
