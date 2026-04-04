@@ -23,8 +23,9 @@ class SimpleDetectionScorer : DetectionScorer {
 
         matchedKeywords.add(keyword.lowercase())
 
+        val addictionTypeIndex = addictionTypeId - 1
         val points =
-            when (addictionTypeId) {
+            when (addictionTypeIndex) {
                 AddictionTypeEnum.ADULT_CONTENT.ordinal,
                 AddictionTypeEnum.BETS.ordinal,
                 -> 3
