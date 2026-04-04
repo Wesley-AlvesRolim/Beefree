@@ -1,10 +1,12 @@
 package com.wesley.beefree.ui.screens
 
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,9 +21,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,27 +28,31 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.wesley.beefree.R
+import com.wesley.beefree.ui.components.designsystem.BeeBodyLarge
+import com.wesley.beefree.ui.components.designsystem.BeeBodyMedium
+import com.wesley.beefree.ui.components.designsystem.BeeBodySmall
+import com.wesley.beefree.ui.components.designsystem.BeeButtonGhost
+import com.wesley.beefree.ui.components.designsystem.BeeButtonPrimary
+import com.wesley.beefree.ui.components.designsystem.BeeCardSection
+import com.wesley.beefree.ui.components.designsystem.BeeHeadlineMedium
+import com.wesley.beefree.ui.components.designsystem.BeeHeadlineSmall
+import com.wesley.beefree.ui.components.designsystem.BeeLabelLarge
+import com.wesley.beefree.ui.components.designsystem.BeeLabelMedium
+import com.wesley.beefree.ui.components.designsystem.BeeSpacing
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.SettingsViewModel
 
@@ -60,6 +63,8 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     val isAccessibilityEnabled by viewModel.isAccessibilityServiceEnabled.collectAsState()
     val isAccessibilityStarted by viewModel.isAccessibilityServiceStarted.collectAsState()
     val isOverlayPermissionEnabled by viewModel.isOverlayPermissionEnabled.collectAsState()
+    val isAdultMonitoringEnabled by viewModel.isAdultMonitoringEnabled.collectAsState()
+    val isBetsMonitoringEnabled by viewModel.isBetsMonitoringEnabled.collectAsState()
     val errorText by viewModel.errorMessage.collectAsState(null)
 
     DisposableEffect(lifecycleOwner) {
@@ -79,12 +84,12 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         AlertDialog(
             onDismissRequest = { viewModel.resetError() },
             confirmButton = {
-                TextButton(onClick = { viewModel.resetError() }) {
-                    Text(stringResource(android.R.string.ok))
+                BeeButtonGhost(onClick = { viewModel.resetError() }) {
+                    BeeLabelMedium(stringResource(android.R.string.ok))
                 }
             },
             text = {
-                Text(uiText)
+                BeeBodyMedium(uiText)
             },
         )
     }
@@ -93,9 +98,13 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         isAccessibilityEnabled = isAccessibilityEnabled,
         isAccessibilityStarted = isAccessibilityStarted,
         isOverlayPermissionEnabled = isOverlayPermissionEnabled,
+        isAdultMonitoringEnabled = isAdultMonitoringEnabled,
+        isBetsMonitoringEnabled = isBetsMonitoringEnabled,
         onToggleAccessibility = { viewModel.toggleAccessibilityService() },
         onOpenAccessibilitySettings = { viewModel.openAccessibilitySettings() },
         onOpenOverlaySettings = { viewModel.openOverlaySettings() },
+        onToggleAdultMonitoring = { viewModel.toggleAdultMonitoring() },
+        onToggleBetsMonitoring = { viewModel.toggleBetsMonitoring() },
         onExportData = { viewModel.exportData() },
     )
 }
@@ -106,65 +115,65 @@ fun SettingsScreenContent(
     isAccessibilityEnabled: Boolean,
     isAccessibilityStarted: Boolean,
     isOverlayPermissionEnabled: Boolean,
+    isAdultMonitoringEnabled: Boolean,
+    isBetsMonitoringEnabled: Boolean,
     onToggleAccessibility: () -> Unit,
     onOpenAccessibilitySettings: () -> Unit,
     onOpenOverlaySettings: () -> Unit,
+    onToggleAdultMonitoring: () -> Unit,
+    onToggleBetsMonitoring: () -> Unit,
     onExportData: () -> Unit,
 ) {
-    var monitorAdult by remember { mutableStateOf(true) }
-    var monitorBets by remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             TopAppBar(
+                colors =
+                    TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.surfaceContainerLowest),
                 title = {
-                    Text(
-                        stringResource(R.string.settings_title),
-                        fontWeight = FontWeight.Bold,
-                    )
+                    BeeHeadlineMedium(stringResource(R.string.settings_title))
                 },
             )
         },
+        contentWindowInsets = WindowInsets(0),
     ) { padding ->
         Column(
             Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+                .padding(BeeSpacing.M),
+            verticalArrangement = Arrangement.spacedBy(BeeSpacing.L),
         ) {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(
+            BeeCardSection {
+                Column(Modifier.padding(BeeSpacing.M)) {
+                    BeeHeadlineSmall(
                         stringResource(R.string.settings_monitoring_section_title),
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
                     )
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(BeeSpacing.M))
                     SwitchRow(
                         stringResource(R.string.settings_adult_content_label),
-                        monitorAdult,
-                    ) { monitorAdult = it }
+                        isAdultMonitoringEnabled,
+                    ) { onToggleAdultMonitoring() }
                     SwitchRow(
                         stringResource(R.string.settings_bets_label),
-                        monitorBets,
-                    ) { monitorBets = it }
+                        isBetsMonitoringEnabled,
+                    ) { onToggleBetsMonitoring() }
                 }
             }
 
             Section(stringResource(R.string.settings_customization_section_title)) {
                 ListItem(
-                    headlineContent = { Text(stringResource(R.string.settings_block_message_title)) },
-                    supportingContent = { Text(stringResource(R.string.settings_block_message_subtitle)) },
+                    headlineContent = {
+                        BeeBodyLarge(stringResource(R.string.settings_block_message_title))
+                    },
+                    supportingContent = {
+                        BeeBodySmall(stringResource(R.string.settings_block_message_subtitle))
+                    },
                     leadingContent = { Icon(Icons.Default.Edit, null) },
                     modifier =
                         Modifier.background(
-                            MaterialTheme.colorScheme.surface,
-                            RoundedCornerShape(12.dp),
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            RoundedCornerShape(BeeSpacing.M),
                         ),
                 )
             }
@@ -182,8 +191,8 @@ fun SettingsScreenContent(
                 },
             ) {
                 ListItem(
-                    headlineContent = { Text("João Primo") },
-                    supportingContent = { Text("(85) 00000-0000") },
+                    headlineContent = { BeeBodyLarge("João Primo") },
+                    supportingContent = { BeeBodySmall("(85) 00000-0000") },
                     leadingContent = { Icon(Icons.Default.Person, null) },
                     trailingContent = {
                         Icon(
@@ -193,23 +202,19 @@ fun SettingsScreenContent(
                     },
                     modifier =
                         Modifier.background(
-                            MaterialTheme.colorScheme.surface,
-                            RoundedCornerShape(12.dp),
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            RoundedCornerShape(BeeSpacing.M),
                         ),
                 )
             }
 
             Section(stringResource(R.string.settings_privacy_section_title)) {
-                Button(
+                BeeButtonPrimary(
                     onClick = onExportData,
-                    Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Icon(Icons.Default.Share, null, Modifier.padding(end = 8.dp))
-                    Text(
+                    Icon(Icons.Default.Share, null, Modifier.padding(end = BeeSpacing.S))
+                    BeeLabelLarge(
                         stringResource(R.string.settings_export_data),
                         color = MaterialTheme.colorScheme.onPrimary,
                     )
@@ -217,21 +222,37 @@ fun SettingsScreenContent(
             }
 
             Section(stringResource(R.string.settings_permissions_section_title)) {
-                Column(Modifier.padding(16.dp)) {
-                    SwitchRow(
-                        stringResource(R.string.settings_screen_reader_label),
-                        isAccessibilityEnabled && isAccessibilityStarted,
+                BeeCardSection {
+                    Column(
+                        modifier =
+                            Modifier
+                                .padding(BeeSpacing.M),
                     ) {
-                        if (isAccessibilityEnabled) {
-                            onToggleAccessibility()
-                        } else {
-                            onOpenAccessibilitySettings()
+                        SwitchRow(
+                            stringResource(R.string.settings_screen_reader_label),
+                            isAccessibilityEnabled && isAccessibilityStarted,
+                        ) {
+                            if (isAccessibilityEnabled) {
+                                onToggleAccessibility()
+                            } else {
+                                onOpenAccessibilitySettings()
+                            }
+                        }
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                            SwitchRow(
+                                stringResource(R.string.settings_screen_blocker_label),
+                                isOverlayPermissionEnabled,
+                            ) { onOpenOverlaySettings() }
                         }
                     }
-                    SwitchRow(
-                        stringResource(R.string.settings_screen_blocker_label),
-                        isOverlayPermissionEnabled,
-                    ) { onOpenOverlaySettings() }
+                }
+                Spacer(Modifier.height(BeeSpacing.S))
+                BeeCardSection {
+                    Column(Modifier.padding(BeeSpacing.M)) {
+                        BeeLabelLarge(stringResource(R.string.settings_banking_warning_title))
+                        Spacer(Modifier.height(BeeSpacing.S))
+                        BeeBodySmall(stringResource(R.string.settings_banking_warning_body))
+                    }
                 }
             }
         }
@@ -245,7 +266,11 @@ private fun SwitchRow(
     onCheckedChange: (Boolean) -> Unit,
 ) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface)
+        BeeBodyLarge(
+            label,
+            Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.onSurface,
+        )
         Switch(checked, onCheckedChange)
     }
 }
@@ -260,14 +285,11 @@ private fun Section(
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp),
+                .padding(bottom = BeeSpacing.S),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
+            BeeHeadlineSmall(
                 text = title,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.primary,
             )
             action?.invoke()
         }
@@ -283,9 +305,13 @@ fun SettingsScreenPreview() {
             isAccessibilityEnabled = true,
             isAccessibilityStarted = false,
             isOverlayPermissionEnabled = true,
+            isAdultMonitoringEnabled = true,
+            isBetsMonitoringEnabled = false,
             onToggleAccessibility = {},
             onOpenAccessibilitySettings = {},
             onOpenOverlaySettings = {},
+            onToggleAdultMonitoring = {},
+            onToggleBetsMonitoring = {},
             onExportData = {},
         )
     }

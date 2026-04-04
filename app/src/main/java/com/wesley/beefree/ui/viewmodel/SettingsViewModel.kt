@@ -9,11 +9,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.R
+import com.wesley.beefree.domain.entities.AddictionTypeEnum
 import com.wesley.beefree.infrastructure.services.AccessibilityServiceActivity
+import com.wesley.beefree.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.storage.adapters.db.AppDatabase
 import com.wesley.beefree.storage.adapters.db.exporters.FileDatabaseExporter
 import com.wesley.beefree.storage.adapters.db.exporters.SqlDatabaseExporterStrategy
+import com.wesley.beefree.storage.ports.AddictionRepository
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.utils.AccessibilityUtils
 import com.wesley.beefree.utils.OverlayUtils
@@ -22,12 +25,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SettingsViewModel(
     private val context: Context,
     private val storageRepository: KeyValueStorageRepository,
+    private val addictionRepository: AddictionRepository,
 ) : ViewModel() {
     private val _isAccessibilityServiceEnabled = MutableStateFlow(false)
     val isAccessibilityServiceEnabled: StateFlow<Boolean> =
@@ -40,11 +45,27 @@ class SettingsViewModel(
     private val _isOverlayPermissionEnabled = MutableStateFlow(false)
     val isOverlayPermissionEnabled: StateFlow<Boolean> = _isOverlayPermissionEnabled.asStateFlow()
 
+    private val _isAdultMonitoringEnabled = MutableStateFlow(true)
+    val isAdultMonitoringEnabled: StateFlow<Boolean> = _isAdultMonitoringEnabled.asStateFlow()
+
+    private val _isBetsMonitoringEnabled = MutableStateFlow(false)
+    val isBetsMonitoringEnabled: StateFlow<Boolean> = _isBetsMonitoringEnabled.asStateFlow()
+
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asSharedFlow()
 
     init {
         updateStatuses()
+        viewModelScope.launch {
+            addictionRepository.getAllAddictionTypes().collect { types ->
+                types.find { it.name == AddictionTypeEnum.ADULT_CONTENT.label }?.let {
+                    _isAdultMonitoringEnabled.value = it.isMonitoringEnabled
+                }
+                types.find { it.name == AddictionTypeEnum.BETS.label }?.let {
+                    _isBetsMonitoringEnabled.value = it.isMonitoringEnabled
+                }
+            }
+        }
     }
 
     fun exportData() {
@@ -110,6 +131,28 @@ class SettingsViewModel(
         OverlayUtils.startOverlayService(context)
     }
 
+    fun toggleAdultMonitoring() {
+        viewModelScope.launch {
+            val type =
+                addictionRepository
+                    .getAllAddictionTypes()
+                    .first()
+                    .find { it.name == AddictionTypeEnum.ADULT_CONTENT.label } ?: return@launch
+            addictionRepository.updateAddictionType(type.copy(isMonitoringEnabled = !type.isMonitoringEnabled))
+        }
+    }
+
+    fun toggleBetsMonitoring() {
+        viewModelScope.launch {
+            val type =
+                addictionRepository
+                    .getAllAddictionTypes()
+                    .first()
+                    .find { it.name == AddictionTypeEnum.BETS.label } ?: return@launch
+            addictionRepository.updateAddictionType(type.copy(isMonitoringEnabled = !type.isMonitoringEnabled))
+        }
+    }
+
     fun resetError() {
         _errorMessage.value = null
     }
@@ -119,10 +162,16 @@ class SettingsViewModel(
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     val appContext = context.applicationContext
+                    val db = AppDatabase.getDatabase(appContext)
                     @Suppress("UNCHECKED_CAST")
                     return SettingsViewModel(
                         appContext,
                         KeyValueStorageRepository(SharedPreferencesKeyValueStorage(appContext)),
+                        RoomAddictionRepository(
+                            db.addictionTypeDao(),
+                            db.addictionKeywordDao(),
+                            db.relapseHistoryDao(),
+                        ),
                     ) as T
                 }
             }
