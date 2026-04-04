@@ -11,8 +11,18 @@ import com.wesley.beefree.domain.onboarding.StepType
 import com.wesley.beefree.domain.onboarding.usecases.ComputeClinicalProfileUseCase
 
 object OnboardingFlowFactory {
-    fun factory(): OnboardingNode =
-        OnboardingSequence(
+    fun factory(requiresOverlayPermission: Boolean = true): OnboardingNode {
+        val permissionSteps =
+            buildList {
+                add(OnboardingStep("request_permissions", StepType.REQUEST_PERMISSIONS))
+                add(OnboardingStep("request_permission_monitor", StepType.REQUEST_PERMISSION_MONITOR))
+                if (requiresOverlayPermission) {
+                    add(OnboardingStep("request_permission_overlay", StepType.REQUEST_PERMISSION_OVERLAY))
+                }
+                add(OnboardingStep("finish", StepType.FINISH))
+            }
+
+        return OnboardingSequence(
             listOf(
                 OnboardingStep("welcome", StepType.WELCOME),
                 OnboardingStep("presentation", StepType.PRESENTATION),
@@ -33,12 +43,9 @@ object OnboardingFlowFactory {
                         OnboardingSequence(emptyList())
                     }
                 },
-                OnboardingStep("request_permissions", StepType.REQUEST_PERMISSIONS),
-                OnboardingStep("request_permission_monitor", StepType.REQUEST_PERMISSION_MONITOR),
-                OnboardingStep("request_permission_overlay", StepType.REQUEST_PERMISSION_OVERLAY),
-                OnboardingStep("finish", StepType.FINISH),
-            ),
+            ) + permissionSteps,
         )
+    }
 
     private fun ppuFlow(): OnboardingNode =
         OnboardingSequence(

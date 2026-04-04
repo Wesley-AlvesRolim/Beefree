@@ -33,11 +33,28 @@ class RelapseRecorderModule(
             RelapseHistory(
                 addictionTypeId = event.addictionTypeId,
                 keywordDetected = event.keyword,
-                detectedText = event.reason,
+                detectedText = extractPhraseContaining(event.reason, event.keyword),
                 appPackage = event.appPackage,
                 relapseAt = event.timestamp,
                 updatedAt = event.timestamp,
             ),
         )
+    }
+
+    private fun extractPhraseContaining(
+        text: String,
+        keyword: String,
+    ): String {
+        val index = text.indexOf(keyword, ignoreCase = true)
+        if (index == -1) return text.take(150)
+        val start =
+            text.lastIndexOfAny(charArrayOf('.', '!', '?', '\n'), index).let {
+                if (it == -1) 0 else it + 1
+            }
+        val end =
+            text.indexOfAny(charArrayOf('.', '!', '?', '\n'), index + keyword.length).let {
+                if (it == -1) text.length else it + 1
+            }
+        return text.substring(start, end).trim()
     }
 }

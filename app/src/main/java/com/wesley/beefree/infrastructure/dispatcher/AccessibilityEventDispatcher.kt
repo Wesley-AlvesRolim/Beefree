@@ -6,10 +6,13 @@ import android.view.accessibility.AccessibilityNodeInfo
 import com.wesley.beefree.data.apps.BRAZILIAN_BANK_PACKAGE_NAMES
 import com.wesley.beefree.data.apps.HELP_APPS_PACKAGE_NAMES
 import com.wesley.beefree.domain.bus.ports.EventBus
+import com.wesley.beefree.domain.detection.ports.WindowContentProvider
+import com.wesley.beefree.domain.events.BankingAppForegrounded
 import com.wesley.beefree.domain.events.EventDispatcher
 import com.wesley.beefree.domain.events.ScreenContentCaptured
 import com.wesley.beefree.infrastructure.services.OverlayServiceActivity
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
+import com.wesley.beefree.ui.InterventionActivity
 
 class AccessibilityEventDispatcher(
     private val eventBus: EventBus,
@@ -20,31 +23,36 @@ class AccessibilityEventDispatcher(
         vararg args: Any?,
     ) {
         if (cannotDispatchTheEvent(event)) return
-        val nodes = args.filterIsInstance<AccessibilityNodeInfo>()
-        if (nodes.firstOrNull() == null) {
-            return
-        }
 
-        val texts = mutableListOf<String>()
-        extractText(nodes.first(), texts)
-        event?.packageName?.let {
-            eventBus.publish(ScreenContentCaptured(texts, it.toString()))
-        } ?: run {
-            eventBus.publish(ScreenContentCaptured(texts, null))
+        val provider = args.filterIsInstance<WindowContentProvider>().firstOrNull() ?: return
+        val rootNode = provider.getRootNode() ?: return
+
+        try {
+            val texts = mutableListOf<String>()
+            extractText(rootNode, texts)
+            event?.packageName?.let {
+                eventBus.publish(ScreenContentCaptured(texts, it.toString()))
+            } ?: run {
+                eventBus.publish(ScreenContentCaptured(texts, null))
+            }
+        } finally {
+            rootNode.recycle()
         }
     }
 
     private fun cannotDispatchTheEvent(event: AccessibilityEvent?): Boolean {
-        if (OverlayServiceActivity.isRunning) return true
-        if (repository?.getTheScreenReaderStatus() == false) return true
-
         if (event?.packageName != null && BRAZILIAN_BANK_PACKAGE_NAMES.contains(event.packageName.toString())) {
+            if (OverlayServiceActivity.isRunning) eventBus.publish(BankingAppForegrounded)
             return true
         }
 
         if (event?.packageName != null && HELP_APPS_PACKAGE_NAMES.contains(event.packageName.toString())) {
             return true
         }
+
+        if (OverlayServiceActivity.isRunning || InterventionActivity.isRunning) return true
+
+        if (repository?.getTheScreenReaderStatus() == false) return true
 
         return false
     }

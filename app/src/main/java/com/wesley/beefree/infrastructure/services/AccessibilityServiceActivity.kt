@@ -3,10 +3,10 @@ package com.wesley.beefree.infrastructure.services
 import android.accessibilityservice.AccessibilityService
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
-import com.wesley.beefree.data.keywords.getBetsKeyWords
-import com.wesley.beefree.data.keywords.getPornKeywords
+import android.view.accessibility.AccessibilityNodeInfo
+import com.wesley.beefree.data.keywords.buildKeywordsMap
 import com.wesley.beefree.domain.detection.KeywordsDetectionEngine
-import com.wesley.beefree.domain.entities.AddictionTypeEnum
+import com.wesley.beefree.domain.detection.ports.WindowContentProvider
 import com.wesley.beefree.domain.intervention.ports.DeviceActionProvider
 import com.wesley.beefree.infrastructure.bus.adapters.InMemoryEventBus
 import com.wesley.beefree.infrastructure.dispatcher.AccessibilityEventDispatcher
@@ -22,10 +22,12 @@ import com.wesley.beefree.ui.adapters.AndroidOverlayInterventionUI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 class AccessibilityServiceActivity :
     AccessibilityService(),
     DeviceActionProvider,
+    WindowContentProvider,
     CoroutineScope {
     private val tag = "AccessibilityServiceActivity"
     private var keyValueStorageRepository: KeyValueStorageRepository? = null
@@ -54,12 +56,12 @@ class AccessibilityServiceActivity :
             )
         dispatcher = AccessibilityEventDispatcher(eventBus, keyValueStorageRepository)
 
-        val keywordsByAddictionType =
-            mapOf(
-                AddictionTypeEnum.ADULT_CONTENT.ordinal to getPornKeywords(),
-                AddictionTypeEnum.BETS.ordinal to getBetsKeyWords(),
-            )
-        keyWordsDetectionEngine = KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
+        keyWordsDetectionEngine = KeywordsDetectionEngine(eventBus, emptyMap())
+        launch {
+            addictionRepository!!.getAllAddictionTypes().collect { types ->
+                keyWordsDetectionEngine.updateKeywords(buildKeywordsMap(types, addictionRepository!!))
+            }
+        }
 
         val interventionUI = AndroidOverlayInterventionUI(this)
         interventionModule = OverlayInterventionModule(eventBus, interventionUI)
@@ -72,11 +74,10 @@ class AccessibilityServiceActivity :
         performGlobalAction(GLOBAL_ACTION_BACK)
     }
 
+    override fun getRootNode(): AccessibilityNodeInfo? = rootInActiveWindow
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        Log.d(tag, "Event: $event")
-        val rootNode = rootInActiveWindow
-        dispatcher.dispatch(event, rootNode)
-        rootNode?.recycle()
+        dispatcher.dispatch(event, this)
     }
 
     override fun onInterrupt() {

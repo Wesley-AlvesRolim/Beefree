@@ -5,9 +5,12 @@ import android.view.accessibility.AccessibilityNodeInfo
 import com.wesley.beefree.data.apps.BRAZILIAN_BANK_PACKAGE_NAMES
 import com.wesley.beefree.data.apps.HELP_APPS_PACKAGE_NAMES
 import com.wesley.beefree.domain.bus.ports.EventBus
+import com.wesley.beefree.domain.detection.ports.WindowContentProvider
+import com.wesley.beefree.domain.events.BankingAppForegrounded
 import com.wesley.beefree.domain.events.ScreenContentCaptured
 import com.wesley.beefree.infrastructure.services.OverlayServiceActivity
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
+import com.wesley.beefree.ui.InterventionActivity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -23,9 +26,12 @@ class AccessibilityEventDispatcherTest {
     @Before
     fun setUp() {
         OverlayServiceActivity.isRunning = false
+        InterventionActivity.isRunning = false
         whenever(repository.getTheScreenReaderStatus()).thenReturn(true)
         dispatcher = AccessibilityEventDispatcher(eventBus, repository)
     }
+
+    private fun nodeProvider(node: AccessibilityNodeInfo): WindowContentProvider = WindowContentProvider { node }
 
     @Test
     fun `should publish ScreenContentCaptured when event is dispatched`() {
@@ -40,7 +46,7 @@ class AccessibilityEventDispatcherTest {
         whenever(rootNode.childCount).thenReturn(0)
         whenever(rootNode.isVisibleToUser).thenReturn(true)
 
-        dispatcher.dispatch(event, rootNode)
+        dispatcher.dispatch(event, nodeProvider(rootNode))
 
         argumentCaptor<ScreenContentCaptured>().apply {
             verify(eventBus).publish(capture())
@@ -50,12 +56,23 @@ class AccessibilityEventDispatcherTest {
     }
 
     @Test
-    fun `should NOT publish anything when overlay is running`() {
+    fun `should NOT publish anything when overlay service is running`() {
         OverlayServiceActivity.isRunning = true
         val event: AccessibilityEvent = mock()
         val rootNode: AccessibilityNodeInfo = mock()
 
-        dispatcher.dispatch(event, rootNode)
+        dispatcher.dispatch(event, nodeProvider(rootNode))
+
+        verify(eventBus, never()).publish(any())
+    }
+
+    @Test
+    fun `should NOT publish anything when intervention activity is running`() {
+        InterventionActivity.isRunning = true
+        val event: AccessibilityEvent = mock()
+        val rootNode: AccessibilityNodeInfo = mock()
+
+        dispatcher.dispatch(event, nodeProvider(rootNode))
 
         verify(eventBus, never()).publish(any())
     }
@@ -66,13 +83,13 @@ class AccessibilityEventDispatcherTest {
         val event: AccessibilityEvent = mock()
         val rootNode: AccessibilityNodeInfo = mock()
 
-        dispatcher.dispatch(event, rootNode)
+        dispatcher.dispatch(event, nodeProvider(rootNode))
 
         verify(eventBus, never()).publish(any())
     }
 
     @Test
-    fun `should NOT publish anything when event is from a bank app`() {
+    fun `should NOT publish anything when event is from a bank app and overlay is not running`() {
         assertFalse(BRAZILIAN_BANK_PACKAGE_NAMES.isEmpty())
         val bankPackageName = BRAZILIAN_BANK_PACKAGE_NAMES.random()
         val event: AccessibilityEvent = mock()
@@ -80,9 +97,25 @@ class AccessibilityEventDispatcherTest {
 
         val rootNode: AccessibilityNodeInfo = mock()
 
-        dispatcher.dispatch(event, rootNode)
+        dispatcher.dispatch(event, nodeProvider(rootNode))
 
         verify(eventBus, never()).publish(any())
+    }
+
+    @Test
+    fun `should publish BankingAppForegrounded when bank app is detected and overlay is running`() {
+        OverlayServiceActivity.isRunning = true
+        assertFalse(BRAZILIAN_BANK_PACKAGE_NAMES.isEmpty())
+        val bankPackageName = BRAZILIAN_BANK_PACKAGE_NAMES.random()
+        val event: AccessibilityEvent = mock()
+        whenever(event.packageName).thenReturn(bankPackageName)
+
+        val rootNode: AccessibilityNodeInfo = mock()
+
+        dispatcher.dispatch(event, nodeProvider(rootNode))
+
+        verify(eventBus).publish(BankingAppForegrounded)
+        verify(eventBus, never()).publish(argThat { this is ScreenContentCaptured })
     }
 
     @Test
@@ -94,7 +127,7 @@ class AccessibilityEventDispatcherTest {
 
         val rootNode: AccessibilityNodeInfo = mock()
 
-        dispatcher.dispatch(event, rootNode)
+        dispatcher.dispatch(event, nodeProvider(rootNode))
 
         verify(eventBus, never()).publish(any())
     }
@@ -119,7 +152,7 @@ class AccessibilityEventDispatcherTest {
 
         whenever(rootNode.getChild(0)).thenReturn(childNode)
 
-        dispatcher.dispatch(event, rootNode)
+        dispatcher.dispatch(event, nodeProvider(rootNode))
 
         argumentCaptor<ScreenContentCaptured>().apply {
             verify(eventBus).publish(capture())
@@ -141,7 +174,7 @@ class AccessibilityEventDispatcherTest {
         whenever(rootNode.childCount).thenReturn(0)
         whenever(rootNode.isVisibleToUser).thenReturn(true)
 
-        dispatcher.dispatch(event, rootNode)
+        dispatcher.dispatch(event, nodeProvider(rootNode))
 
         argumentCaptor<ScreenContentCaptured>().apply {
             verify(eventBus).publish(capture())
@@ -169,7 +202,7 @@ class AccessibilityEventDispatcherTest {
 
         whenever(rootNode.getChild(0)).thenReturn(childNode)
 
-        dispatcher.dispatch(event, rootNode)
+        dispatcher.dispatch(event, nodeProvider(rootNode))
 
         argumentCaptor<ScreenContentCaptured>().apply {
             verify(eventBus).publish(capture())

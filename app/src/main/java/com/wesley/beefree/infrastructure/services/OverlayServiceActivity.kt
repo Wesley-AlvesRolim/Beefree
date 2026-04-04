@@ -37,7 +37,7 @@ class OverlayServiceActivity : Service() {
         if (floatyView == null) {
             addOverlayView()
         }
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onCreate() {

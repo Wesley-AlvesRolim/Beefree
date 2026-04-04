@@ -2,6 +2,7 @@ package com.wesley.beefree.ui.viewmodel
 
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -131,7 +132,12 @@ open class OnboardingViewModelImpl(
                         KeyValueStorageRepository(SharedPreferencesKeyValueStorage(application))
                     @Suppress("UNCHECKED_CAST")
                     return OnboardingViewModelImpl(
-                        engine = CompositeOnboardingFlowEngine(OnboardingFlowFactory.factory()),
+                        engine =
+                            CompositeOnboardingFlowEngine(
+                                OnboardingFlowFactory.factory(
+                                    requiresOverlayPermission = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q,
+                                ),
+                            ),
                         saveOnboardingDataUseCase =
                             SaveOnboardingDataUseCase(addictionRepository, keyValueStorageRepository),
                         computeScoreUseCase = ComputeScoreUseCase(),

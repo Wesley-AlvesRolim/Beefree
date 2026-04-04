@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission
+        android:name="android.permission.SYSTEM_ALERT_WINDOW"
+        android:maxSdkVersion="28" />
 
     <application
         android:allowBackup="true"
@@ -15,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BeeFree">
         <service android:name=".infrastructure.services.AccessibilityServiceActivity"
-            android:exported="true"
+            android:exported="false"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:label="@string/accessibility_service_label">
             <meta-data
@@ -29,6 +31,13 @@
         <service
             android:name=".infrastructure.services.OverlayServiceActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.InterventionActivity"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.BeeFree" />
 
         <activity
             android:name=".MainActivity"

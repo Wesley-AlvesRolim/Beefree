@@ -139,4 +139,33 @@ class KeywordsDetectionEngineTest {
         engine.detect(ScreenContentCaptured(listOf("Another Safe"), "pkg"))
         verify(mockScorer, times(2)).reset()
     }
+
+    @Test
+    fun `should not detect keywords removed via updateKeywords`() {
+        val eventBus = InMemoryEventBus()
+        val engine = KeywordsDetectionEngine(eventBus, mapOf(1 to listOf("bet")))
+
+        var triggerCount = 0
+        eventBus.subscribe(InterventionTriggered::class.java) { triggerCount++ }
+
+        engine.updateKeywords(emptyMap())
+        engine.detect(ScreenContentCaptured(listOf("bet, another_bet, famous_bet"), "pkg"))
+
+        assertEquals(0, triggerCount)
+    }
+
+    @Test
+    fun `should detect new keywords added via updateKeywords`() {
+        val eventBus = InMemoryEventBus()
+        val engine = KeywordsDetectionEngine(eventBus, emptyMap())
+
+        var receivedEvent: InterventionTriggered? = null
+        eventBus.subscribe(InterventionTriggered::class.java) { receivedEvent = it }
+
+        engine.updateKeywords(mapOf(1 to listOf("k1", "k2", "k3")))
+        engine.detect(ScreenContentCaptured(listOf("k1, k2, k3"), "pkg"))
+
+        assertNotNull(receivedEvent)
+        assertEquals(1, receivedEvent?.addictionTypeId)
+    }
 }
