@@ -4,6 +4,8 @@ import com.wesley.beefree.domain.entities.AddictionType
 import com.wesley.beefree.domain.onboarding.AddictionProfile
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.storage.ports.AddictionRepository
+import com.wesley.beefree.storage.ports.OnboardingRepository
+import com.wesley.beefree.storage.ports.UserProfileRepository
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
@@ -17,8 +19,16 @@ import org.mockito.kotlin.whenever
 
 class SaveOnboardingDataUseCaseTest {
     private val addictionRepository: AddictionRepository = mock()
+    private val userProfileRepository: UserProfileRepository = mock()
+    private val onboardingRepository: OnboardingRepository = mock()
     private val keyValueStorageRepository: KeyValueStorageRepository = mock()
-    private val useCase = SaveOnboardingDataUseCase(addictionRepository, keyValueStorageRepository)
+    private val useCase =
+        SaveOnboardingDataUseCase(
+            addictionRepository,
+            userProfileRepository,
+            onboardingRepository,
+            keyValueStorageRepository,
+        )
 
     @Test
     fun `returns failure when no addiction profile selected`() =
@@ -35,9 +45,16 @@ class SaveOnboardingDataUseCaseTest {
     @Test
     fun `saves addiction type and marks onboarding completed for PPU profile`() =
         runBlocking {
+            whenever(userProfileRepository.insertProfile(any())).thenReturn(1L)
             whenever(addictionRepository.insertAddictionType(any<AddictionType>())).thenReturn(1L)
             whenever(addictionRepository.insertKeyword(any())).thenReturn(1L)
-            val answers = OnboardingAnswers(addictionProfile = AddictionProfile.PPU)
+            whenever(onboardingRepository.insertOnboardingResult(any())).thenReturn(1L)
+            val answers =
+                OnboardingAnswers(
+                    addictionProfile = AddictionProfile.PPU,
+                    ppcs6Answers = listOf(1, 1, 1, 1, 1, 1),
+                    frequencyAnswer = 1,
+                )
 
             val result = useCase.execute(answers)
 
@@ -49,9 +66,15 @@ class SaveOnboardingDataUseCaseTest {
     @Test
     fun `saves addiction type and marks onboarding completed for GAMBLING profile`() =
         runBlocking {
+            whenever(userProfileRepository.insertProfile(any())).thenReturn(1L)
             whenever(addictionRepository.insertAddictionType(any<AddictionType>())).thenReturn(1L)
             whenever(addictionRepository.insertKeyword(any())).thenReturn(1L)
-            val answers = OnboardingAnswers(addictionProfile = AddictionProfile.GAMBLING)
+            whenever(onboardingRepository.insertOnboardingResult(any())).thenReturn(1L)
+            val answers =
+                OnboardingAnswers(
+                    addictionProfile = AddictionProfile.GAMBLING,
+                    pgsiAnswers = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0),
+                )
 
             val result = useCase.execute(answers)
 
@@ -61,9 +84,37 @@ class SaveOnboardingDataUseCaseTest {
         }
 
     @Test
+    fun `saves hobbies, symptoms, goals and core values`() {
+        runBlocking {
+            whenever(userProfileRepository.insertProfile(any())).thenReturn(1L)
+            whenever(addictionRepository.insertAddictionType(any<AddictionType>())).thenReturn(1L)
+            whenever(addictionRepository.insertKeyword(any())).thenReturn(1L)
+            whenever(onboardingRepository.insertOnboardingResult(any())).thenReturn(1L)
+            val answers =
+                OnboardingAnswers(
+                    addictionProfile = AddictionProfile.PPU,
+                    ppcs6Answers = listOf(1, 1, 1, 1, 1, 1),
+                    frequencyAnswer = 1,
+                    hobbies = listOf("Leitura", "Academia"),
+                    symptoms = listOf("ANXIETY", "ISOLATION"),
+                    goals = listOf("Ser mais presente"),
+                    coreValues = listOf("Família", "Fé"),
+                )
+
+            val result = useCase.execute(answers)
+
+            assertTrue(result.isSuccess)
+            verify(onboardingRepository, times(2)).insertHobby(any())
+            verify(onboardingRepository, times(2)).insertSymptom(any())
+            verify(onboardingRepository, times(1)).insertObjective(any())
+            verify(onboardingRepository, times(2)).insertCoreValue(any())
+        }
+    }
+
+    @Test
     fun `propagates repository failure as Result failure`() =
         runBlocking {
-            whenever(addictionRepository.insertAddictionType(any<AddictionType>()))
+            whenever(userProfileRepository.insertProfile(any()))
                 .thenThrow(RuntimeException("DB error"))
             val answers = OnboardingAnswers(addictionProfile = AddictionProfile.PPU)
 

@@ -17,18 +17,24 @@ class ComputeClinicalProfileUseCase {
         }
 
     private fun computePpuProfile(answers: OnboardingAnswers): ClinicalProfile {
-        val incongruenceLevel = computeIncongruenceLevel(answers)
+        val moralIncongruenceScore = computeMoralIncongruenceScore(answers)
+        val incongruenceLevel = classifyIncongruenceLevel(moralIncongruenceScore)
         val ppcs6Level = Ppcs6Scorer().score(answers.ppcs6Answers).level
         val treatmentProfile = resolvePpuTreatment(incongruenceLevel, ppcs6Level)
-        return ClinicalProfile(incongruenceLevel = incongruenceLevel, treatmentProfile = treatmentProfile)
+        return ClinicalProfile(
+            incongruenceLevel = incongruenceLevel,
+            treatmentProfile = treatmentProfile,
+            moralIncongruenceScore = moralIncongruenceScore,
+        )
     }
 
-    internal fun computeIncongruenceLevel(answers: OnboardingAnswers): IncongruenceLevel {
-        val frequency = answers.frequencyAnswer
+    internal fun computeMoralIncongruenceScore(answers: OnboardingAnswers): Int {
         val moralDisapproval = (answers.emaAnswers.firstOrNull() ?: 0) + 1
-        val score = frequency * moralDisapproval
-        val percentage = score.toFloat() / MAX_INCONGRUENCE_SCORE
+        return answers.frequencyAnswer * moralDisapproval
+    }
 
+    internal fun classifyIncongruenceLevel(score: Int): IncongruenceLevel {
+        val percentage = score.toFloat() / MAX_INCONGRUENCE_SCORE
         return when {
             percentage >= ALTA_THRESHOLD -> IncongruenceLevel.ALTA
             percentage >= MEDIA_THRESHOLD -> IncongruenceLevel.MEDIA

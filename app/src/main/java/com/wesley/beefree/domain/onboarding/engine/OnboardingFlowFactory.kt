@@ -73,6 +73,8 @@ object OnboardingFlowFactory {
             ),
         )
 
-    private fun requiresCoreValues(answers: OnboardingAnswers): Boolean =
-        ComputeClinicalProfileUseCase().computeIncongruenceLevel(answers) != IncongruenceLevel.BAIXA
+    private fun requiresCoreValues(answers: OnboardingAnswers): Boolean {
+        val moralIncongruenceScore = ComputeClinicalProfileUseCase().computeMoralIncongruenceScore(answers)
+        return ComputeClinicalProfileUseCase().classifyIncongruenceLevel(moralIncongruenceScore) != IncongruenceLevel.BAIXA
+    }
 }
