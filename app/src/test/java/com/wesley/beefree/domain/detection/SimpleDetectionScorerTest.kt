@@ -19,7 +19,7 @@ class SimpleDetectionScorerTest {
 
     @Test
     fun `should trigger intervention after three matches for ADULT_CONTENT`() {
-        val addictionId = AddictionTypeEnum.ADULT_CONTENT.ordinal
+        val addictionId = AddictionTypeEnum.ADULT_CONTENT.ordinal + 1
 
         assertFalse(scorer.addMatch("Porn content 1", "porn1", addictionId, "com.test.app"))
         assertFalse(scorer.addMatch("Porn content 2", "porn2", addictionId, "com.test.app"))
@@ -42,7 +42,7 @@ class SimpleDetectionScorerTest {
 
     @Test
     fun `should trigger intervention after three matches for BETS`() {
-        val addictionId = AddictionTypeEnum.BETS.ordinal
+        val addictionId = AddictionTypeEnum.BETS.ordinal + 1
 
         assertFalse(scorer.addMatch("Bet site 1", "bet1", addictionId, "com.test.app"))
         assertFalse(scorer.addMatch("Bet site 2", "bet2", addictionId, "com.test.app"))
@@ -79,7 +79,7 @@ class SimpleDetectionScorerTest {
 
     @Test
     fun `should trigger intervention for OTHERS after nine matches`() {
-        val addictionId = AddictionTypeEnum.OTHERS.ordinal
+        val addictionId = AddictionTypeEnum.OTHERS.ordinal + 1
 
         repeat(8) { i ->
             assertFalse(scorer.addMatch("Other $i", "k$i", addictionId, "pkg"))
@@ -94,7 +94,7 @@ class SimpleDetectionScorerTest {
 
     @Test
     fun `should NOT count the same keyword twice`() {
-        val addictionId = AddictionTypeEnum.BETS.ordinal
+        val addictionId = AddictionTypeEnum.BETS.ordinal + 1
 
         scorer.addMatch("First time", "duplicate", addictionId, "pkg")
         scorer.addMatch("Second time", "duplicate", addictionId, "pkg")
@@ -109,7 +109,7 @@ class SimpleDetectionScorerTest {
 
     @Test
     fun `should ignore keyword case when checking for duplicates`() {
-        val addictionId = AddictionTypeEnum.BETS.ordinal
+        val addictionId = AddictionTypeEnum.BETS.ordinal + 1
 
         scorer.addMatch("First", "BET", addictionId, "pkg")
         scorer.addMatch("Second", "bet", addictionId, "pkg")
@@ -121,7 +121,7 @@ class SimpleDetectionScorerTest {
 
     @Test
     fun `should reset state after reset is called`() {
-        val addictionId = AddictionTypeEnum.BETS.ordinal
+        val addictionId = AddictionTypeEnum.BETS.ordinal + 1
 
         scorer.addMatch("Match 1", "k1", addictionId, "pkg")
         scorer.addMatch("Match 2", "k2", addictionId, "pkg")
