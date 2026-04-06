@@ -5,10 +5,7 @@ import com.wesley.beefree.domain.events.ScreenContentCaptured
 import com.wesley.beefree.infrastructure.bus.adapters.InMemoryEventBus
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class InMemoryEventBusTest {
     @Test
     fun `should publish and subscribe to events`() {
