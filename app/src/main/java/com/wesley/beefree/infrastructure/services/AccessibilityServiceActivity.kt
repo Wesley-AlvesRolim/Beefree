@@ -1,7 +1,6 @@
 package com.wesley.beefree.infrastructure.services
 
 import android.accessibilityservice.AccessibilityService
-import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.wesley.beefree.data.keywords.buildKeywordsMap
@@ -13,6 +12,7 @@ import com.wesley.beefree.infrastructure.dispatcher.AccessibilityEventDispatcher
 import com.wesley.beefree.infrastructure.history.RelapseRecorderModule
 import com.wesley.beefree.infrastructure.intervention.DeviceGoBackIntervention
 import com.wesley.beefree.infrastructure.intervention.OverlayInterventionModule
+import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.storage.adapters.db.AppDatabase
@@ -36,7 +36,7 @@ class AccessibilityServiceActivity :
     private val job = SupervisorJob()
     override val coroutineContext = Dispatchers.Main + job
 
-    private val eventBus = InMemoryEventBus()
+    private val eventBus = InMemoryEventBus(AndroidLogger)
     private lateinit var dispatcher: AccessibilityEventDispatcher
     private lateinit var keyWordsDetectionEngine: KeywordsDetectionEngine
     private lateinit var interventionModule: OverlayInterventionModule
@@ -78,12 +78,12 @@ class AccessibilityServiceActivity :
     override fun getRootNode(): AccessibilityNodeInfo? = rootInActiveWindow
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        Log.d(tag, "onAccessibilityEvent: ${event?.packageName}")
+        AndroidLogger.d(tag, "onAccessibilityEvent: ${event?.packageName}")
         dispatcher.dispatch(event, this)
     }
 
     override fun onInterrupt() {
-        Log.d(tag, "Stop AccessibilityService")
+        AndroidLogger.d(tag, "Stop AccessibilityService")
     }
 
     override fun onDestroy() {

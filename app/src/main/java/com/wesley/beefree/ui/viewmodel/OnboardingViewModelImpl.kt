@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -19,6 +18,7 @@ import com.wesley.beefree.domain.onboarding.ports.OnboardingFlowEngine
 import com.wesley.beefree.domain.onboarding.usecases.ComputeClinicalProfileUseCase
 import com.wesley.beefree.domain.onboarding.usecases.ComputeScoreUseCase
 import com.wesley.beefree.domain.onboarding.usecases.SaveOnboardingDataUseCase
+import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.services.AccessibilityServiceActivity
 import com.wesley.beefree.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.storage.adapters.RoomOnboardingRepository
@@ -101,7 +101,7 @@ open class OnboardingViewModelImpl(
     ) {
         viewModelScope.launch {
             val profile = _clinicalProfile.value
-            Log.d(
+            AndroidLogger.d(
                 "OnboardingProfile",
                 "Clinical profile on finish: treatment=${profile?.treatmentProfile}, incongruence=${profile?.incongruenceLevel}",
             )

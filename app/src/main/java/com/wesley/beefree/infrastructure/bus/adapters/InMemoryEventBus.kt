@@ -1,15 +1,17 @@
 package com.wesley.beefree.infrastructure.bus.adapters
 
-import android.util.Log
 import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.events.DomainEvent
+import com.wesley.beefree.infrastructure.logging.Logger
 
-class InMemoryEventBus : EventBus {
+class InMemoryEventBus(
+    private val logger: Logger = Logger { _, _ -> },
+) : EventBus {
     private val subscribers = mutableMapOf<Class<out DomainEvent>, MutableList<(DomainEvent) -> Unit>>()
     private val tag = "EventBus"
 
     override fun publish(event: DomainEvent) {
-        Log.d(tag, "publish ${event::class.java.name}")
+        logger.d(tag, "publish ${event::class.java.name}")
         subscribers[event::class.java]?.forEach { subscriber ->
             subscriber(event)
         }
@@ -19,7 +21,7 @@ class InMemoryEventBus : EventBus {
         eventType: Class<T>,
         subscriber: (T) -> Unit,
     ) {
-        Log.d(tag, "subscribe ${eventType.name}")
+        logger.d(tag, "subscribe ${eventType.name}")
         val list = subscribers.getOrPut(eventType) { mutableListOf() }
         list.add(subscriber as (DomainEvent) -> Unit)
     }
