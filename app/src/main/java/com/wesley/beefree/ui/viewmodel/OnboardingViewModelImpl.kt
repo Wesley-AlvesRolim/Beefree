@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -19,8 +18,11 @@ import com.wesley.beefree.domain.onboarding.ports.OnboardingFlowEngine
 import com.wesley.beefree.domain.onboarding.usecases.ComputeClinicalProfileUseCase
 import com.wesley.beefree.domain.onboarding.usecases.ComputeScoreUseCase
 import com.wesley.beefree.domain.onboarding.usecases.SaveOnboardingDataUseCase
+import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.services.AccessibilityServiceActivity
 import com.wesley.beefree.storage.adapters.RoomAddictionRepository
+import com.wesley.beefree.storage.adapters.RoomOnboardingRepository
+import com.wesley.beefree.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.storage.adapters.db.AppDatabase
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
@@ -52,7 +54,8 @@ open class OnboardingViewModelImpl(
     override val clinicalProfile: StateFlow<ClinicalProfile?> = _clinicalProfile.asStateFlow()
 
     protected val openIsAccessibilityEnabled = MutableStateFlow(false)
-    override val isAccessibilityEnabled: StateFlow<Boolean> = openIsAccessibilityEnabled.asStateFlow()
+    override val isAccessibilityEnabled: StateFlow<Boolean> =
+        openIsAccessibilityEnabled.asStateFlow()
 
     protected val openIsOverlayEnabled = MutableStateFlow(false)
     override val isOverlayEnabled: StateFlow<Boolean> = openIsOverlayEnabled.asStateFlow()
@@ -98,7 +101,7 @@ open class OnboardingViewModelImpl(
     ) {
         viewModelScope.launch {
             val profile = _clinicalProfile.value
-            Log.d(
+            AndroidLogger.d(
                 "OnboardingProfile",
                 "Clinical profile on finish: treatment=${profile?.treatmentProfile}, incongruence=${profile?.incongruenceLevel}",
             )
@@ -128,8 +131,24 @@ open class OnboardingViewModelImpl(
                             database.addictionKeywordDao(),
                             database.relapseHistoryDao(),
                         )
+                    val userProfileRepository =
+                        RoomUserProfileRepository(
+                            database.userProfileDao(),
+                            database.userProfileAddictionDao(),
+                        )
+                    val onboardingRepository =
+                        RoomOnboardingRepository(
+                            database.userProfileOnboardingResultDao(),
+                            database.onboardingScaleAnswerDao(),
+                            database.userCoreValueDao(),
+                            database.userHobbyDao(),
+                            database.userObjectiveDao(),
+                            database.userSymptomDao(),
+                        )
                     val keyValueStorageRepository =
                         KeyValueStorageRepository(SharedPreferencesKeyValueStorage(application))
+                    val computeScoreUseCase = ComputeScoreUseCase()
+                    val computeClinicalProfileUseCase = ComputeClinicalProfileUseCase()
                     @Suppress("UNCHECKED_CAST")
                     return OnboardingViewModelImpl(
                         engine =
@@ -139,9 +158,16 @@ open class OnboardingViewModelImpl(
                                 ),
                             ),
                         saveOnboardingDataUseCase =
-                            SaveOnboardingDataUseCase(addictionRepository, keyValueStorageRepository),
-                        computeScoreUseCase = ComputeScoreUseCase(),
-                        computeClinicalProfileUseCase = ComputeClinicalProfileUseCase(),
+                            SaveOnboardingDataUseCase(
+                                addictionRepository,
+                                userProfileRepository,
+                                onboardingRepository,
+                                keyValueStorageRepository,
+                                computeScoreUseCase = computeScoreUseCase,
+                                computeClinicalProfileUseCase = computeClinicalProfileUseCase,
+                            ),
+                        computeScoreUseCase = computeScoreUseCase,
+                        computeClinicalProfileUseCase = computeClinicalProfileUseCase,
                     ) as T
                 }
             }

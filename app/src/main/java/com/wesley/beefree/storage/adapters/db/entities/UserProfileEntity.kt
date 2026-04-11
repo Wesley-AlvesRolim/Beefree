@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 data class UserProfileEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "profile_name") val profileName: String,
+    @ColumnInfo(name = "gender") val gender: String? = null,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
 )

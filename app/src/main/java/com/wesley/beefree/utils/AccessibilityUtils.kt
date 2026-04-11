@@ -6,8 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import android.view.accessibility.AccessibilityManager
+import com.wesley.beefree.infrastructure.logging.AndroidLogger
 
 object AccessibilityUtils {
     private const val TAG = "AccessibilityUtils"
@@ -27,13 +27,13 @@ object AccessibilityUtils {
 
         for (service in enabledServices) {
             val serviceName = service.resolveInfo.serviceInfo.name
-            Log.d(TAG, "Enabled service: $serviceName")
+            AndroidLogger.d(TAG, "Enabled service: $serviceName")
             if (serviceName == serviceClass.name) {
-                Log.d(TAG, "${serviceClass.simpleName} is enabled")
+                AndroidLogger.d(TAG, "${serviceClass.simpleName} is enabled")
                 return true
             }
         }
-        Log.d(TAG, "${serviceClass.simpleName} is not enabled")
+        AndroidLogger.d(TAG, "${serviceClass.simpleName} is not enabled")
         return false
     }
 
