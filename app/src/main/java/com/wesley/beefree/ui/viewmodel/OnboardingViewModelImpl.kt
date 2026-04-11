@@ -147,6 +147,8 @@ open class OnboardingViewModelImpl(
                         )
                     val keyValueStorageRepository =
                         KeyValueStorageRepository(SharedPreferencesKeyValueStorage(application))
+                    val computeScoreUseCase = ComputeScoreUseCase()
+                    val computeClinicalProfileUseCase = ComputeClinicalProfileUseCase()
                     @Suppress("UNCHECKED_CAST")
                     return OnboardingViewModelImpl(
                         engine =
@@ -161,9 +163,11 @@ open class OnboardingViewModelImpl(
                                 userProfileRepository,
                                 onboardingRepository,
                                 keyValueStorageRepository,
+                                computeScoreUseCase = computeScoreUseCase,
+                                computeClinicalProfileUseCase = computeClinicalProfileUseCase,
                             ),
-                        computeScoreUseCase = ComputeScoreUseCase(),
-                        computeClinicalProfileUseCase = ComputeClinicalProfileUseCase(),
+                        computeScoreUseCase = computeScoreUseCase,
+                        computeClinicalProfileUseCase = computeClinicalProfileUseCase,
                     ) as T
                 }
             }

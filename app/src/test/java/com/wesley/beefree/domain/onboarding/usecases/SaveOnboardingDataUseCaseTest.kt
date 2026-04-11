@@ -2,13 +2,16 @@ package com.wesley.beefree.domain.onboarding.usecases
 
 import com.wesley.beefree.domain.entities.AddictionType
 import com.wesley.beefree.domain.onboarding.AddictionProfile
+import com.wesley.beefree.domain.onboarding.ClinicalProfile
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
+import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.storage.ports.AddictionRepository
 import com.wesley.beefree.storage.ports.OnboardingRepository
 import com.wesley.beefree.storage.ports.UserProfileRepository
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -22,13 +25,28 @@ class SaveOnboardingDataUseCaseTest {
     private val userProfileRepository: UserProfileRepository = mock()
     private val onboardingRepository: OnboardingRepository = mock()
     private val keyValueStorageRepository: KeyValueStorageRepository = mock()
+    private val computeScoreUseCase: ComputeScoreUseCase = mock()
+    private val computeClinicalProfileUseCase: ComputeClinicalProfileUseCase = mock()
     private val useCase =
         SaveOnboardingDataUseCase(
             addictionRepository,
             userProfileRepository,
             onboardingRepository,
             keyValueStorageRepository,
+            computeScoreUseCase,
+            computeClinicalProfileUseCase,
         )
+
+    @Before
+    fun setUp() {
+        whenever(computeClinicalProfileUseCase.execute(any())).thenReturn(
+            ClinicalProfile(
+                incongruenceLevel = null,
+                treatmentProfile = TreatmentProfile.PREVENTION,
+                moralIncongruenceScore = 0,
+            ),
+        )
+    }
 
     @Test
     fun `returns failure when no addiction profile selected`() =

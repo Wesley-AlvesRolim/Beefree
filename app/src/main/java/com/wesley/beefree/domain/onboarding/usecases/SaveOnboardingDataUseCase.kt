@@ -29,6 +29,8 @@ class SaveOnboardingDataUseCase(
     private val userProfileRepository: UserProfileRepository,
     private val onboardingRepository: OnboardingRepository,
     private val keyValueStorageRepository: KeyValueStorageRepository,
+    private val computeScoreUseCase: ComputeScoreUseCase,
+    private val computeClinicalProfileUseCase: ComputeClinicalProfileUseCase,
 ) {
     suspend fun execute(answers: OnboardingAnswers): Result<Unit> {
         val profile =
@@ -40,9 +42,9 @@ class SaveOnboardingDataUseCase(
 
             val userProfileId = insertUserProfile(answers, now)
             val selectedAddictionTypeId = insertAddictionTypes(profile, userProfileId, now)
-            val scoreResult = ComputeScoreUseCase().execute(answers)
+            val scoreResult = computeScoreUseCase.execute(answers)
             val clinicalProfile =
-                ComputeClinicalProfileUseCase().execute(answers)
+                computeClinicalProfileUseCase.execute(answers)
                     ?: throw IllegalStateException("Clinical profile could not be computed")
 
             insertOnboardingResult(userProfileId, selectedAddictionTypeId, profile, scoreResult, clinicalProfile, answers, now)
