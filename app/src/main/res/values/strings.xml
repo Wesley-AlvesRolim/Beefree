@@ -165,16 +165,12 @@
     <string name="onboarding_score_result_approach_label">Como vamos trabalhar</string>
     <string name="onboarding_treatment_act">Aceitação e Compromisso (ACT)</string>
     <string name="onboarding_treatment_tcc">Terapia Cognitivo-Comportamental (TCC)</string>
-    <string name="onboarding_treatment_act_and_tcc">ACT + TCC combinados</string>
+    <string name="onboarding_treatment_hybrid">Abordagem integrativa (ACT + TCC)</string>
     <string name="onboarding_treatment_prevention">Prevenção e estilo de vida</string>
-    <string name="onboarding_treatment_hybrid_tcc">Abordagem integrativa (ênfase em TCC)</string>
-    <string name="onboarding_treatment_hybrid_act">Abordagem integrativa (ênfase em ACT)</string>
     <string name="onboarding_treatment_desc_act">Você aprenderá a observar seus impulsos sem ser controlado por eles, e a tomar decisões guiadas pelos seus valores pessoais.</string>
     <string name="onboarding_treatment_desc_tcc">Vamos identificar os pensamentos e situações que alimentam o consumo e construir estratégias práticas para lidar com eles.</string>
-    <string name="onboarding_treatment_desc_act_and_tcc">Combinaremos aceitação dos impulsos com reestruturação dos pensamentos — uma abordagem completa adaptada ao seu perfil.</string>
+    <string name="onboarding_treatment_desc_hybrid">Combinaremos aceitação dos impulsos com reestruturação dos pensamentos — uma abordagem completa adaptada ao seu perfil.</string>
     <string name="onboarding_treatment_desc_prevention">Seu padrão não exige intervenção intensiva. Vamos fortalecer seus hábitos e manter o que você já tem de bom.</string>
-    <string name="onboarding_treatment_desc_hybrid_tcc">Abordagem que integra aceitação e técnicas cognitivas, com foco em estratégias práticas de mudança de comportamento.</string>
-    <string name="onboarding_treatment_desc_hybrid_act">Abordagem que integra técnicas cognitivas e aceitação, com foco em clarificação dos seus valores e propósito.</string>
 
     <!-- Onboarding: Request permissions -->
     <string name="onboarding_request_permissions_title">Últimas configurações</string>
