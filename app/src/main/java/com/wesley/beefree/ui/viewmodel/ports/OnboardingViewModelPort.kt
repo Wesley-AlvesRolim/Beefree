@@ -13,7 +13,6 @@ interface OnboardingViewModelPort {
     val scaleResult: StateFlow<ScaleResult?>
     val clinicalProfile: StateFlow<ClinicalProfile?>
     val isAccessibilityEnabled: StateFlow<Boolean>
-    val isOverlayEnabled: StateFlow<Boolean>
 
     fun updateAnswer(update: OnboardingAnswers.() -> OnboardingAnswers)
 
@@ -24,8 +23,6 @@ interface OnboardingViewModelPort {
     fun updatePermissions(context: Context)
 
     fun openAccessibilitySettings(context: Context)
-
-    fun openOverlaySettings(context: Context)
 
     fun finishOnboarding(
         onFinish: () -> Unit,

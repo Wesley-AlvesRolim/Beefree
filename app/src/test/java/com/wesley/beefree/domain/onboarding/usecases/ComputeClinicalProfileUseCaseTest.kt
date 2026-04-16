@@ -40,27 +40,27 @@ class ComputeClinicalProfileUseCaseTest {
     }
 
     @Test
-    fun `ALTA incongruence with high PPCS-6 returns ACT_AND_TCC`() {
+    fun `ALTA incongruence with high PPCS-6 returns HYBRID`() {
         val answers = ppuAnswers(ppcs6Sum = 42, emaIndex = 6, frequency = 5)
         val result = useCase.execute(answers)!!
         assertEquals(IncongruenceLevel.ALTA, result.incongruenceLevel)
-        assertEquals(TreatmentProfile.ACT_AND_TCC, result.treatmentProfile)
+        assertEquals(TreatmentProfile.HYBRID, result.treatmentProfile)
     }
 
     @Test
-    fun `MEDIA incongruence with high PPCS-6 returns HYBRID_TCC_FOCUS`() {
+    fun `MEDIA incongruence with high PPCS-6 returns HYBRID`() {
         val answers = ppuAnswers(ppcs6Sum = 24, emaIndex = 3, frequency = 3)
         val result = useCase.execute(answers)!!
         assertEquals(IncongruenceLevel.MEDIA, result.incongruenceLevel)
-        assertEquals(TreatmentProfile.HYBRID_TCC_FOCUS, result.treatmentProfile)
+        assertEquals(TreatmentProfile.HYBRID, result.treatmentProfile)
     }
 
     @Test
-    fun `MEDIA incongruence with low PPCS-6 returns HYBRID_ACT_FOCUS`() {
+    fun `MEDIA incongruence with low PPCS-6 returns HYBRID`() {
         val answers = ppuAnswers(ppcs6Sum = 6, emaIndex = 3, frequency = 3)
         val result = useCase.execute(answers)!!
         assertEquals(IncongruenceLevel.MEDIA, result.incongruenceLevel)
-        assertEquals(TreatmentProfile.HYBRID_ACT_FOCUS, result.treatmentProfile)
+        assertEquals(TreatmentProfile.HYBRID, result.treatmentProfile)
     }
 
     @Test
@@ -129,13 +129,13 @@ class ComputeClinicalProfileUseCaseTest {
     }
 
     @Test
-    fun `GAMBLING high PGSI returns ACT_AND_TCC`() {
+    fun `GAMBLING high PGSI returns HYBRID`() {
         val answers =
             OnboardingAnswers(
                 addictionProfile = AddictionProfile.GAMBLING,
                 pgsiAnswers = List(9) { 1 },
             )
         val result = useCase.execute(answers)!!
-        assertEquals(TreatmentProfile.ACT_AND_TCC, result.treatmentProfile)
+        assertEquals(TreatmentProfile.HYBRID, result.treatmentProfile)
     }
 }

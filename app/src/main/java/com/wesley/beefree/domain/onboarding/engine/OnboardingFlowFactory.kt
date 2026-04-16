@@ -11,18 +11,8 @@ import com.wesley.beefree.domain.onboarding.StepType
 import com.wesley.beefree.domain.onboarding.usecases.ComputeClinicalProfileUseCase
 
 object OnboardingFlowFactory {
-    fun factory(requiresOverlayPermission: Boolean = true): OnboardingNode {
-        val permissionSteps =
-            buildList {
-                add(OnboardingStep("request_permissions", StepType.REQUEST_PERMISSIONS))
-                add(OnboardingStep("request_permission_monitor", StepType.REQUEST_PERMISSION_MONITOR))
-                if (requiresOverlayPermission) {
-                    add(OnboardingStep("request_permission_overlay", StepType.REQUEST_PERMISSION_OVERLAY))
-                }
-                add(OnboardingStep("finish", StepType.FINISH))
-            }
-
-        return OnboardingSequence(
+    fun factory(): OnboardingNode =
+        OnboardingSequence(
             listOf(
                 OnboardingStep("welcome", StepType.WELCOME),
                 OnboardingStep("presentation", StepType.PRESENTATION),
@@ -37,15 +27,21 @@ object OnboardingFlowFactory {
                 },
                 OnboardingStep("score_result", StepType.SCORE_RESULT),
                 OnboardingBranch { answers ->
-                    if (answers.addictionProfile == AddictionProfile.PPU && requiresCoreValues(answers)) {
+                    if (answers.addictionProfile == AddictionProfile.PPU &&
+                        requiresCoreValues(
+                            answers,
+                        )
+                    ) {
                         OnboardingStep("core_values", StepType.CORE_VALUES)
                     } else {
                         OnboardingSequence(emptyList())
                     }
                 },
-            ) + permissionSteps,
+                OnboardingStep("request_permissions", StepType.REQUEST_PERMISSIONS),
+                OnboardingStep("request_permission_monitor", StepType.REQUEST_PERMISSION_MONITOR),
+                OnboardingStep("finish", StepType.FINISH),
+            ),
         )
-    }
 
     private fun ppuFlow(): OnboardingNode =
         OnboardingSequence(
@@ -74,7 +70,8 @@ object OnboardingFlowFactory {
         )
 
     private fun requiresCoreValues(answers: OnboardingAnswers): Boolean {
-        val moralIncongruenceScore = ComputeClinicalProfileUseCase().computeMoralIncongruenceScore(answers)
+        val moralIncongruenceScore =
+            ComputeClinicalProfileUseCase().computeMoralIncongruenceScore(answers)
         return ComputeClinicalProfileUseCase().classifyIncongruenceLevel(moralIncongruenceScore) != IncongruenceLevel.BAIXA
     }
 }

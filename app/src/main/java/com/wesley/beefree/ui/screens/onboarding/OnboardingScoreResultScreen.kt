@@ -138,10 +138,8 @@ private fun treatmentProfileLabel(profile: TreatmentProfile): String =
     when (profile) {
         TreatmentProfile.ACT -> stringResource(R.string.onboarding_treatment_act)
         TreatmentProfile.TCC -> stringResource(R.string.onboarding_treatment_tcc)
-        TreatmentProfile.ACT_AND_TCC -> stringResource(R.string.onboarding_treatment_act_and_tcc)
+        TreatmentProfile.HYBRID -> stringResource(R.string.onboarding_treatment_hybrid)
         TreatmentProfile.PREVENTION -> stringResource(R.string.onboarding_treatment_prevention)
-        TreatmentProfile.HYBRID_TCC_FOCUS -> stringResource(R.string.onboarding_treatment_hybrid_tcc)
-        TreatmentProfile.HYBRID_ACT_FOCUS -> stringResource(R.string.onboarding_treatment_hybrid_act)
     }
 
 @Composable
@@ -149,8 +147,6 @@ private fun treatmentProfileDescription(profile: TreatmentProfile): String =
     when (profile) {
         TreatmentProfile.ACT -> stringResource(R.string.onboarding_treatment_desc_act)
         TreatmentProfile.TCC -> stringResource(R.string.onboarding_treatment_desc_tcc)
-        TreatmentProfile.ACT_AND_TCC -> stringResource(R.string.onboarding_treatment_desc_act_and_tcc)
+        TreatmentProfile.HYBRID -> stringResource(R.string.onboarding_treatment_desc_hybrid)
         TreatmentProfile.PREVENTION -> stringResource(R.string.onboarding_treatment_desc_prevention)
-        TreatmentProfile.HYBRID_TCC_FOCUS -> stringResource(R.string.onboarding_treatment_desc_hybrid_tcc)
-        TreatmentProfile.HYBRID_ACT_FOCUS -> stringResource(R.string.onboarding_treatment_desc_hybrid_act)
     }

@@ -165,16 +165,12 @@
     <string name="onboarding_score_result_approach_label">Como vamos trabalhar</string>
     <string name="onboarding_treatment_act">Aceitação e Compromisso (ACT)</string>
     <string name="onboarding_treatment_tcc">Terapia Cognitivo-Comportamental (TCC)</string>
-    <string name="onboarding_treatment_act_and_tcc">ACT + TCC combinados</string>
+    <string name="onboarding_treatment_hybrid">Abordagem integrativa (ACT + TCC)</string>
     <string name="onboarding_treatment_prevention">Prevenção e estilo de vida</string>
-    <string name="onboarding_treatment_hybrid_tcc">Abordagem integrativa (ênfase em TCC)</string>
-    <string name="onboarding_treatment_hybrid_act">Abordagem integrativa (ênfase em ACT)</string>
     <string name="onboarding_treatment_desc_act">Você aprenderá a observar seus impulsos sem ser controlado por eles, e a tomar decisões guiadas pelos seus valores pessoais.</string>
     <string name="onboarding_treatment_desc_tcc">Vamos identificar os pensamentos e situações que alimentam o consumo e construir estratégias práticas para lidar com eles.</string>
-    <string name="onboarding_treatment_desc_act_and_tcc">Combinaremos aceitação dos impulsos com reestruturação dos pensamentos — uma abordagem completa adaptada ao seu perfil.</string>
+    <string name="onboarding_treatment_desc_hybrid">Combinaremos aceitação dos impulsos com reestruturação dos pensamentos — uma abordagem completa adaptada ao seu perfil.</string>
     <string name="onboarding_treatment_desc_prevention">Seu padrão não exige intervenção intensiva. Vamos fortalecer seus hábitos e manter o que você já tem de bom.</string>
-    <string name="onboarding_treatment_desc_hybrid_tcc">Abordagem que integra aceitação e técnicas cognitivas, com foco em estratégias práticas de mudança de comportamento.</string>
-    <string name="onboarding_treatment_desc_hybrid_act">Abordagem que integra técnicas cognitivas e aceitação, com foco em clarificação dos seus valores e propósito.</string>
 
     <!-- Onboarding: Request permissions -->
     <string name="onboarding_request_permissions_title">Últimas configurações</string>
@@ -227,8 +223,10 @@
     <string name="overlay_permission_disabled_status">A permissão de sobreposição está DESATIVADA. Por favor, ative-a nas configurações.</string>
     <string name="overlay_go_to_settings">Ir para Configurações de Sobreposição</string>
 
-    <!-- Overlay UI -->
-    <string name="overlay_close_description">Fechar alerta</string>
+    <!-- EMI Intervention UI -->
+    <string name="emi_close_description">Fechar alerta</string>
+    <string name="emi_remember_values">Lembre-se dos seus valores</string>
+    <string name="emi_breathe">Respire. Você está em um momento de desejo. Vamos te ajudar.</string>
 
     <!-- Stats summary -->
     <string name="stats_total_30d">Total (30d)</string>

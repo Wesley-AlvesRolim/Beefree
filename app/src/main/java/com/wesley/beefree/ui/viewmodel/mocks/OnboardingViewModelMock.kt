@@ -17,7 +17,6 @@ class OnboardingViewModelMock : OnboardingViewModelPort {
     override val scaleResult = MutableStateFlow<ScaleResult?>(null)
     override val clinicalProfile = MutableStateFlow<ClinicalProfile?>(null)
     override val isAccessibilityEnabled = MutableStateFlow(false)
-    override val isOverlayEnabled = MutableStateFlow(false)
 
     override fun updateAnswer(update: OnboardingAnswers.() -> OnboardingAnswers) {
         answers.value = answers.value.update()
@@ -36,8 +35,6 @@ class OnboardingViewModelMock : OnboardingViewModelPort {
     override fun updatePermissions(context: Context) {}
 
     override fun openAccessibilitySettings(context: Context) {}
-
-    override fun openOverlaySettings(context: Context) {}
 
     override fun finishOnboarding(
         onFinish: () -> Unit,

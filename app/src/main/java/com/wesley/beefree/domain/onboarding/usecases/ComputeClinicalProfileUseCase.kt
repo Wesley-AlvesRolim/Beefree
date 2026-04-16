@@ -50,13 +50,9 @@ class ComputeClinicalProfileUseCase {
             IncongruenceLevel.ALTA ->
                 when (ppcs6Level) {
                     RiskLevel.LOW -> TreatmentProfile.ACT
-                    else -> TreatmentProfile.ACT_AND_TCC
+                    else -> TreatmentProfile.HYBRID
                 }
-            IncongruenceLevel.MEDIA ->
-                when (ppcs6Level) {
-                    RiskLevel.LOW -> TreatmentProfile.HYBRID_ACT_FOCUS
-                    else -> TreatmentProfile.HYBRID_TCC_FOCUS
-                }
+            IncongruenceLevel.MEDIA -> TreatmentProfile.HYBRID
             IncongruenceLevel.BAIXA ->
                 when (ppcs6Level) {
                     RiskLevel.LOW -> TreatmentProfile.PREVENTION
@@ -70,7 +66,7 @@ class ComputeClinicalProfileUseCase {
             when {
                 pgsiRaw <= 2 -> TreatmentProfile.PREVENTION
                 pgsiRaw <= 7 -> TreatmentProfile.TCC
-                else -> TreatmentProfile.ACT_AND_TCC
+                else -> TreatmentProfile.HYBRID
             }
         return ClinicalProfile(incongruenceLevel = null, treatmentProfile = treatmentProfile)
     }
