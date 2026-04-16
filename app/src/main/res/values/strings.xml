@@ -227,8 +227,10 @@
     <string name="overlay_permission_disabled_status">A permissão de sobreposição está DESATIVADA. Por favor, ative-a nas configurações.</string>
     <string name="overlay_go_to_settings">Ir para Configurações de Sobreposição</string>
 
-    <!-- Overlay UI -->
-    <string name="overlay_close_description">Fechar alerta</string>
+    <!-- EMI Intervention UI -->
+    <string name="emi_close_description">Fechar alerta</string>
+    <string name="emi_remember_values">Lembre-se dos seus valores</string>
+    <string name="emi_breathe">Respire. Você está em um momento de desejo. Vamos te ajudar.</string>
 
     <!-- Stats summary -->
     <string name="stats_total_30d">Total (30d)</string>

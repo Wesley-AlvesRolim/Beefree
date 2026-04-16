@@ -1,6 +1,5 @@
 package com.wesley.beefree.ui.screens
 
-import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -62,7 +61,6 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 
     val isAccessibilityEnabled by viewModel.isAccessibilityServiceEnabled.collectAsState()
     val isAccessibilityStarted by viewModel.isAccessibilityServiceStarted.collectAsState()
-    val isOverlayPermissionEnabled by viewModel.isOverlayPermissionEnabled.collectAsState()
     val isAdultMonitoringEnabled by viewModel.isAdultMonitoringEnabled.collectAsState()
     val isBetsMonitoringEnabled by viewModel.isBetsMonitoringEnabled.collectAsState()
     val errorText by viewModel.errorMessage.collectAsState(null)
@@ -97,12 +95,10 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     SettingsScreenContent(
         isAccessibilityEnabled = isAccessibilityEnabled,
         isAccessibilityStarted = isAccessibilityStarted,
-        isOverlayPermissionEnabled = isOverlayPermissionEnabled,
         isAdultMonitoringEnabled = isAdultMonitoringEnabled,
         isBetsMonitoringEnabled = isBetsMonitoringEnabled,
         onToggleAccessibility = { viewModel.toggleAccessibilityService() },
         onOpenAccessibilitySettings = { viewModel.openAccessibilitySettings() },
-        onOpenOverlaySettings = { viewModel.openOverlaySettings() },
         onToggleAdultMonitoring = { viewModel.toggleAdultMonitoring() },
         onToggleBetsMonitoring = { viewModel.toggleBetsMonitoring() },
         onExportData = { viewModel.exportData() },
@@ -114,12 +110,10 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 fun SettingsScreenContent(
     isAccessibilityEnabled: Boolean,
     isAccessibilityStarted: Boolean,
-    isOverlayPermissionEnabled: Boolean,
     isAdultMonitoringEnabled: Boolean,
     isBetsMonitoringEnabled: Boolean,
     onToggleAccessibility: () -> Unit,
     onOpenAccessibilitySettings: () -> Unit,
-    onOpenOverlaySettings: () -> Unit,
     onToggleAdultMonitoring: () -> Unit,
     onToggleBetsMonitoring: () -> Unit,
     onExportData: () -> Unit,
@@ -238,12 +232,6 @@ fun SettingsScreenContent(
                                 onOpenAccessibilitySettings()
                             }
                         }
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                            SwitchRow(
-                                stringResource(R.string.settings_screen_blocker_label),
-                                isOverlayPermissionEnabled,
-                            ) { onOpenOverlaySettings() }
-                        }
                     }
                 }
                 Spacer(Modifier.height(BeeSpacing.S))
@@ -304,12 +292,10 @@ fun SettingsScreenPreview() {
         SettingsScreenContent(
             isAccessibilityEnabled = true,
             isAccessibilityStarted = false,
-            isOverlayPermissionEnabled = true,
             isAdultMonitoringEnabled = true,
             isBetsMonitoringEnabled = false,
             onToggleAccessibility = {},
             onOpenAccessibilitySettings = {},
-            onOpenOverlaySettings = {},
             onToggleAdultMonitoring = {},
             onToggleBetsMonitoring = {},
             onExportData = {},

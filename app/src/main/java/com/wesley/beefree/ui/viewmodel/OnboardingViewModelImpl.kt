@@ -2,7 +2,6 @@ package com.wesley.beefree.ui.viewmodel
 
 import android.app.Application
 import android.content.Context
-import android.os.Build
 import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -28,7 +27,6 @@ import com.wesley.beefree.storage.adapters.db.AppDatabase
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.viewmodel.ports.OnboardingViewModelPort
 import com.wesley.beefree.utils.AccessibilityUtils
-import com.wesley.beefree.utils.OverlayUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -58,7 +56,6 @@ open class OnboardingViewModelImpl(
         openIsAccessibilityEnabled.asStateFlow()
 
     protected val openIsOverlayEnabled = MutableStateFlow(false)
-    override val isOverlayEnabled: StateFlow<Boolean> = openIsOverlayEnabled.asStateFlow()
 
     override fun updateAnswer(update: OnboardingAnswers.() -> OnboardingAnswers) {
         _answers.value = _answers.value.update()
@@ -89,10 +86,6 @@ open class OnboardingViewModelImpl(
 
     override fun openAccessibilitySettings(context: Context) {
         AccessibilityUtils.openAccessibilitySettings(context)
-    }
-
-    override fun openOverlaySettings(context: Context) {
-        OverlayUtils.openSettingsToEnableTheOverlayPermission(context)
     }
 
     override fun finishOnboarding(
@@ -153,9 +146,7 @@ open class OnboardingViewModelImpl(
                     return OnboardingViewModelImpl(
                         engine =
                             CompositeOnboardingFlowEngine(
-                                OnboardingFlowFactory.factory(
-                                    requiresOverlayPermission = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q,
-                                ),
+                                OnboardingFlowFactory.factory(),
                             ),
                         saveOnboardingDataUseCase =
                             SaveOnboardingDataUseCase(

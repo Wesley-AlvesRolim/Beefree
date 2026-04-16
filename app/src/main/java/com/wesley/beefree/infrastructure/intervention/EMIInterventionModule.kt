@@ -5,7 +5,7 @@ import com.wesley.beefree.domain.events.BankingAppForegrounded
 import com.wesley.beefree.domain.events.InterventionUIPending
 import com.wesley.beefree.domain.intervention.ports.InterventionUI
 
-class OverlayInterventionModule(
+class EMIInterventionModule(
     private val eventBus: EventBus,
     private val interventionUI: InterventionUI,
 ) {

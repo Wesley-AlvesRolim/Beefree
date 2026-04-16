@@ -3,7 +3,6 @@ package com.wesley.beefree.ui.viewmodel
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.provider.Settings
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -19,7 +18,6 @@ import com.wesley.beefree.storage.adapters.db.exporters.SqlDatabaseExporterStrat
 import com.wesley.beefree.storage.ports.AddictionRepository
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.utils.AccessibilityUtils
-import com.wesley.beefree.utils.OverlayUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,9 +39,6 @@ class SettingsViewModel(
     private val _isAccessibilityServiceStarted = MutableStateFlow(false)
     val isAccessibilityServiceStarted: StateFlow<Boolean> =
         _isAccessibilityServiceStarted.asStateFlow()
-
-    private val _isOverlayPermissionEnabled = MutableStateFlow(false)
-    val isOverlayPermissionEnabled: StateFlow<Boolean> = _isOverlayPermissionEnabled.asStateFlow()
 
     private val _isAdultMonitoringEnabled = MutableStateFlow(true)
     val isAdultMonitoringEnabled: StateFlow<Boolean> = _isAdultMonitoringEnabled.asStateFlow()
@@ -110,7 +105,6 @@ class SettingsViewModel(
                 AccessibilityServiceActivity::class.java,
             )
         _isAccessibilityServiceStarted.value = storageRepository.getTheScreenReaderStatus()
-        _isOverlayPermissionEnabled.value = Settings.canDrawOverlays(context)
     }
 
     fun toggleAccessibilityService() {
@@ -121,14 +115,6 @@ class SettingsViewModel(
 
     fun openAccessibilitySettings() {
         AccessibilityUtils.openAccessibilitySettings(context)
-    }
-
-    fun openOverlaySettings() {
-        OverlayUtils.openSettingsToEnableTheOverlayPermission(context)
-    }
-
-    fun startOverlayService() {
-        OverlayUtils.startOverlayService(context)
     }
 
     fun toggleAdultMonitoring() {

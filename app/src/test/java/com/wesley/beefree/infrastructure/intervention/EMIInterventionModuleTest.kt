@@ -7,16 +7,16 @@ import com.wesley.beefree.domain.intervention.ports.InterventionUI
 import org.junit.Test
 import org.mockito.kotlin.*
 
-class OverlayInterventionModuleTest {
+class EMIInterventionModuleTest {
     private val eventBus: EventBus = mock()
     private val interventionUI: InterventionUI = mock()
-    private lateinit var module: OverlayInterventionModule
+    private lateinit var module: EMIInterventionModule
 
     @Test
     fun `should show intervention UI when InterventionUIPending event is published`() {
         val lambdaCaptor = argumentCaptor<(InterventionUIPending) -> Unit>()
 
-        module = OverlayInterventionModule(eventBus, interventionUI)
+        module = EMIInterventionModule(eventBus, interventionUI)
 
         verify(eventBus).subscribe(eq(InterventionUIPending::class.java), lambdaCaptor.capture())
 
@@ -30,7 +30,7 @@ class OverlayInterventionModuleTest {
     fun `should hide intervention UI when BankingAppForegrounded event is published`() {
         val lambdaCaptor = argumentCaptor<(BankingAppForegrounded) -> Unit>()
 
-        module = OverlayInterventionModule(eventBus, interventionUI)
+        module = EMIInterventionModule(eventBus, interventionUI)
 
         verify(eventBus).subscribe(eq(BankingAppForegrounded::class.java), lambdaCaptor.capture())
 

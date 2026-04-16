@@ -8,7 +8,6 @@ import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.detection.ports.WindowContentProvider
 import com.wesley.beefree.domain.events.BankingAppForegrounded
 import com.wesley.beefree.domain.events.ScreenContentCaptured
-import com.wesley.beefree.infrastructure.services.OverlayServiceActivity
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.InterventionActivity
 import org.junit.Assert.assertEquals
@@ -25,7 +24,6 @@ class AccessibilityEventDispatcherTest {
 
     @Before
     fun setUp() {
-        OverlayServiceActivity.isRunning = false
         InterventionActivity.isRunning = false
         whenever(repository.getTheScreenReaderStatus()).thenReturn(true)
         dispatcher = AccessibilityEventDispatcher(eventBus, repository)
@@ -53,17 +51,6 @@ class AccessibilityEventDispatcherTest {
             assertEquals(packageName, firstValue.packageName)
             assertTrue(firstValue.texts.contains(text))
         }
-    }
-
-    @Test
-    fun `should NOT publish anything when overlay service is running`() {
-        OverlayServiceActivity.isRunning = true
-        val event: AccessibilityEvent = mock()
-        val rootNode: AccessibilityNodeInfo = mock()
-
-        dispatcher.dispatch(event, nodeProvider(rootNode))
-
-        verify(eventBus, never()).publish(any())
     }
 
     @Test
@@ -103,8 +90,8 @@ class AccessibilityEventDispatcherTest {
     }
 
     @Test
-    fun `should publish BankingAppForegrounded when bank app is detected and overlay is running`() {
-        OverlayServiceActivity.isRunning = true
+    fun `should publish BankingAppForegrounded when bank app is detected and intervention is running`() {
+        InterventionActivity.isRunning = true
         assertFalse(BRAZILIAN_BANK_PACKAGE_NAMES.isEmpty())
         val bankPackageName = BRAZILIAN_BANK_PACKAGE_NAMES.random()
         val event: AccessibilityEvent = mock()

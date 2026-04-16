@@ -53,7 +53,6 @@ fun OnboardingScreen(
     val scaleResult by viewModel.scaleResult.collectAsState()
     val clinicalProfile by viewModel.clinicalProfile.collectAsState()
     val isAccessibilityEnabled by viewModel.isAccessibilityEnabled.collectAsState()
-    val isOverlayEnabled by viewModel.isOverlayEnabled.collectAsState()
 
     DisposableEffect(lifecycleOwner.value) {
         val lifecycle = lifecycleOwner.value.lifecycle
@@ -183,14 +182,6 @@ fun OnboardingScreen(
             RequestMonitorPermissionScreen(
                 isAccessibilityEnabled = isAccessibilityEnabled,
                 onOpenSettings = { viewModel.openAccessibilitySettings(context) },
-                onNext = { viewModel.next() },
-                onBack = { viewModel.previous() },
-            )
-
-        StepType.REQUEST_PERMISSION_OVERLAY ->
-            RequestPermissionOverlayScreen(
-                isOverlayEnabled = isOverlayEnabled,
-                onOpenSettings = { viewModel.openOverlaySettings(context) },
                 onNext = { viewModel.next() },
                 onBack = { viewModel.previous() },
             )
