@@ -248,6 +248,90 @@
     <string name="settings_banking_warning_title">Compatibilidade com apps bancários</string>
     <string name="settings_banking_warning_body">Alguns aplicativos bancários podem bloquear transações enquanto o monitoramento de tela estiver ativo. Se isso ocorrer, desative temporariamente o serviço de acessibilidade antes de acessar seu banco.</string>
 
+
+    <!-- Check-in -->
+    <string name="check_in_title">Check-in</string>
+    <string name="check_in_daily_title">Check-in Diário</string>
+    <string name="check_in_weekly_title">Check-in Semanal</string>
+    <string name="check_in_dopamine_section">De onde veio sua energia hoje?</string>
+    <string name="check_in_source_hobby">Hobby</string>
+    <string name="check_in_source_exercise">Exercício</string>
+    <string name="check_in_source_social">Social</string>
+    <string name="check_in_source_mindfulness">Mindfulness</string>
+    <string name="check_in_source_creative">Criativo</string>
+    <string name="check_in_source_adult_content">Conteúdo adulto</string>
+    <string name="check_in_source_gambling">Apostas</string>
+    <string name="check_in_dopamine_level_label">Nível de dopamina</string>
+    <string name="check_in_mood_label">Como você está se sentindo?</string>
+    <string name="check_in_mood_relapse_label">Como você se sentiu durante?</string>
+    <string name="check_in_mood_hint">Descreva seu estado emocional…</string>
+    <string name="check_in_anxiety_label">Nível de ansiedade</string>
+    <string name="check_in_values_label">O que fez esta semana alinhado com seus valores?</string>
+    <string name="check_in_values_hint">Descreva uma atitude prática…</string>
+    <string name="check_in_energy_label">Energia para conexões reais</string>
+    <string name="check_in_your_values">Seus valores fundamentais</string>
+    <string name="check_in_subtitle">Cada momento é um recomeço. Como você está navegando seu caminho hoje?</string>
+    <string name="check_in_weather_section">Estado atual</string>
+    <string name="check_in_weather_heavy">Pesado</string>
+    <string name="check_in_weather_tired">Cansado</string>
+    <string name="check_in_weather_steady">Estável</string>
+    <string name="check_in_weather_light">Leve</string>
+    <string name="check_in_weather_bright">Animado</string>
+    <string name="check_in_motivation_label">Nível de Motivação</string>
+    <string name="check_in_motivation_low">BAIXA ENERGIA</string>
+    <string name="check_in_motivation_high">ALTO ÂNIMO</string>
+    <string name="check_in_natural_dopamine_label">Dopamina Natural</string>
+    <string name="check_in_dopamine_seeking">BUSCANDO</string>
+    <string name="check_in_dopamine_satisfied">SATISFEITO</string>
+    <string name="check_in_thought_record_label">Registro de Pensamento</string>
+    <string name="check_in_thought_tag">TCC/ACT</string>
+    <string name="check_in_automatic_thought_label">Pensamento Automático</string>
+    <string name="check_in_automatic_thought_hint">Ex: \"Preciso disso para relaxar após um longo dia\"</string>
+    <string name="check_in_challenge_thought_title">Desafie o Pensamento</string>
+    <string name="check_in_challenge_thought_desc">Há outra forma de ver isso? Qual é a evidência?</string>
+    <string name="check_in_flexible_response_title">Resposta Flexível</string>
+    <string name="check_in_flexible_response_desc">Escolha uma ação que se alinhe com os seus valores.</string>
+    <string name="check_in_progress_title">Você está progredindo.</string>
+    <string name="check_in_progress_body">Aparecer para este check-in é prova de sua flexibilidade psicológica. Você não é seus pensamentos; você é quem os observa.</string>
+    <string name="check_in_log_button">Registrar Check-in</string>
+    <string name="check_in_submit">Registrar</string>
+
+    <!-- Weekly check-in: multi-step flow -->
+    <string name="check_in_weekly_step_label">PASSO %1$d DE %2$d</string>
+    <string name="check_in_weekly_valores_title">Seus Valores</string>
+    <string name="check_in_weekly_valores_subtitle">Dos valores que você escolheu, em quais se sentiu mais conectado esta semana?</string>
+    <string name="check_in_weekly_acao_title">Ação Comprometida</string>
+    <string name="check_in_weekly_acao_subtitle">Cite uma pequena atitude prática que demonstrou seu compromisso com seus valores esta semana.</string>
+    <string name="check_in_weekly_acao_hint">Escreva aqui sua reflexão…</string>
+    <string name="check_in_weekly_acao_tag">Diário ACT</string>
+    <string name="check_in_weekly_momento_title">Momento Presente</string>
+    <string name="check_in_weekly_momento_subtitle">Avalie sua conexão real e satisfação emocional nesta última semana. Não há respostas certas, apenas a sua verdade.</string>
+    <string name="check_in_weekly_momento_q1">Como você avalia sua satisfação emocional em interações reais?</string>
+    <string name="check_in_weekly_momento_q1_low">MÍNIMA</string>
+    <string name="check_in_weekly_momento_q1_high">PLENA</string>
+    <string name="check_in_weekly_momento_q2">O quanto você se sentiu conectado às pessoas importantes?</string>
+    <string name="check_in_weekly_momento_q2_low">DESCONECTADO</string>
+    <string name="check_in_weekly_momento_q2_high">ÍNTIMO</string>
+    <string name="check_in_weekly_aceitacao_title">Aceitação</string>
+    <string name="check_in_weekly_aceitacao_subtitle">Acolher o que sentimos é o primeiro passo para agir de acordo com nossos valores.</string>
+    <string name="check_in_weekly_aceitacao_q">Qual foi seu nível médio de ansiedade e culpa nesta semana?</string>
+    <string name="check_in_weekly_aceitacao_low">BAIXO</string>
+    <string name="check_in_weekly_aceitacao_high">ALTO</string>
+    <string name="check_in_weekly_aceitacao_quote">\"A aceitação não é sobre gostar de como as coisas são, mas sobre parar de lutar contra a realidade do momento.\"</string>
+    <string name="check_in_weekly_defusao_title">Desfusão e Observação</string>
+    <string name="check_in_weekly_defusao_q">Se houve um deslize, você conseguiu observar o impulso sem julgamento e retomar suas atividades?</string>
+    <string name="check_in_weekly_defusao_sim">Sim</string>
+    <string name="check_in_weekly_defusao_parcial">Parcialmente</string>
+    <string name="check_in_weekly_defusao_nao">Não</string>
+    <string name="check_in_weekly_defusao_obs_label">BREVE OBSERVAÇÃO</string>
+    <string name="check_in_weekly_defusao_obs_hint">Como foi a sua experiência de observar seus pensamentos esta semana?</string>
+    <string name="check_in_weekly_defusao_quote">\"Os pensamentos são como nuvens passando no céu; você é o vasto céu azul que os observa.\"</string>
+    <string name="check_in_weekly_continue">Continuar Jornada</string>
+    <string name="check_in_weekly_conclude">Concluir Check-in</string>
+
+    <string name="check_in_notification_title">Hora do check-in!</string>
+    <string name="check_in_notification_body">Como foi seu dia? Registre seu humor e dopamina agora.</string>
+
     <!-- Errors -->
     <string name="export_data_error">Falha ao exportar os seus dados!</string>
     <string name="onboarding_save_error">Falha ao salvar os seus dados. Tente novamente.</string>
