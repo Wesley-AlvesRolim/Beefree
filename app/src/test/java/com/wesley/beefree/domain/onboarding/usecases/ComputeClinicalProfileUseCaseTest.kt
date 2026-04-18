@@ -2,6 +2,7 @@ package com.wesley.beefree.domain.onboarding.usecases
 
 import com.wesley.beefree.domain.onboarding.AddictionProfile
 import com.wesley.beefree.domain.onboarding.IncongruenceLevel
+import com.wesley.beefree.domain.onboarding.NeurodivergenceAnswer
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import org.junit.Assert.assertEquals
@@ -15,6 +16,7 @@ class ComputeClinicalProfileUseCaseTest {
         ppcs6Sum: Int = 6,
         emaIndex: Int = 0,
         frequency: Int = 1,
+        neurodivergence: NeurodivergenceAnswer = NeurodivergenceAnswer.NO,
     ): OnboardingAnswers {
         val ppcs6PerQuestion = ppcs6Sum / 6
         return OnboardingAnswers(
@@ -22,6 +24,7 @@ class ComputeClinicalProfileUseCaseTest {
             ppcs6Answers = List(6) { ppcs6PerQuestion },
             emaAnswers = listOf(emaIndex),
             frequencyAnswer = frequency,
+            neurodivergenceAnswer = neurodivergence,
         )
     }
 
@@ -137,5 +140,61 @@ class ComputeClinicalProfileUseCaseTest {
             )
         val result = useCase.execute(answers)!!
         assertEquals(TreatmentProfile.HYBRID, result.treatmentProfile)
+    }
+
+    @Test
+    fun `ALTA with low PPCS-6 and neurodivergence returns HYBRID`() {
+        val answers = ppuAnswers(ppcs6Sum = 6, emaIndex = 6, frequency = 5, neurodivergence = NeurodivergenceAnswer.YES)
+        val result = useCase.execute(answers)!!
+        assertEquals(TreatmentProfile.HYBRID, result.treatmentProfile)
+    }
+
+    @Test
+    fun `ALTA with high PPCS-6 and neurodivergence still returns HYBRID`() {
+        val answers = ppuAnswers(ppcs6Sum = 42, emaIndex = 6, frequency = 5, neurodivergence = NeurodivergenceAnswer.YES)
+        val result = useCase.execute(answers)!!
+        assertEquals(TreatmentProfile.HYBRID, result.treatmentProfile)
+    }
+
+    @Test
+    fun `MEDIA with low PPCS-6 and neurodivergence returns HYBRID`() {
+        val answers = ppuAnswers(ppcs6Sum = 6, emaIndex = 3, frequency = 3, neurodivergence = NeurodivergenceAnswer.YES)
+        val result = useCase.execute(answers)!!
+        assertEquals(TreatmentProfile.HYBRID, result.treatmentProfile)
+    }
+
+    @Test
+    fun `MEDIA with high PPCS-6 and neurodivergence returns HYBRID`() {
+        val answers = ppuAnswers(ppcs6Sum = 24, emaIndex = 3, frequency = 3, neurodivergence = NeurodivergenceAnswer.YES)
+        val result = useCase.execute(answers)!!
+        assertEquals(TreatmentProfile.HYBRID, result.treatmentProfile)
+    }
+
+    @Test
+    fun `BAIXA with neurodivergence does not change treatment`() {
+        val answers = ppuAnswers(ppcs6Sum = 42, emaIndex = 0, frequency = 1, neurodivergence = NeurodivergenceAnswer.YES)
+        val result = useCase.execute(answers)!!
+        assertEquals(TreatmentProfile.TCC, result.treatmentProfile)
+    }
+
+    @Test
+    fun `BAIXA low PPCS-6 with neurodivergence does not change treatment`() {
+        val answers = ppuAnswers(ppcs6Sum = 6, emaIndex = 0, frequency = 1, neurodivergence = NeurodivergenceAnswer.YES)
+        val result = useCase.execute(answers)!!
+        assertEquals(TreatmentProfile.PREVENTION, result.treatmentProfile)
+    }
+
+    @Test
+    fun `neurodivergence NO does not alter ALTA low PPCS-6`() {
+        val answers = ppuAnswers(ppcs6Sum = 6, emaIndex = 6, frequency = 5, neurodivergence = NeurodivergenceAnswer.NO)
+        val result = useCase.execute(answers)!!
+        assertEquals(TreatmentProfile.ACT, result.treatmentProfile)
+    }
+
+    @Test
+    fun `neurodivergence PREFER_NOT_SAY does not alter treatment`() {
+        val answers = ppuAnswers(ppcs6Sum = 6, emaIndex = 6, frequency = 5, neurodivergence = NeurodivergenceAnswer.PREFER_NOT_SAY)
+        val result = useCase.execute(answers)!!
+        assertEquals(TreatmentProfile.ACT, result.treatmentProfile)
     }
 }
