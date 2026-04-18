@@ -21,7 +21,7 @@ import androidx.room.PrimaryKey
 data class RelapseHistoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "addiction_type_id") val addictionTypeId: Int,
-    @ColumnInfo(name = "keyword_detected") val keywordDetected: String,
+    @ColumnInfo(name = "keyword_detected") val keywordDetected: String? = null,
     @ColumnInfo(name = "detected_text") val detectedText: String? = null,
     @ColumnInfo(name = "app_package") val appPackage: String? = null,
     @ColumnInfo(name = "external_app") val externalApp: String? = null,
