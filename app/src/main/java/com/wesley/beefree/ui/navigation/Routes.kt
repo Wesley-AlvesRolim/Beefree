@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
@@ -17,6 +18,8 @@ import androidx.navigation.compose.composable
 import com.wesley.beefree.R
 import com.wesley.beefree.ui.screens.HomeScreen
 import com.wesley.beefree.ui.screens.SettingsScreen
+import com.wesley.beefree.ui.screens.checkin.CheckInScreen
+import com.wesley.beefree.ui.viewmodel.CheckInViewModel
 import com.wesley.beefree.ui.viewmodel.HomeViewModel
 import com.wesley.beefree.ui.viewmodel.SettingsViewModel
 
@@ -28,6 +31,8 @@ sealed class Screen(
     object Home : Screen("home", R.string.nav_home, Icons.Default.Home)
 
     object Settings : Screen("settings", R.string.settings_title, Icons.Default.Settings)
+
+    object CheckIn : Screen("check_in", R.string.check_in_title, Icons.Default.CheckCircle)
 }
 
 @Composable
@@ -37,7 +42,7 @@ fun Routes(
 ) {
     val context = LocalContext.current
     val homeViewModel: HomeViewModel =
-        viewModel(factory = HomeViewModel.factory(context.applicationContext as android.app.Application))
+        viewModel(factory = HomeViewModel.factory(context))
     val settingsViewModel: SettingsViewModel =
         viewModel(factory = SettingsViewModel.factory(context))
 
@@ -46,7 +51,21 @@ fun Routes(
         startDestination = Screen.Home.route,
         modifier = Modifier.padding(innerPadding),
     ) {
-        composable(Screen.Home.route) { HomeScreen(homeViewModel) }
+        composable(Screen.Home.route) {
+            HomeScreen(
+                viewModel = homeViewModel,
+                onOpenCheckIn = { navController.navigate(Screen.CheckIn.route) },
+            )
+        }
         composable(Screen.Settings.route) { SettingsScreen(settingsViewModel) }
+        composable(Screen.CheckIn.route) {
+            CheckInScreen(
+                viewModel = viewModel(factory = CheckInViewModel.factory(context)),
+                onDone = {
+                    navController.popBackStack()
+                    homeViewModel.refresh()
+                },
+            )
+        }
     }
 }

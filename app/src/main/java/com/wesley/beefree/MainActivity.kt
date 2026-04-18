@@ -20,6 +20,7 @@ import com.wesley.beefree.ui.viewmodel.OnboardingViewModelImpl
 class MainActivity : ComponentActivity() {
     private lateinit var keyValueStorageRepository: KeyValueStorageRepository
     private var onboardingCompleted by mutableStateOf(false)
+    private var openCheckIn by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,12 +28,14 @@ class MainActivity : ComponentActivity() {
 
         keyValueStorageRepository = KeyValueStorageRepository(SharedPreferencesKeyValueStorage(this))
         onboardingCompleted = keyValueStorageRepository.isOnboardingCompleted()
+        openCheckIn = false
+
         CheckAccessibilityWorker.scheduleNotificationWorker(this)
 
         setContent {
             BeeFreeTheme {
                 if (onboardingCompleted) {
-                    MainContent()
+                    MainContent(openCheckIn = openCheckIn)
                 } else {
                     val onboardingViewModel: OnboardingViewModelImpl =
                         viewModel(factory = OnboardingViewModelImpl.factory(application))
@@ -47,6 +50,6 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainContent() {
-    NavBar()
+fun MainContent(openCheckIn: Boolean = false) {
+    NavBar(openCheckIn = openCheckIn)
 }
