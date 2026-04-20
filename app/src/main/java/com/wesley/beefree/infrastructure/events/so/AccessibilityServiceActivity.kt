@@ -8,10 +8,10 @@ import com.wesley.beefree.domain.detection.KeywordsDetectionEngine
 import com.wesley.beefree.domain.detection.ports.WindowContentProvider
 import com.wesley.beefree.domain.intervention.ports.DeviceActionProvider
 import com.wesley.beefree.infrastructure.bus.adapters.InMemoryEventBus
-import com.wesley.beefree.infrastructure.dispatcher.AccessibilityEventDispatcher
-import com.wesley.beefree.infrastructure.history.RelapseRecorderModule
-import com.wesley.beefree.infrastructure.intervention.DeviceGoBackIntervention
-import com.wesley.beefree.infrastructure.intervention.EMIInterventionModule
+import com.wesley.beefree.infrastructure.bus.dispatchers.AccessibilityEventDispatcher
+import com.wesley.beefree.infrastructure.bus.subscribers.history.RelapseRecorderModule
+import com.wesley.beefree.infrastructure.bus.subscribers.intervention.DeviceGoBackIntervention
+import com.wesley.beefree.infrastructure.bus.subscribers.intervention.EMIInterventionModule
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.trigger.TriggerRecorderModule
 import com.wesley.beefree.storage.adapters.RoomAddictionRepository

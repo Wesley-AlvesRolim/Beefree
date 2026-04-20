@@ -1,4 +1,4 @@
-package com.wesley.beefree.infrastructure.dispatcher
+package com.wesley.beefree.infrastructure.bus.dispatchers
 
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -8,6 +8,7 @@ import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.detection.ports.WindowContentProvider
 import com.wesley.beefree.domain.events.BankingAppForegrounded
 import com.wesley.beefree.domain.events.ScreenContentCaptured
+import com.wesley.beefree.infrastructure.bus.dispatchers.AccessibilityEventDispatcher
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.InterventionActivity
 import org.junit.Assert.assertEquals

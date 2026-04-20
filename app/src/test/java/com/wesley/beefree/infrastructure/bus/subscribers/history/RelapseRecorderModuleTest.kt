@@ -1,8 +1,9 @@
-package com.wesley.beefree.infrastructure.history
+package com.wesley.beefree.infrastructure.bus.subscribers.history
 
 import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.entities.RelapseHistory
 import com.wesley.beefree.domain.events.InterventionTriggered
+import com.wesley.beefree.infrastructure.bus.subscribers.history.RelapseRecorderModule
 import com.wesley.beefree.storage.ports.AddictionRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,4 @@
-package com.wesley.beefree.infrastructure.intervention
+package com.wesley.beefree.infrastructure.bus.subscribers.intervention
 
 import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.events.BankingAppForegrounded

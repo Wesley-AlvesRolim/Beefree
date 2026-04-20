@@ -1,4 +1,4 @@
-package com.wesley.beefree.infrastructure.history
+package com.wesley.beefree.infrastructure.bus.subscribers.history
 
 import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.entities.RelapseHistory

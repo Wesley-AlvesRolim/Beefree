@@ -1,4 +1,4 @@
-package com.wesley.beefree.infrastructure.dispatcher
+package com.wesley.beefree.infrastructure.bus.dispatchers
 
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent

@@ -1,4 +1,4 @@
-package com.wesley.beefree.infrastructure.bus
+package com.wesley.beefree.infrastructure.bus.adapters
 
 import com.wesley.beefree.domain.events.InterventionTriggered
 import com.wesley.beefree.domain.events.ScreenContentCaptured
