@@ -32,7 +32,7 @@ class HasCompletedTodaysCheckInUseCaseTest {
                 ),
             )
 
-            assertTrue(useCase.execute(userId, dailyCreatedAt))
+            assertTrue(useCase.execute(userId, dailyCreatedAt, now))
         }
     }
 
@@ -48,7 +48,7 @@ class HasCompletedTodaysCheckInUseCaseTest {
                 ),
             )
 
-            assertFalse(useCase.execute(userId, dailyCreatedAt))
+            assertFalse(useCase.execute(userId, dailyCreatedAt, now))
         }
     }
 
@@ -57,14 +57,14 @@ class HasCompletedTodaysCheckInUseCaseTest {
         runBlocking {
             whenever(checkInRepository.getDailyCheckIns(userId)).thenReturn(flowOf(emptyList()))
 
-            assertFalse(useCase.execute(userId, dailyCreatedAt))
+            assertFalse(useCase.execute(userId, dailyCreatedAt, now))
         }
     }
 
     @Test
     fun `returns true when weekly check-in exists for current week`() {
         runBlocking {
-            val weekStart = HasCompletedTodaysCheckInUseCase.currentWeekStart()
+            val weekStart = HasCompletedTodaysCheckInUseCase.currentWeekStart(now)
             whenever(checkInRepository.getWeeklyCheckIns(userId)).thenReturn(
                 flowOf(
                     listOf(
@@ -79,14 +79,14 @@ class HasCompletedTodaysCheckInUseCaseTest {
                 ),
             )
 
-            assertTrue(useCase.execute(userId, weeklyCreatedAt))
+            assertTrue(useCase.execute(userId, weeklyCreatedAt, now))
         }
     }
 
     @Test
     fun `returns false when weekly check-in is from a different week`() {
         runBlocking {
-            val lastWeekStart = HasCompletedTodaysCheckInUseCase.currentWeekStart() - (7 * dayMs)
+            val lastWeekStart = HasCompletedTodaysCheckInUseCase.currentWeekStart(now) - (7 * dayMs)
             whenever(checkInRepository.getWeeklyCheckIns(userId)).thenReturn(
                 flowOf(
                     listOf(
@@ -101,7 +101,7 @@ class HasCompletedTodaysCheckInUseCaseTest {
                 ),
             )
 
-            assertFalse(useCase.execute(userId, weeklyCreatedAt))
+            assertFalse(useCase.execute(userId, weeklyCreatedAt, now))
         }
     }
 }
