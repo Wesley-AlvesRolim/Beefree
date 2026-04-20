@@ -5,10 +5,10 @@ import com.wesley.beefree.domain.onboarding.AddictionProfile
 import com.wesley.beefree.domain.onboarding.ClinicalProfile
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
-import com.wesley.beefree.storage.ports.AddictionRepository
-import com.wesley.beefree.storage.ports.OnboardingRepository
-import com.wesley.beefree.storage.ports.UserProfileRepository
-import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
+import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
+import com.wesley.beefree.infrastructure.storage.ports.OnboardingRepository
+import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
+import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Before

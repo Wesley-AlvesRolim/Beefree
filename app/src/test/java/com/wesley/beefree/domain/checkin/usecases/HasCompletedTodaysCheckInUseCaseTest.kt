@@ -2,7 +2,7 @@ package com.wesley.beefree.domain.checkin.usecases
 
 import com.wesley.beefree.domain.entities.DailyCheckIn
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
-import com.wesley.beefree.storage.ports.CheckInRepository
+import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertFalse

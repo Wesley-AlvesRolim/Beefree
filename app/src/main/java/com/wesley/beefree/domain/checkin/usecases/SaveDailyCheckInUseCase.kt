@@ -7,9 +7,9 @@ import com.wesley.beefree.domain.entities.DailyCheckIn
 import com.wesley.beefree.domain.entities.DailyMicroActivityLog
 import com.wesley.beefree.domain.entities.MicroActivity
 import com.wesley.beefree.domain.entities.RelapseHistory
-import com.wesley.beefree.storage.ports.ActivityRepository
-import com.wesley.beefree.storage.ports.AddictionRepository
-import com.wesley.beefree.storage.ports.CheckInRepository
+import com.wesley.beefree.infrastructure.storage.ports.ActivityRepository
+import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
+import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
 import kotlinx.coroutines.flow.first
 
 class SaveDailyCheckInUseCase(

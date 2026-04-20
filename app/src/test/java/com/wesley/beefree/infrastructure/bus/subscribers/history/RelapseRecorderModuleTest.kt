@@ -4,7 +4,7 @@ import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.entities.RelapseHistory
 import com.wesley.beefree.domain.events.InterventionTriggered
 import com.wesley.beefree.infrastructure.bus.subscribers.history.RelapseRecorderModule
-import com.wesley.beefree.storage.ports.AddictionRepository
+import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

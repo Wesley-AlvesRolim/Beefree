@@ -4,9 +4,9 @@ import com.wesley.beefree.domain.checkin.ArtificialDopamineSource
 import com.wesley.beefree.domain.checkin.DopamineType
 import com.wesley.beefree.domain.checkin.NaturalDopamineSource
 import com.wesley.beefree.domain.entities.MicroActivity
-import com.wesley.beefree.storage.ports.ActivityRepository
-import com.wesley.beefree.storage.ports.AddictionRepository
-import com.wesley.beefree.storage.ports.CheckInRepository
+import com.wesley.beefree.infrastructure.storage.ports.ActivityRepository
+import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
+import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue

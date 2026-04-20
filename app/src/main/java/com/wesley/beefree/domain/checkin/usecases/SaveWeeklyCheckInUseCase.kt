@@ -1,7 +1,7 @@
 package com.wesley.beefree.domain.checkin.usecases
 
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
-import com.wesley.beefree.storage.ports.CheckInRepository
+import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
 import java.util.Calendar
 
 class SaveWeeklyCheckInUseCase(

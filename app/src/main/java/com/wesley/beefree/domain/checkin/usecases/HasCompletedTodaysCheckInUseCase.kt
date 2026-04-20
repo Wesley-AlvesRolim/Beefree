@@ -1,7 +1,7 @@
 package com.wesley.beefree.domain.checkin.usecases
 
 import com.wesley.beefree.domain.checkin.CheckInType
-import com.wesley.beefree.storage.ports.CheckInRepository
+import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
 import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
 import java.util.Calendar

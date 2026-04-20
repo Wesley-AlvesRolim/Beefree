@@ -1,11 +1,11 @@
-package com.wesley.beefree.storage.adapters.db.exporters
+package com.wesley.beefree.infrastructure.storage.adapters.db.exporters
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.wesley.beefree.storage.adapters.db.AppDatabase
-import com.wesley.beefree.storage.adapters.db.entities.AddictionKeywordEntity
-import com.wesley.beefree.storage.adapters.db.entities.AddictionTypeEntity
+import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
+import com.wesley.beefree.infrastructure.storage.adapters.db.entities.AddictionKeywordEntity
+import com.wesley.beefree.infrastructure.storage.adapters.db.entities.AddictionTypeEntity
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertTrue

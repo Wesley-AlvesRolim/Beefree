@@ -9,10 +9,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.wesley.beefree.infrastructure.events.workers.DailyCheckInWorker
 import com.wesley.beefree.infrastructure.events.workers.CheckAccessibilityWorker
-import com.wesley.beefree.storage.adapters.SharedPreferencesKeyValueStorage
-import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
+import com.wesley.beefree.infrastructure.events.workers.DailyCheckInWorker
+import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
+import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.navigation.NavBar
 import com.wesley.beefree.ui.screens.onboarding.OnboardingScreen
 import com.wesley.beefree.ui.theme.BeeFreeTheme
