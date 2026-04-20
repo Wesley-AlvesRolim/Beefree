@@ -1,11 +1,13 @@
-package com.wesley.beefree.infrastructure.workers
+package com.wesley.beefree.infrastructure.events.workers
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
@@ -28,7 +30,7 @@ class DailyCheckInWorker(
         val channelId = CHANNEL_ID
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel =
                 NotificationChannel(
                     channelId,
@@ -78,11 +80,11 @@ class DailyCheckInWorker(
                 PeriodicWorkRequestBuilder<DailyCheckInWorker>(24, TimeUnit.HOURS)
                     .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
                     .build()
-            WorkManager
+            WorkManager.Companion
                 .getInstance(context)
                 .enqueueUniquePeriodicWork(
                     WORK_NAME,
-                    androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+                    ExistingPeriodicWorkPolicy.KEEP,
                     checkInWork,
                 )
         }

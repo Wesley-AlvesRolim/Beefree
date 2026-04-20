@@ -1,4 +1,4 @@
-package com.wesley.beefree.infrastructure.services
+package com.wesley.beefree.infrastructure.events.so
 
 import android.accessibilityservice.AccessibilityService
 import android.view.accessibility.AccessibilityEvent
@@ -13,7 +13,11 @@ import com.wesley.beefree.infrastructure.history.RelapseRecorderModule
 import com.wesley.beefree.infrastructure.intervention.DeviceGoBackIntervention
 import com.wesley.beefree.infrastructure.intervention.EMIInterventionModule
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
+import com.wesley.beefree.infrastructure.trigger.TriggerRecorderModule
 import com.wesley.beefree.storage.adapters.RoomAddictionRepository
+import com.wesley.beefree.storage.adapters.RoomCheckInRepository
+import com.wesley.beefree.storage.adapters.RoomEMIRepository
+import com.wesley.beefree.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.storage.adapters.db.AppDatabase
 import com.wesley.beefree.storage.ports.AddictionRepository
@@ -22,6 +26,7 @@ import com.wesley.beefree.ui.adapters.AndroidEMIInterventionUI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class AccessibilityServiceActivity :
@@ -42,12 +47,13 @@ class AccessibilityServiceActivity :
     private lateinit var interventionModule: EMIInterventionModule
     private lateinit var deviceGoBackIntervention: DeviceGoBackIntervention
     private lateinit var relapseRecorderModule: RelapseRecorderModule
+    private lateinit var triggerRecorderModule: TriggerRecorderModule
 
     override fun onCreate() {
         super.onCreate()
         keyValueStorageRepository =
             KeyValueStorageRepository(SharedPreferencesKeyValueStorage(this))
-        val db = AppDatabase.getDatabase(this)
+        val db = AppDatabase.Companion.getDatabase(this)
         addictionRepository =
             RoomAddictionRepository(
                 db.addictionTypeDao(),
@@ -69,6 +75,38 @@ class AccessibilityServiceActivity :
         deviceGoBackIntervention = DeviceGoBackIntervention(eventBus, this)
 
         relapseRecorderModule = RelapseRecorderModule(eventBus, addictionRepository!!, this)
+
+        val emiRepository =
+            RoomEMIRepository(
+                db.triggerMappingDao(),
+                db.interventionLogDao(),
+                db.thoughtRecordDao(),
+                db.urgeSurfingSessionDao(),
+            )
+        val checkInRepository =
+            RoomCheckInRepository(
+                db.dailyCheckInDao(),
+                db.weeklyCheckInDao(),
+            )
+        val userProfileRepository =
+            RoomUserProfileRepository(
+                db.userProfileDao(),
+                db.userProfileAddictionDao(),
+            )
+        triggerRecorderModule =
+            TriggerRecorderModule(
+                eventBus = eventBus,
+                emiRepository = emiRepository,
+                checkInRepository = checkInRepository,
+                coroutineScope = this,
+                userIdProvider = {
+                    userProfileRepository
+                        .getAllProfiles()
+                        .first()
+                        .firstOrNull()
+                        ?.id ?: 0
+                },
+            )
     }
 
     override fun performGoBack() {

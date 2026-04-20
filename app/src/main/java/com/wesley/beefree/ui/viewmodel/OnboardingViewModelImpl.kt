@@ -18,7 +18,7 @@ import com.wesley.beefree.domain.onboarding.usecases.ComputeClinicalProfileUseCa
 import com.wesley.beefree.domain.onboarding.usecases.ComputeScoreUseCase
 import com.wesley.beefree.domain.onboarding.usecases.SaveOnboardingDataUseCase
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
-import com.wesley.beefree.infrastructure.services.AccessibilityServiceActivity
+import com.wesley.beefree.infrastructure.events.so.AccessibilityServiceActivity
 import com.wesley.beefree.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.storage.adapters.RoomOnboardingRepository
 import com.wesley.beefree.storage.adapters.RoomUserProfileRepository

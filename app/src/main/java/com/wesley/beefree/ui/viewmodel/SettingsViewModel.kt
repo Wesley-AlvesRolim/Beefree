@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.AddictionTypeEnum
-import com.wesley.beefree.infrastructure.services.AccessibilityServiceActivity
+import com.wesley.beefree.infrastructure.events.so.AccessibilityServiceActivity
 import com.wesley.beefree.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.storage.adapters.db.AppDatabase

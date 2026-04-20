@@ -1,10 +1,11 @@
-package com.wesley.beefree.notifications
+package com.wesley.beefree.infrastructure.events.workers
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.work.PeriodicWorkRequestBuilder
@@ -12,7 +13,7 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.wesley.beefree.R
-import com.wesley.beefree.infrastructure.services.AccessibilityServiceActivity
+import com.wesley.beefree.infrastructure.events.so.AccessibilityServiceActivity
 import com.wesley.beefree.utils.AccessibilityUtils
 import java.util.concurrent.TimeUnit
 
@@ -37,7 +38,7 @@ class CheckAccessibilityWorker(
         val channelId = "accessibility_check"
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel =
                 NotificationChannel(
                     channelId,
@@ -74,7 +75,7 @@ class CheckAccessibilityWorker(
                     15,
                     TimeUnit.MINUTES,
                 ).build()
-            WorkManager
+            WorkManager.Companion
                 .getInstance(context)
                 .enqueue(checkWork)
         }

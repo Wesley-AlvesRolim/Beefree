@@ -9,8 +9,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.wesley.beefree.infrastructure.workers.DailyCheckInWorker
-import com.wesley.beefree.notifications.CheckAccessibilityWorker
+import com.wesley.beefree.infrastructure.events.workers.DailyCheckInWorker
+import com.wesley.beefree.infrastructure.events.workers.CheckAccessibilityWorker
 import com.wesley.beefree.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.navigation.NavBar
