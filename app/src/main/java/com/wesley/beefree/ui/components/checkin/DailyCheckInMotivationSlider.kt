@@ -1,4 +1,4 @@
-package com.wesley.beefree.ui.screens.checkin.components
+package com.wesley.beefree.ui.components.checkin
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import com.wesley.beefree.R
 import com.wesley.beefree.ui.components.designsystem.BeeBodyMedium
 import com.wesley.beefree.ui.components.designsystem.BeeLabelLarge
@@ -50,7 +51,7 @@ fun DailyCheckInMotivationSlider(
         BeeLabelSmall(
             text = stringResource(R.string.check_in_motivation_high),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = androidx.compose.ui.text.style.TextAlign.End,
+            textAlign = TextAlign.End,
             modifier = Modifier.weight(1f),
         )
     }

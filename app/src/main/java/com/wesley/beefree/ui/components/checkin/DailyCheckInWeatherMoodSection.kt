@@ -1,4 +1,4 @@
-package com.wesley.beefree.ui.screens.checkin.components
+package com.wesley.beefree.ui.components.checkin
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -13,7 +13,6 @@ import com.wesley.beefree.R
 import com.wesley.beefree.ui.components.designsystem.BeeChipMood
 import com.wesley.beefree.ui.components.designsystem.BeeLabelSmall
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
-import com.wesley.beefree.ui.screens.checkin.components.weatherMoodOptions
 
 @Composable
 fun DailyCheckInWeatherMoodSection(

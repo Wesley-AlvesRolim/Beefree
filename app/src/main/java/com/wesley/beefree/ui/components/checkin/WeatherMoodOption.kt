@@ -1,4 +1,4 @@
-package com.wesley.beefree.ui.screens.checkin.components
+package com.wesley.beefree.ui.components.checkin
 
 import com.wesley.beefree.R
 

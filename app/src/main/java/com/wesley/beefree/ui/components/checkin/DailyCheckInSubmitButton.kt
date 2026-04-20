@@ -1,4 +1,4 @@
-package com.wesley.beefree.ui.screens.checkin.components
+package com.wesley.beefree.ui.components.checkin
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable

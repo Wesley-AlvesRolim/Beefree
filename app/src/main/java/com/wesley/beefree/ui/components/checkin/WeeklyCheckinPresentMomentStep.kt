@@ -1,4 +1,4 @@
-package com.wesley.beefree.ui.screens.checkin.components
+package com.wesley.beefree.ui.components.checkin
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +15,6 @@ import androidx.compose.ui.text.style.TextAlign
 import com.wesley.beefree.R
 import com.wesley.beefree.ui.components.designsystem.BeeBodyMedium
 import com.wesley.beefree.ui.components.designsystem.BeeButtonPrimary
-import com.wesley.beefree.ui.components.designsystem.BeeCardPrimary
 import com.wesley.beefree.ui.components.designsystem.BeeCardSection
 import com.wesley.beefree.ui.components.designsystem.BeeHeadlineMedium
 import com.wesley.beefree.ui.components.designsystem.BeeLabelLarge
@@ -23,35 +22,37 @@ import com.wesley.beefree.ui.components.designsystem.BeeLabelSmall
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
 
 @Composable
-fun WeeklyCheckinAcceptanceStep(
-    weeklyAnxiety: Float,
-    onWeeklyAnxietyChange: (Float) -> Unit,
+fun WeeklyCheckinPresentMomentStep(
+    emotionalSatisfaction: Float,
+    realConnectionLevel: Float,
+    onEmotionalSatisfactionChange: (Float) -> Unit,
+    onRealConnectionChange: (Float) -> Unit,
     onNext: () -> Unit,
 ) {
-    BeeHeadlineMedium(stringResource(R.string.check_in_weekly_aceitacao_title))
+    BeeHeadlineMedium(stringResource(R.string.check_in_weekly_momento_title))
     Spacer(modifier = Modifier.height(BeeSpacing.S))
     BeeBodyMedium(
-        text = stringResource(R.string.check_in_weekly_aceitacao_subtitle),
+        text = stringResource(R.string.check_in_weekly_momento_subtitle),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Spacer(modifier = Modifier.height(BeeSpacing.L))
 
     BeeCardSection(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(BeeSpacing.M)) {
-            BeeBodyMedium(stringResource(R.string.check_in_weekly_aceitacao_q))
+            BeeBodyMedium(stringResource(R.string.check_in_weekly_momento_q1))
             Slider(
-                value = weeklyAnxiety,
-                onValueChange = onWeeklyAnxietyChange,
+                value = emotionalSatisfaction,
+                onValueChange = onEmotionalSatisfactionChange,
                 modifier = Modifier.fillMaxWidth(),
             )
             Row(modifier = Modifier.fillMaxWidth()) {
                 BeeLabelSmall(
-                    text = stringResource(R.string.check_in_weekly_aceitacao_low),
+                    text = stringResource(R.string.check_in_weekly_momento_q1_low),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f),
                 )
                 BeeLabelSmall(
-                    text = stringResource(R.string.check_in_weekly_aceitacao_high),
+                    text = stringResource(R.string.check_in_weekly_momento_q1_high),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.End,
                     modifier = Modifier.weight(1f),
@@ -60,15 +61,29 @@ fun WeeklyCheckinAcceptanceStep(
         }
     }
 
-    Spacer(modifier = Modifier.height(BeeSpacing.L))
+    Spacer(modifier = Modifier.height(BeeSpacing.M))
 
-    BeeCardPrimary(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(BeeSpacing.L)) {
-            BeeBodyMedium(
-                text = stringResource(R.string.check_in_weekly_aceitacao_quote),
-                color = MaterialTheme.colorScheme.onPrimary,
-                textAlign = TextAlign.Center,
+    BeeCardSection(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(BeeSpacing.M)) {
+            BeeBodyMedium(stringResource(R.string.check_in_weekly_momento_q2))
+            Slider(
+                value = realConnectionLevel,
+                onValueChange = onRealConnectionChange,
+                modifier = Modifier.fillMaxWidth(),
             )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                BeeLabelSmall(
+                    text = stringResource(R.string.check_in_weekly_momento_q2_low),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f),
+                )
+                BeeLabelSmall(
+                    text = stringResource(R.string.check_in_weekly_momento_q2_high),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
     }
 

@@ -18,13 +18,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.wesley.beefree.domain.entities.UserCoreValue
+import com.wesley.beefree.ui.components.checkin.WeeklyCheckinAcceptanceStep
+import com.wesley.beefree.ui.components.checkin.WeeklyCheckinCognitiveDefusionAndSelfAsContextStep
+import com.wesley.beefree.ui.components.checkin.WeeklyCheckinCommittedActionStep
+import com.wesley.beefree.ui.components.checkin.WeeklyCheckinPresentMomentStep
+import com.wesley.beefree.ui.components.checkin.WeeklyCheckinValuesStep
+import com.wesley.beefree.ui.components.checkin.WeeklyTopBar
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
-import com.wesley.beefree.ui.screens.checkin.components.WeeklyCheckinAcceptanceStep
-import com.wesley.beefree.ui.screens.checkin.components.WeeklyCheckinCognitiveDefusionAndSelfAsContextStep
-import com.wesley.beefree.ui.screens.checkin.components.WeeklyCheckinCommittedActionStep
-import com.wesley.beefree.ui.screens.checkin.components.WeeklyCheckinPresentMomentStep
-import com.wesley.beefree.ui.screens.checkin.components.WeeklyCheckinValuesStep
-import com.wesley.beefree.ui.screens.checkin.components.WeeklyTopBar
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.CheckInViewModel
 

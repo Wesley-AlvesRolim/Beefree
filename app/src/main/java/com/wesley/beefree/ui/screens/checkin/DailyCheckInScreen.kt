@@ -16,15 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.wesley.beefree.R
+import com.wesley.beefree.ui.components.checkin.DailyCheckInDopamineSlider
+import com.wesley.beefree.ui.components.checkin.DailyCheckInMotivationSlider
+import com.wesley.beefree.ui.components.checkin.DailyCheckInProgressCard
+import com.wesley.beefree.ui.components.checkin.DailyCheckInSubmitButton
+import com.wesley.beefree.ui.components.checkin.DailyCheckInThoughtRecordSection
+import com.wesley.beefree.ui.components.checkin.DailyCheckInWeatherMoodSection
 import com.wesley.beefree.ui.components.designsystem.BeeBodyMedium
 import com.wesley.beefree.ui.components.designsystem.BeeHeadlineMedium
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
-import com.wesley.beefree.ui.screens.checkin.components.DailyCheckInDopamineSlider
-import com.wesley.beefree.ui.screens.checkin.components.DailyCheckInMotivationSlider
-import com.wesley.beefree.ui.screens.checkin.components.DailyCheckInProgressCard
-import com.wesley.beefree.ui.screens.checkin.components.DailyCheckInSubmitButton
-import com.wesley.beefree.ui.screens.checkin.components.DailyCheckInThoughtRecordSection
-import com.wesley.beefree.ui.screens.checkin.components.DailyCheckInWeatherMoodSection
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.CheckInViewModel
 
