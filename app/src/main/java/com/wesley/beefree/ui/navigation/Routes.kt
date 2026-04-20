@@ -54,7 +54,6 @@ fun Routes(
         composable(Screen.Home.route) {
             HomeScreen(
                 viewModel = homeViewModel,
-                onOpenCheckIn = { navController.navigate(Screen.CheckIn.route) },
             )
         }
         composable(Screen.Settings.route) { SettingsScreen(settingsViewModel) }

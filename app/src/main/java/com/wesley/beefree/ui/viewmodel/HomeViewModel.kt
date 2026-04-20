@@ -1,6 +1,6 @@
 package com.wesley.beefree.ui.viewmodel
 
-import android.app.Application
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -27,6 +27,10 @@ class HomeViewModel(
     val motivationalMessage: StateFlow<String> = _motivationalMessage.asStateFlow()
 
     init {
+        refresh()
+    }
+
+    fun refresh() {
         viewModelScope.launch {
             loadData()
         }
@@ -64,10 +68,10 @@ class HomeViewModel(
     }
 
     companion object {
-        fun factory(application: Application): ViewModelProvider.Factory =
+        fun factory(context: Context): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    val database = AppDatabase.getDatabase(application)
+                    val database = AppDatabase.getDatabase(context)
                     @Suppress("UNCHECKED_CAST")
                     return HomeViewModel(
                         RoomAddictionRepository(
