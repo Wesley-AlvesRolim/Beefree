@@ -81,10 +81,11 @@ class SaveDailyCheckInUseCase(
                     )
                 }
 
+        val activityId = checkNotNull(activity.id) { "MicroActivity id must not be null" }
         activityRepository.insertDailyLog(
             DailyMicroActivityLog(
                 userProfileId = userId,
-                activityId = activity.id!!,
+                activityId = activityId,
                 dayDate = now,
                 completedAt = now,
             ),
