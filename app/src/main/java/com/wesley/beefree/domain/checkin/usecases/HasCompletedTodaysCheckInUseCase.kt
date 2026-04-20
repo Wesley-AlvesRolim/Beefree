@@ -15,23 +15,30 @@ class HasCompletedTodaysCheckInUseCase(
     suspend fun execute(
         userId: Int,
         userCreatedAt: Long,
+        now: Long = System.currentTimeMillis(),
     ): Boolean =
-        when (determineCheckInTypeUseCase.execute(userCreatedAt)) {
-            CheckInType.DAILY -> hasDailyCheckInToday(userId)
-            CheckInType.WEEKLY -> hasWeeklyCheckInThisWeek(userId)
+        when (determineCheckInTypeUseCase.execute(userCreatedAt, now)) {
+            CheckInType.DAILY -> hasDailyCheckInToday(userId, now)
+            CheckInType.WEEKLY -> hasWeeklyCheckInThisWeek(userId, now)
         }
 
-    private suspend fun hasDailyCheckInToday(userId: Int): Boolean {
+    private suspend fun hasDailyCheckInToday(
+        userId: Int,
+        now: Long,
+    ): Boolean {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val today = sdf.format(Date())
+        val today = sdf.format(Date(now))
         return checkInRepository
             .getDailyCheckIns(userId)
             .first()
             .any { sdf.format(Date(it.checkedInAt)) == today }
     }
 
-    private suspend fun hasWeeklyCheckInThisWeek(userId: Int): Boolean {
-        val weekStart = currentWeekStart()
+    private suspend fun hasWeeklyCheckInThisWeek(
+        userId: Int,
+        now: Long,
+    ): Boolean {
+        val weekStart = currentWeekStart(now)
         return checkInRepository
             .getWeeklyCheckIns(userId)
             .first()
@@ -39,9 +46,10 @@ class HasCompletedTodaysCheckInUseCase(
     }
 
     companion object {
-        fun currentWeekStart(): Long {
+        fun currentWeekStart(now: Long = System.currentTimeMillis()): Long {
             val cal =
                 Calendar.getInstance().apply {
+                    timeInMillis = now
                     set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
                     set(Calendar.HOUR_OF_DAY, 0)
                     set(Calendar.MINUTE, 0)
