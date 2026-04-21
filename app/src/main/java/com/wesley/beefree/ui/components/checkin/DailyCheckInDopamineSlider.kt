@@ -17,10 +17,10 @@ import kotlin.math.roundToInt
 
 @Composable
 fun DailyCheckInDopamineSlider(
-    anxietyLevel: Int?,
-    onAnxietyLevelChange: (Int?) -> Unit,
+    dopamineLevel: Int?,
+    onDopamineLevelChange: (Int?) -> Unit,
 ) {
-    val dopamineSlider = anxietyLevel?.let { (it - 1) / 4.0f } ?: 0.5f
+    val dopamineSlider = dopamineLevel?.let { (it - 1) / 4.0f } ?: 0.5f
     val dopaminePercent = (dopamineSlider * 100).roundToInt()
 
     Row(
@@ -38,7 +38,7 @@ fun DailyCheckInDopamineSlider(
     }
     Slider(
         value = dopamineSlider,
-        onValueChange = { onAnxietyLevelChange((it * 4).roundToInt() + 1) },
+        onValueChange = { onDopamineLevelChange((it * 4).roundToInt() + 1) },
         modifier = Modifier.fillMaxWidth(),
         steps = 3,
     )

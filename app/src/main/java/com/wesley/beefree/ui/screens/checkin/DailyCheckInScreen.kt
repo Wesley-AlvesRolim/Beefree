@@ -94,8 +94,8 @@ private fun DailyCheckInScreen(
             Spacer(modifier = Modifier.height(BeeSpacing.L))
 
             DailyCheckInDopamineSlider(
-                anxietyLevel = anxietyLevel,
-                onAnxietyLevelChange = onAnxietyLevelChange,
+                dopamineLevel = anxietyLevel,
+                onDopamineLevelChange = onAnxietyLevelChange,
             )
 
             Spacer(modifier = Modifier.height(BeeSpacing.L))
