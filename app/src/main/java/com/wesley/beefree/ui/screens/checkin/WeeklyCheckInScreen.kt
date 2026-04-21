@@ -17,6 +17,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.wesley.beefree.domain.entities.UserCoreValue
 import com.wesley.beefree.ui.components.checkin.WeeklyCheckinAcceptanceStep
 import com.wesley.beefree.ui.components.checkin.WeeklyCheckinCognitiveDefusionAndSelfAsContextStep
@@ -158,135 +160,33 @@ private fun WeeklyCheckInScreen(
     }
 }
 
+private class WeeklyStepPreviewProvider : PreviewParameterProvider<Int> {
+    override val values = sequenceOf(1, 2, 3, 4, 5)
+}
+
 @Preview(showBackground = true)
 @Composable
-fun WeeklyCheckInStep1Preview() {
+private fun WeeklyCheckInPreview(
+    @PreviewParameter(WeeklyStepPreviewProvider::class) step: Int,
+) {
     BeeFreeTheme {
         WeeklyCheckInScreen(
-            currentStep = 1,
+            currentStep = step,
             coreValues =
-                listOf(
-                    UserCoreValue(userProfileId = 0, valueName = "Família", createdAt = 0),
-                    UserCoreValue(userProfileId = 0, valueName = "Fé", createdAt = 0),
-                ),
-            valueConnectionLevels = mapOf("Família" to 0.6f, "Fé" to 0.4f),
+                if (step == 1) {
+                    listOf(
+                        UserCoreValue(userProfileId = 0, valueName = "Família", createdAt = 0),
+                        UserCoreValue(userProfileId = 0, valueName = "Fé", createdAt = 0),
+                    )
+                } else {
+                    emptyList()
+                },
+            valueConnectionLevels = if (step == 1) mapOf("Família" to 0.6f, "Fé" to 0.4f) else emptyMap(),
             valuesAlignmentText = "",
             emotionalSatisfaction = 0.5f,
             realConnectionLevel = 0.5f,
             weeklyAnxiety = 0.5f,
-            defusionChoice = null,
-            defusionObservation = "",
-            onBack = {},
-            onNext = {},
-            onSubmit = {},
-            onUpdateValueLevel = { _, _ -> },
-            onUpdateValuesAlignment = {},
-            onUpdateEmotionalSatisfaction = {},
-            onUpdateRealConnection = {},
-            onUpdateWeeklyAnxiety = {},
-            onUpdateDefusionChoice = {},
-            onUpdateDefusionObservation = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WeeklyCheckInStep2Preview() {
-    BeeFreeTheme {
-        WeeklyCheckInScreen(
-            currentStep = 2,
-            coreValues = emptyList(),
-            valueConnectionLevels = emptyMap(),
-            valuesAlignmentText = "",
-            emotionalSatisfaction = 0.5f,
-            realConnectionLevel = 0.5f,
-            weeklyAnxiety = 0.3f,
-            defusionChoice = 0,
-            defusionObservation = "",
-            onBack = {},
-            onNext = {},
-            onSubmit = {},
-            onUpdateValueLevel = { _, _ -> },
-            onUpdateValuesAlignment = {},
-            onUpdateEmotionalSatisfaction = {},
-            onUpdateRealConnection = {},
-            onUpdateWeeklyAnxiety = {},
-            onUpdateDefusionChoice = {},
-            onUpdateDefusionObservation = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WeeklyCheckInStep3Preview() {
-    BeeFreeTheme {
-        WeeklyCheckInScreen(
-            currentStep = 3,
-            coreValues = emptyList(),
-            valueConnectionLevels = emptyMap(),
-            valuesAlignmentText = "",
-            emotionalSatisfaction = 0.5f,
-            realConnectionLevel = 0.5f,
-            weeklyAnxiety = 0.3f,
-            defusionChoice = 0,
-            defusionObservation = "",
-            onBack = {},
-            onNext = {},
-            onSubmit = {},
-            onUpdateValueLevel = { _, _ -> },
-            onUpdateValuesAlignment = {},
-            onUpdateEmotionalSatisfaction = {},
-            onUpdateRealConnection = {},
-            onUpdateWeeklyAnxiety = {},
-            onUpdateDefusionChoice = {},
-            onUpdateDefusionObservation = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WeeklyCheckInStep4Preview() {
-    BeeFreeTheme {
-        WeeklyCheckInScreen(
-            currentStep = 4,
-            coreValues = emptyList(),
-            valueConnectionLevels = emptyMap(),
-            valuesAlignmentText = "",
-            emotionalSatisfaction = 0.5f,
-            realConnectionLevel = 0.5f,
-            weeklyAnxiety = 0.4f,
-            defusionChoice = 0,
-            defusionObservation = "",
-            onBack = {},
-            onNext = {},
-            onSubmit = {},
-            onUpdateValueLevel = { _, _ -> },
-            onUpdateValuesAlignment = {},
-            onUpdateEmotionalSatisfaction = {},
-            onUpdateRealConnection = {},
-            onUpdateWeeklyAnxiety = {},
-            onUpdateDefusionChoice = {},
-            onUpdateDefusionObservation = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WeeklyCheckInStep5Preview() {
-    BeeFreeTheme {
-        WeeklyCheckInScreen(
-            currentStep = 5,
-            coreValues = emptyList(),
-            valueConnectionLevels = emptyMap(),
-            valuesAlignmentText = "",
-            emotionalSatisfaction = 0.5f,
-            realConnectionLevel = 0.5f,
-            weeklyAnxiety = 0.3f,
-            defusionChoice = 0,
+            defusionChoice = if (step == 1) null else 0,
             defusionObservation = "",
             onBack = {},
             onNext = {},
