@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.wesley.beefree.infrastructure.events.workers.CheckAccessibilityWorker
 import com.wesley.beefree.infrastructure.events.workers.DailyCheckInWorker
 import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
@@ -32,7 +31,6 @@ class MainActivity : ComponentActivity() {
         onboardingCompleted = keyValueStorageRepository.isOnboardingCompleted()
         openCheckIn = intent.getBooleanExtra(DailyCheckInWorker.EXTRA_OPEN_CHECK_IN, false)
 
-        CheckAccessibilityWorker.scheduleNotificationWorker(this)
         DailyCheckInWorker.scheduleCheckInWorker(this)
 
         setContent {
