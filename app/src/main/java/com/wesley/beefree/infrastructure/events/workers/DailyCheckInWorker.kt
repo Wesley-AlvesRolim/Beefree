@@ -30,16 +30,6 @@ class DailyCheckInWorker(
         val channelId = CHANNEL_ID
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel =
-                NotificationChannel(
-                    channelId,
-                    "Check-in Diário",
-                    NotificationManager.IMPORTANCE_HIGH,
-                )
-            nm.createNotificationChannel(channel)
-        }
-
         val intent =
             Intent(context, MainActivity::class.java).apply {
                 putExtra(EXTRA_OPEN_CHECK_IN, true)
@@ -75,6 +65,12 @@ class DailyCheckInWorker(
         private const val NOTIFICATION_HOUR = 21
 
         fun scheduleCheckInWorker(context: Context) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                nm.createNotificationChannel(
+                    NotificationChannel(CHANNEL_ID, "Check-in Diário", NotificationManager.IMPORTANCE_HIGH),
+                )
+            }
             val initialDelay = calculateDelayToNextNotification()
             val checkInWork =
                 PeriodicWorkRequestBuilder<DailyCheckInWorker>(24, TimeUnit.HOURS)
