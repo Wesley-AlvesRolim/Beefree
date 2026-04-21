@@ -1,8 +1,8 @@
 package com.wesley.beefree.domain.checkin.usecases
 
+import com.wesley.beefree.domain.checkin.CheckInDateUtils
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
 import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
-import java.util.Calendar
 
 class SaveWeeklyCheckInUseCase(
     private val checkInRepository: CheckInRepository,
@@ -14,7 +14,7 @@ class SaveWeeklyCheckInUseCase(
     ): Result<Unit> =
         runCatching {
             val now = System.currentTimeMillis()
-            val weekStartDate = startOfWeek(now)
+            val weekStartDate = CheckInDateUtils.startOfWeek(now)
 
             checkInRepository.insertWeeklyCheckIn(
                 WeeklyCheckIn(
@@ -27,16 +27,4 @@ class SaveWeeklyCheckInUseCase(
             )
         }
 
-    private fun startOfWeek(now: Long): Long {
-        val cal =
-            Calendar.getInstance().apply {
-                timeInMillis = now
-                set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
-        return cal.timeInMillis
-    }
 }

@@ -1,10 +1,10 @@
 package com.wesley.beefree.domain.checkin.usecases
 
+import com.wesley.beefree.domain.checkin.CheckInDateUtils
 import com.wesley.beefree.domain.checkin.CheckInType
 import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
 import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -46,17 +46,6 @@ class HasCompletedTodaysCheckInUseCase(
     }
 
     companion object {
-        fun currentWeekStart(now: Long = System.currentTimeMillis()): Long {
-            val cal =
-                Calendar.getInstance().apply {
-                    timeInMillis = now
-                    set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }
-            return cal.timeInMillis
-        }
+        fun currentWeekStart(now: Long = System.currentTimeMillis()): Long = CheckInDateUtils.startOfWeek(now)
     }
 }
