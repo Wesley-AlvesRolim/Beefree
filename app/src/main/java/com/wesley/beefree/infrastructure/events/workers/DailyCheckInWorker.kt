@@ -1,60 +1,55 @@
 package com.wesley.beefree.infrastructure.events.workers
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import androidx.core.app.NotificationCompat
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.wesley.beefree.MainActivity
 import com.wesley.beefree.R
+import com.wesley.beefree.domain.checkin.usecases.DetermineCheckInTypeUseCase
+import com.wesley.beefree.domain.checkin.usecases.HasCompletedTodaysCheckInUseCase
+import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
+import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
+import kotlinx.coroutines.flow.first
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 class DailyCheckInWorker(
     context: Context,
     workerParams: WorkerParameters,
-) : Worker(context, workerParams) {
-    override fun doWork(): Result {
-        showNotification(applicationContext)
-        return Result.success()
-    }
+) : BeeNotificationWorker(context, workerParams) {
+    override fun buildNotification() =
+        NotificationContent(
+            id = NOTIFICATION_ID,
+            channelId = CHANNEL_ID,
+            title = applicationContext.getString(R.string.check_in_notification_title),
+            text = applicationContext.getString(R.string.check_in_notification_body),
+            intent =
+                Intent(applicationContext, MainActivity::class.java).apply {
+                    putExtra(EXTRA_OPEN_CHECK_IN, true)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                },
+        )
 
-    private fun showNotification(context: Context) {
-        val channelId = CHANNEL_ID
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    override suspend fun onTriggered(): Boolean {
+        val database = AppDatabase.getDatabase(applicationContext)
+        val profile =
+            RoomUserProfileRepository(
+                userProfileDao = database.userProfileDao(),
+                userProfileAddictionDao = database.userProfileAddictionDao(),
+            ).getAllProfiles()
+                .first()
+                .firstOrNull() ?: return true
 
-        val intent =
-            Intent(context, MainActivity::class.java).apply {
-                putExtra(EXTRA_OPEN_CHECK_IN, true)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            }
-
-        val pendingIntent =
-            PendingIntent.getActivity(
-                context,
-                0,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        val hasCompleted =
+            HasCompletedTodaysCheckInUseCase(
+                checkInRepository = RoomCheckInRepository(database.dailyCheckInDao(), database.weeklyCheckInDao()),
+                determineCheckInTypeUseCase = DetermineCheckInTypeUseCase(),
+            ).execute(
+                userId = profile.id ?: return true,
+                userCreatedAt = profile.createdAt,
             )
 
-        val notification =
-            NotificationCompat
-                .Builder(context, channelId)
-                .setSmallIcon(R.drawable.bee_mono)
-                .setContentTitle(context.getString(R.string.check_in_notification_title))
-                .setContentText(context.getString(R.string.check_in_notification_body))
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
-                .build()
-
-        nm.notify(NOTIFICATION_ID, notification)
+        return !hasCompleted
     }
 
     companion object {
@@ -65,24 +60,15 @@ class DailyCheckInWorker(
         private const val NOTIFICATION_HOUR = 21
 
         fun scheduleCheckInWorker(context: Context) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                nm.createNotificationChannel(
-                    NotificationChannel(CHANNEL_ID, "Check-in Diário", NotificationManager.IMPORTANCE_HIGH),
-                )
-            }
-            val initialDelay = calculateDelayToNextNotification()
-            val checkInWork =
-                PeriodicWorkRequestBuilder<DailyCheckInWorker>(24, TimeUnit.HOURS)
-                    .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
-                    .build()
-            WorkManager.Companion
-                .getInstance(context)
-                .enqueueUniquePeriodicWork(
-                    WORK_NAME,
-                    ExistingPeriodicWorkPolicy.KEEP,
-                    checkInWork,
-                )
+            schedule(
+                context = context,
+                workerClass = DailyCheckInWorker::class.java,
+                workName = WORK_NAME,
+                channelId = CHANNEL_ID,
+                channelName = "Check-in Diário",
+                periodHours = 24,
+                initialDelayMs = calculateDelayToNextNotification(),
+            )
         }
 
         private fun calculateDelayToNextNotification(): Long {
