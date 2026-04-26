@@ -3,6 +3,7 @@ package com.wesley.beefree.domain.onboarding.usecases
 import com.wesley.beefree.domain.onboarding.AddictionProfile
 import com.wesley.beefree.domain.onboarding.ClinicalProfile
 import com.wesley.beefree.domain.onboarding.IncongruenceLevel
+import com.wesley.beefree.domain.onboarding.NeurodivergenceAnswer
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.domain.onboarding.RiskLevel
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
@@ -20,7 +21,8 @@ class ComputeClinicalProfileUseCase {
         val moralIncongruenceScore = computeMoralIncongruenceScore(answers)
         val incongruenceLevel = classifyIncongruenceLevel(moralIncongruenceScore)
         val ppcs6Level = Ppcs6Scorer().score(answers.ppcs6Answers).level
-        val treatmentProfile = resolvePpuTreatment(incongruenceLevel, ppcs6Level)
+        val hasNeurodivergence = answers.neurodivergenceAnswer == NeurodivergenceAnswer.YES
+        val treatmentProfile = resolvePpuTreatment(incongruenceLevel, ppcs6Level, hasNeurodivergence)
         return ClinicalProfile(
             incongruenceLevel = incongruenceLevel,
             treatmentProfile = treatmentProfile,
@@ -45,8 +47,12 @@ class ComputeClinicalProfileUseCase {
     private fun resolvePpuTreatment(
         incongruence: IncongruenceLevel,
         ppcs6Level: RiskLevel,
-    ): TreatmentProfile =
-        when (incongruence) {
+        hasNeurodivergence: Boolean,
+    ): TreatmentProfile {
+        if (hasNeurodivergence && incongruence != IncongruenceLevel.BAIXA) {
+            return TreatmentProfile.HYBRID
+        }
+        return when (incongruence) {
             IncongruenceLevel.ALTA ->
                 when (ppcs6Level) {
                     RiskLevel.LOW -> TreatmentProfile.ACT
@@ -59,6 +65,7 @@ class ComputeClinicalProfileUseCase {
                     else -> TreatmentProfile.TCC
                 }
         }
+    }
 
     private fun computeGamblingProfile(answers: OnboardingAnswers): ClinicalProfile {
         val pgsiRaw = answers.pgsiAnswers.sum()

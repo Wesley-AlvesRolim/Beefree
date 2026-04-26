@@ -87,6 +87,24 @@ fun BeeCardInteractive(
 }
 
 @Composable
+fun BeeCardPrimary(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Card(
+        modifier = modifier,
+        shape = BeeCardLargeShape,
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+        content = content,
+    )
+}
+
+@Composable
 fun BeeCardOutlined(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,

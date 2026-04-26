@@ -1,13 +1,23 @@
 package com.wesley.beefree.ui.viewmodel
 
-import android.app.Application
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.domain.entities.RelapseHistory
-import com.wesley.beefree.storage.adapters.RoomAddictionRepository
-import com.wesley.beefree.storage.adapters.db.AppDatabase
-import com.wesley.beefree.storage.ports.AddictionRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomActivityRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomEMIRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
+import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
+import com.wesley.beefree.infrastructure.storage.ports.ActivityRepository
+import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
+import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
+import com.wesley.beefree.infrastructure.storage.ports.EMIRepository
+import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
+import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +37,10 @@ class HomeViewModel(
     val motivationalMessage: StateFlow<String> = _motivationalMessage.asStateFlow()
 
     init {
+        refresh()
+    }
+
+    fun refresh() {
         viewModelScope.launch {
             loadData()
         }
@@ -64,10 +78,10 @@ class HomeViewModel(
     }
 
     companion object {
-        fun factory(application: Application): ViewModelProvider.Factory =
+        fun factory(context: Context): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    val database = AppDatabase.getDatabase(application)
+                    val database = AppDatabase.getDatabase(context)
                     @Suppress("UNCHECKED_CAST")
                     return HomeViewModel(
                         RoomAddictionRepository(

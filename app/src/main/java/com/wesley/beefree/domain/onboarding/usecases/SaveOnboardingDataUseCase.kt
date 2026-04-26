@@ -19,10 +19,10 @@ import com.wesley.beefree.domain.onboarding.NeurodivergenceAnswer
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.domain.onboarding.ScaleResult
 import com.wesley.beefree.domain.onboarding.ScaleType
-import com.wesley.beefree.storage.ports.AddictionRepository
-import com.wesley.beefree.storage.ports.OnboardingRepository
-import com.wesley.beefree.storage.ports.UserProfileRepository
-import com.wesley.beefree.storage.repositories.KeyValueStorageRepository
+import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
+import com.wesley.beefree.infrastructure.storage.ports.OnboardingRepository
+import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
+import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 
 class SaveOnboardingDataUseCase(
     private val addictionRepository: AddictionRepository,

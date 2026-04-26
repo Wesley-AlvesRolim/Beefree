@@ -13,7 +13,7 @@
         android:roundIcon="@drawable/bee_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.BeeFree">
-        <service android:name=".infrastructure.services.AccessibilityServiceActivity"
+        <service android:name=".infrastructure.events.so.AccessibilityServiceActivity"
             android:exported="false"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:label="@string/accessibility_service_label">

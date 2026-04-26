@@ -3,7 +3,7 @@ package com.wesley.beefree.domain.entities
 data class RelapseHistory(
     val id: Int? = null,
     val addictionTypeId: Int,
-    val keywordDetected: String,
+    val keywordDetected: String? = null,
     val detectedText: String? = null,
     val appPackage: String? = null,
     val externalApp: String? = null,

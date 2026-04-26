@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,8 +30,14 @@ import com.wesley.beefree.ui.components.designsystem.BeeBodySmall
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
 
 @Composable
-fun NavBar() {
+fun NavBar(openCheckIn: Boolean = false) {
     val navController = rememberNavController()
+
+    LaunchedEffect(openCheckIn) {
+        if (openCheckIn) {
+            navController.navigate(Screen.CheckIn.route)
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

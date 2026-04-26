@@ -1,7 +1,7 @@
 package com.wesley.beefree.data.keywords
 
 import com.wesley.beefree.domain.entities.AddictionType
-import com.wesley.beefree.storage.ports.AddictionRepository
+import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
 import kotlinx.coroutines.flow.first
 
 suspend fun buildKeywordsMap(

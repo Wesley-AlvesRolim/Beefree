@@ -8,7 +8,7 @@ import com.wesley.beefree.domain.intervention.ClinicalProfileStrategyFactory
 import com.wesley.beefree.domain.intervention.EmiTool
 import com.wesley.beefree.domain.intervention.ports.ClinicalProfileStrategy
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
-import com.wesley.beefree.storage.adapters.db.AppDatabase
+import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import com.wesley.beefree.ui.components.EMIInterventionUI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
