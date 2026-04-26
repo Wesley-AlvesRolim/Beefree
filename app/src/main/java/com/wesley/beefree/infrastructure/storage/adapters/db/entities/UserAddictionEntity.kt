@@ -4,10 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
-import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "InterventionLogs",
+    tableName = "UserAddiction",
+    primaryKeys = ["user_profile_id", "addiction_category_id"],
     foreignKeys = [
         ForeignKey(
             entity = UserProfileEntity::class,
@@ -15,14 +15,20 @@ import androidx.room.PrimaryKey
             childColumns = arrayOf("user_profile_id"),
             onDelete = ForeignKey.CASCADE,
         ),
+        ForeignKey(
+            entity = AddictionCategoryEntity::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("addiction_category_id"),
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
-    indices = [Index(value = ["user_profile_id"])],
+    indices = [
+        Index(value = ["user_profile_id"]),
+        Index(value = ["addiction_category_id"]),
+    ],
 )
-data class InterventionLogEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int? = null,
+data class UserAddictionEntity(
     @ColumnInfo(name = "user_profile_id") val userProfileId: Int,
-    @ColumnInfo(name = "intervention_type") val interventionType: String,
-    @ColumnInfo(name = "triggered_by") val triggeredBy: String,
-    @ColumnInfo(name = "was_completed") val wasCompleted: Boolean,
+    @ColumnInfo(name = "addiction_category_id") val addictionCategoryId: Int,
     @ColumnInfo(name = "created_at") val createdAt: Long,
 )

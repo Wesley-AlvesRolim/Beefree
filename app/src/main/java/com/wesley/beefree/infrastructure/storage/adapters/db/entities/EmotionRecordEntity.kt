@@ -7,7 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "UrgeSurfingSession",
+    tableName = "EmotionRecord",
     foreignKeys = [
         ForeignKey(
             entity = UserProfileEntity::class,
@@ -18,12 +18,10 @@ import androidx.room.PrimaryKey
     ],
     indices = [Index(value = ["user_profile_id"])],
 )
-data class UrgeSurfingSessionEntity(
+data class EmotionRecordEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "user_profile_id") val userProfileId: Int,
-    @ColumnInfo(name = "intervention_id") val interventionId: Int?,
-    @ColumnInfo(name = "peak_intensity") val peakIntensity: Int?,
-    @ColumnInfo(name = "duration_seconds") val durationSeconds: Int?,
-    @ColumnInfo(name = "completed") val completed: Boolean,
-    @ColumnInfo(name = "logged_at") val loggedAt: Long,
+    @ColumnInfo(name = "feeling_type") val feelingType: String,
+    val intensity: Int,
+    @ColumnInfo(name = "created_at") val createdAt: Long,
 )

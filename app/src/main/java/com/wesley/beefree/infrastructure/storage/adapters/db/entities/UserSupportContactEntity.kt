@@ -7,7 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "ThoughtRecords",
+    tableName = "UserSupportContact",
     foreignKeys = [
         ForeignKey(
             entity = UserProfileEntity::class,
@@ -15,23 +15,14 @@ import androidx.room.PrimaryKey
             childColumns = arrayOf("user_profile_id"),
             onDelete = ForeignKey.CASCADE,
         ),
-        ForeignKey(
-            entity = TriggerMappingEntity::class,
-            parentColumns = arrayOf("id"),
-            childColumns = arrayOf("trigger_id"),
-            onDelete = ForeignKey.SET_NULL,
-        ),
     ],
-    indices = [
-        Index(value = ["user_profile_id"]),
-        Index(value = ["trigger_id"]),
-    ],
+    indices = [Index(value = ["user_profile_id"])],
 )
-data class ThoughtRecordEntity(
+data class UserSupportContactEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "user_profile_id") val userProfileId: Int,
-    @ColumnInfo(name = "trigger_id") val triggerId: Int?,
-    @ColumnInfo(name = "automatic_thought") val automaticThought: String,
-    @ColumnInfo(name = "rational_response") val rationalResponse: String?,
+    val name: String,
+    @ColumnInfo(name = "phone_number") val phoneNumber: String,
+    @ColumnInfo(name = "is_active") val isActive: Boolean = true,
     @ColumnInfo(name = "created_at") val createdAt: Long,
 )

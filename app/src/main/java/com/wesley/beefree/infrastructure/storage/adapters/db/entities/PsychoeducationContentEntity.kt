@@ -7,20 +7,20 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "MotivationalMessages",
+    tableName = "PsychoeducationContent",
     foreignKeys = [
         ForeignKey(
-            entity = AddictionTypeEntity::class,
+            entity = AddictionCategoryEntity::class,
             parentColumns = arrayOf("id"),
-            childColumns = arrayOf("addiction_type_id"),
-            onDelete = ForeignKey.CASCADE,
+            childColumns = arrayOf("addiction_category_id"),
+            onDelete = ForeignKey.SET_NULL,
         ),
     ],
-    indices = [Index(value = ["addiction_type_id"])],
+    indices = [Index(value = ["addiction_category_id"])],
 )
-data class MotivationalMessageEntity(
+data class PsychoeducationContentEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
-    @ColumnInfo(name = "addiction_type_id") val addictionTypeId: Int? = null,
-    @ColumnInfo(name = "message_text") val messageText: String,
+    @ColumnInfo(name = "addiction_category_id") val addictionCategoryId: Int? = null,
+    @ColumnInfo(name = "content_text") val contentText: String,
     @ColumnInfo(name = "is_active") val isActive: Boolean = true,
 )

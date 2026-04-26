@@ -4,10 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "SupportContacts")
-data class SupportContactEntity(
+@Entity(tableName = "AddictionCategory")
+data class AddictionCategoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
-    @ColumnInfo(name = "phone_number") val phoneNumber: String,
-    @ColumnInfo(name = "is_active") val isActive: Boolean = true,
+    val name: String,
+    @ColumnInfo(name = "is_monitoring_enabled") val isMonitoringEnabled: Boolean = true,
     @ColumnInfo(name = "created_at") val createdAt: Long,
+    @ColumnInfo(name = "updated_at") val updatedAt: Long,
 )

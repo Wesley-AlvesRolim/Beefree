@@ -7,7 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "OnboardingScaleAnswers",
+    tableName = "UserOnboardingSession",
     foreignKeys = [
         ForeignKey(
             entity = UserProfileEntity::class,
@@ -18,11 +18,15 @@ import androidx.room.PrimaryKey
     ],
     indices = [Index(value = ["user_profile_id"])],
 )
-data class OnboardingScaleAnswerEntity(
+data class UserOnboardingSessionEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "user_profile_id") val userProfileId: Int,
-    @ColumnInfo(name = "scale_type") val scaleType: String,
-    @ColumnInfo(name = "question_index") val questionIndex: Int,
-    @ColumnInfo(name = "answer_value") val answerValue: Int,
+    @ColumnInfo(name = "clinical_approach") val clinicalApproach: String,
+    @ColumnInfo(name = "ppcs_score") val ppcsScore: Int?,
+    @ColumnInfo(name = "pgsi_score") val pgsiScore: Int?,
+    @ColumnInfo(name = "moral_incongruence_score") val moralIncongruenceScore: Int?,
+    @ColumnInfo(name = "frequency_score") val frequencyScore: Int?,
+    @ColumnInfo(name = "moral_disapproval_score") val moralDisapprovalScore: Int?,
+    @ColumnInfo(name = "has_neurodivergence") val hasNeurodivergence: Boolean,
     @ColumnInfo(name = "created_at") val createdAt: Long,
 )

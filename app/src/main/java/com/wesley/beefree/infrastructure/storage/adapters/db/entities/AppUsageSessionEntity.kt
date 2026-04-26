@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "AppUse")
-data class AppUseEntity(
+@Entity(tableName = "AppUsageSession")
+data class AppUsageSessionEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "package_name") val packageName: String,
     @ColumnInfo(name = "enter_time") val enterTime: Long,

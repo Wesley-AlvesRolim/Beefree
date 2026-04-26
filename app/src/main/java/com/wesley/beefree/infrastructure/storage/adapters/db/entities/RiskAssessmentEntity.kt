@@ -7,7 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "RiskPrediction",
+    tableName = "RiskAssessment",
     foreignKeys = [
         ForeignKey(
             entity = UserProfileEntity::class,
@@ -18,11 +18,10 @@ import androidx.room.PrimaryKey
     ],
     indices = [Index(value = ["user_profile_id"])],
 )
-data class RiskPredictionEntity(
+data class RiskAssessmentEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "user_profile_id") val userProfileId: Int,
     @ColumnInfo(name = "risk_score") val riskScore: Int,
-    @ColumnInfo(name = "risk_factors") val riskFactors: String?,
-    @ColumnInfo(name = "notification_sent") val notificationSent: Boolean,
-    @ColumnInfo(name = "predicted_at") val predictedAt: Long,
+    @ColumnInfo(name = "time_window") val timeWindow: String? = null,
+    @ColumnInfo(name = "created_at") val createdAt: Long,
 )

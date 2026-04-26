@@ -7,7 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "UserLessonProgress",
+    tableName = "InterventionRecord",
     foreignKeys = [
         ForeignKey(
             entity = UserProfileEntity::class,
@@ -18,9 +18,11 @@ import androidx.room.PrimaryKey
     ],
     indices = [Index(value = ["user_profile_id"])],
 )
-data class UserLessonProgressEntity(
+data class InterventionRecordEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "user_profile_id") val userProfileId: Int,
-    @ColumnInfo(name = "lesson_id") val lessonId: Int,
-    @ColumnInfo(name = "completed_at") val completedAt: Long,
+    @ColumnInfo(name = "intervention_type") val interventionType: String,
+    @ColumnInfo(name = "trigger_type") val triggerType: String,
+    @ColumnInfo(name = "was_completed") val wasCompleted: Boolean,
+    @ColumnInfo(name = "created_at") val createdAt: Long,
 )
