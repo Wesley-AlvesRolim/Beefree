@@ -15,64 +15,39 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [
-        AddictionTypeEntity::class,
-        AddictionKeywordEntity::class,
-        RelapseHistoryEntity::class,
         UserProfileEntity::class,
-        UserProfileAddictionEntity::class,
-        AppRestrictionEntity::class,
-        AppUseEntity::class,
-        SupportContactEntity::class,
-        BlockScreenConfigEntity::class,
-        MotivationalMessageEntity::class,
-        OnboardingScaleAnswerEntity::class,
-        UserProfileOnboardingResultEntity::class,
+        AddictionCategoryEntity::class,
+        UserAddictionEntity::class,
+        UserOnboardingSessionEntity::class,
         UserCoreValueEntity::class,
         UserHobbyEntity::class,
         UserObjectiveEntity::class,
         UserSymptomEntity::class,
+        AppUsageSessionEntity::class,
+        RelapseRecordEntity::class,
+        EmotionRecordEntity::class,
         DailyCheckInEntity::class,
         WeeklyCheckInEntity::class,
-        TriggerMappingEntity::class,
-        InterventionLogEntity::class,
-        ThoughtRecordEntity::class,
-        UrgeSurfingSessionEntity::class,
-        MicroActivityEntity::class,
-        DailyMicroActivityLogEntity::class,
-        DailyLessonEntity::class,
-        UserLessonProgressEntity::class,
-        HolisticMetricsEntity::class,
-        RiskPredictionEntity::class,
-        NotificationLogEntity::class,
+        InterventionRecordEntity::class,
+        CognitiveThoughtRecordEntity::class,
+        InterventionValueLinkEntity::class,
+        PsychoeducationContentEntity::class,
+        RiskFeatureSnapshotEntity::class,
+        RiskAssessmentEntity::class,
+        UserSupportContactEntity::class,
     ],
     version = 1,
     exportSchema = false,
 )
 @TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun addictionTypeDao(): AddictionTypeDAO
-
-    abstract fun addictionKeywordDao(): AddictionKeywordDAO
-
-    abstract fun relapseHistoryDao(): RelapseHistoryDAO
-
     abstract fun userProfileDao(): UserProfileDAO
 
-    abstract fun userProfileAddictionDao(): UserProfileAddictionDAO
+    abstract fun addictionCategoryDao(): AddictionCategoryDAO
 
-    abstract fun appRestrictionDao(): AppRestrictionDAO
+    abstract fun userAddictionDao(): UserAddictionDAO
 
-    abstract fun appUseDao(): AppUseDAO
-
-    abstract fun supportContactDao(): SupportContactDAO
-
-    abstract fun blockScreenConfigDao(): BlockScreenConfigDAO
-
-    abstract fun motivationalMessageDao(): MotivationalMessageDAO
-
-    abstract fun onboardingScaleAnswerDao(): OnboardingScaleAnswerDAO
-
-    abstract fun userProfileOnboardingResultDao(): UserProfileOnboardingResultDAO
+    abstract fun userOnboardingSessionDao(): UserOnboardingSessionDAO
 
     abstract fun userCoreValueDao(): UserCoreValueDAO
 
@@ -82,31 +57,29 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userSymptomDao(): UserSymptomDAO
 
+    abstract fun appUsageSessionDao(): AppUsageSessionDAO
+
+    abstract fun relapseRecordDao(): RelapseRecordDAO
+
+    abstract fun emotionRecordDao(): EmotionRecordDAO
+
     abstract fun dailyCheckInDao(): DailyCheckInDAO
 
     abstract fun weeklyCheckInDao(): WeeklyCheckInDAO
 
-    abstract fun triggerMappingDao(): TriggerMappingDAO
+    abstract fun interventionRecordDao(): InterventionRecordDAO
 
-    abstract fun interventionLogDao(): InterventionLogDAO
+    abstract fun cognitiveThoughtRecordDao(): CognitiveThoughtRecordDAO
 
-    abstract fun thoughtRecordDao(): ThoughtRecordDAO
+    abstract fun interventionValueLinkDao(): InterventionValueLinkDAO
 
-    abstract fun urgeSurfingSessionDao(): UrgeSurfingSessionDAO
+    abstract fun psychoeducationContentDao(): PsychoeducationContentDAO
 
-    abstract fun microActivityDao(): MicroActivityDAO
+    abstract fun riskFeatureSnapshotDao(): RiskFeatureSnapshotDAO
 
-    abstract fun dailyMicroActivityLogDao(): DailyMicroActivityLogDAO
+    abstract fun riskAssessmentDao(): RiskAssessmentDAO
 
-    abstract fun dailyLessonDao(): DailyLessonDAO
-
-    abstract fun userLessonProgressDao(): UserLessonProgressDAO
-
-    abstract fun holisticMetricsDao(): HolisticMetricsDAO
-
-    abstract fun riskPredictionDao(): RiskPredictionDAO
-
-    abstract fun notificationLogDao(): NotificationLogDAO
+    abstract fun userSupportContactDao(): UserSupportContactDAO
 
     companion object {
         @Volatile
