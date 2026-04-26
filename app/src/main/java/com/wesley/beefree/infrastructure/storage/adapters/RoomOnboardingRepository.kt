@@ -1,16 +1,14 @@
 package com.wesley.beefree.infrastructure.storage.adapters
 
-import com.wesley.beefree.domain.entities.OnboardingScaleAnswer
 import com.wesley.beefree.domain.entities.UserCoreValue
 import com.wesley.beefree.domain.entities.UserHobby
 import com.wesley.beefree.domain.entities.UserObjective
-import com.wesley.beefree.domain.entities.UserProfileOnboardingResult
+import com.wesley.beefree.domain.entities.UserOnboardingSession
 import com.wesley.beefree.domain.entities.UserSymptom
-import com.wesley.beefree.infrastructure.storage.adapters.db.dao.OnboardingScaleAnswerDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserCoreValueDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserHobbyDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserObjectiveDAO
-import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserProfileOnboardingResultDAO
+import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserOnboardingSessionDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserSymptomDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.toDomain
 import com.wesley.beefree.infrastructure.storage.adapters.db.toEntity
@@ -19,23 +17,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class RoomOnboardingRepository(
-    private val onboardingResultDao: UserProfileOnboardingResultDAO,
-    private val scaleAnswerDao: OnboardingScaleAnswerDAO,
+    private val onboardingSessionDao: UserOnboardingSessionDAO,
     private val coreValueDao: UserCoreValueDAO,
     private val hobbyDao: UserHobbyDAO,
     private val objectiveDao: UserObjectiveDAO,
     private val symptomDao: UserSymptomDAO,
 ) : OnboardingRepository {
-    override suspend fun insertOnboardingResult(result: UserProfileOnboardingResult): Long = onboardingResultDao.insert(result.toEntity())
+    override suspend fun insertOnboardingSession(session: UserOnboardingSession): Long = onboardingSessionDao.insert(session.toEntity())
 
-    override suspend fun getOnboardingResult(userId: Int): UserProfileOnboardingResult? = onboardingResultDao.getByUser(userId)?.toDomain()
-
-    override suspend fun insertScaleAnswer(answer: OnboardingScaleAnswer): Long = scaleAnswerDao.insert(answer.toEntity())
-
-    override fun getScaleAnswers(
-        userId: Int,
-        scaleType: String,
-    ): Flow<List<OnboardingScaleAnswer>> = scaleAnswerDao.getByUserAndScale(userId, scaleType).map { list -> list.map { it.toDomain() } }
+    override suspend fun getOnboardingSession(userId: Int): UserOnboardingSession? = onboardingSessionDao.getByUser(userId)?.toDomain()
 
     override suspend fun insertCoreValue(value: UserCoreValue): Long = coreValueDao.insert(value.toEntity())
 
