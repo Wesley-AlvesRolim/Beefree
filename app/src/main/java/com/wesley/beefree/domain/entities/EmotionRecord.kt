@@ -1,10 +1,9 @@
 package com.wesley.beefree.domain.entities
 
-data class ThoughtRecord(
+data class EmotionRecord(
     val id: Int? = null,
     val userProfileId: Int,
-    val triggerId: Int?,
-    val automaticThought: String,
-    val rationalResponse: String?,
+    val feelingType: String,
+    val intensity: Int,
     val createdAt: Long,
 )

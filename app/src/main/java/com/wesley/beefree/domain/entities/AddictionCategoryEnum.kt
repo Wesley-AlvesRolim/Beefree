@@ -1,6 +1,6 @@
 package com.wesley.beefree.domain.entities
 
-enum class AddictionTypeEnum(
+enum class AddictionCategoryEnum(
     val label: String,
 ) {
     ADULT_CONTENT("ADULT_CONTENT"),

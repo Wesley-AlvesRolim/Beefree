@@ -1,6 +1,6 @@
 package com.wesley.beefree.domain.entities
 
-data class AddictionType(
+data class AddictionCategory(
     val id: Int? = null,
     val name: String,
     val isMonitoringEnabled: Boolean = true,

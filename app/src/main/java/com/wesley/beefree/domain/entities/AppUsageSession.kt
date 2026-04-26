@@ -1,6 +1,6 @@
 package com.wesley.beefree.domain.entities
 
-data class AppUse(
+data class AppUsageSession(
     val id: Int? = null,
     val packageName: String,
     val enterTime: Long,

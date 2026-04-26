@@ -1,10 +1,10 @@
 package com.wesley.beefree.domain.entities
 
-data class InterventionLog(
+data class UserSupportContact(
     val id: Int? = null,
     val userProfileId: Int,
-    val interventionType: String,
-    val triggeredBy: String,
-    val wasCompleted: Boolean,
+    val name: String,
+    val phoneNumber: String,
+    val isActive: Boolean = true,
     val createdAt: Long,
 )
