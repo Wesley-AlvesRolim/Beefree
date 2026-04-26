@@ -1,7 +1,7 @@
 package com.wesley.beefree.infrastructure.storage.ports
 
+import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserProfile
-import com.wesley.beefree.domain.entities.UserProfileAddiction
 import kotlinx.coroutines.flow.Flow
 
 interface UserProfileRepository {
@@ -13,9 +13,9 @@ interface UserProfileRepository {
 
     fun getAllProfiles(): Flow<List<UserProfile>>
 
-    suspend fun associateAddictionToProfile(userProfileAddiction: UserProfileAddiction): Long
+    suspend fun associateAddictionToProfile(userAddiction: UserAddiction): Long
 
-    suspend fun removeAddictionFromProfile(userProfileAddiction: UserProfileAddiction)
+    suspend fun removeAddictionFromProfile(userAddiction: UserAddiction)
 
-    fun getAddictionsByUserId(userId: Int): Flow<List<UserProfileAddiction>>
+    fun getAddictionsByUserId(userId: Int): Flow<List<UserAddiction>>
 }

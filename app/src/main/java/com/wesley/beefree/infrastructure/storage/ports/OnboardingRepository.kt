@@ -1,24 +1,16 @@
 package com.wesley.beefree.infrastructure.storage.ports
 
-import com.wesley.beefree.domain.entities.OnboardingScaleAnswer
 import com.wesley.beefree.domain.entities.UserCoreValue
 import com.wesley.beefree.domain.entities.UserHobby
 import com.wesley.beefree.domain.entities.UserObjective
-import com.wesley.beefree.domain.entities.UserProfileOnboardingResult
+import com.wesley.beefree.domain.entities.UserOnboardingSession
 import com.wesley.beefree.domain.entities.UserSymptom
 import kotlinx.coroutines.flow.Flow
 
 interface OnboardingRepository {
-    suspend fun insertOnboardingResult(result: UserProfileOnboardingResult): Long
+    suspend fun insertOnboardingSession(session: UserOnboardingSession): Long
 
-    suspend fun getOnboardingResult(userId: Int): UserProfileOnboardingResult?
-
-    suspend fun insertScaleAnswer(answer: OnboardingScaleAnswer): Long
-
-    fun getScaleAnswers(
-        userId: Int,
-        scaleType: String,
-    ): Flow<List<OnboardingScaleAnswer>>
+    suspend fun getOnboardingSession(userId: Int): UserOnboardingSession?
 
     suspend fun insertCoreValue(value: UserCoreValue): Long
 

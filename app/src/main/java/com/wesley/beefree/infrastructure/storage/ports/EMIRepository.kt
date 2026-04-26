@@ -1,33 +1,19 @@
 package com.wesley.beefree.infrastructure.storage.ports
 
-import com.wesley.beefree.domain.entities.InterventionLog
-import com.wesley.beefree.domain.entities.ThoughtRecord
-import com.wesley.beefree.domain.entities.TriggerMapping
-import com.wesley.beefree.domain.entities.UrgeSurfingSession
+import com.wesley.beefree.domain.entities.CognitiveThoughtRecord
+import com.wesley.beefree.domain.entities.InterventionRecord
 import kotlinx.coroutines.flow.Flow
 
 interface EMIRepository {
-    suspend fun insertTrigger(trigger: TriggerMapping): Long
+    suspend fun insertInterventionRecord(record: InterventionRecord): Long
 
-    suspend fun updateTrigger(trigger: TriggerMapping)
+    suspend fun updateInterventionRecord(record: InterventionRecord)
 
-    fun getTriggers(userId: Int): Flow<List<TriggerMapping>>
+    fun getInterventionRecords(userId: Int): Flow<List<InterventionRecord>>
 
-    suspend fun insertInterventionLog(log: InterventionLog): Long
+    suspend fun insertThoughtRecord(record: CognitiveThoughtRecord): Long
 
-    suspend fun updateInterventionLog(log: InterventionLog)
+    suspend fun updateThoughtRecord(record: CognitiveThoughtRecord)
 
-    fun getInterventionLogs(userId: Int): Flow<List<InterventionLog>>
-
-    suspend fun insertThoughtRecord(record: ThoughtRecord): Long
-
-    suspend fun updateThoughtRecord(record: ThoughtRecord)
-
-    fun getThoughtRecords(userId: Int): Flow<List<ThoughtRecord>>
-
-    suspend fun insertUrgeSurfingSession(session: UrgeSurfingSession): Long
-
-    suspend fun updateUrgeSurfingSession(session: UrgeSurfingSession)
-
-    fun getUrgeSurfingSessions(userId: Int): Flow<List<UrgeSurfingSession>>
+    fun getThoughtRecords(userId: Int): Flow<List<CognitiveThoughtRecord>>
 }
