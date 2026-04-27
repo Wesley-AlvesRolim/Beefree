@@ -21,7 +21,7 @@ import androidx.room.PrimaryKey
 data class UserSupportContactEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "user_profile_id") val userProfileId: Int,
-    val name: String,
+    @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "phone_number") val phoneNumber: String,
     @ColumnInfo(name = "is_active") val isActive: Boolean = true,
     @ColumnInfo(name = "created_at") val createdAt: Long,
