@@ -1,8 +1,8 @@
 package com.wesley.beefree.infrastructure.storage.adapters
 
+import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserProfile
-import com.wesley.beefree.domain.entities.UserProfileAddiction
-import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserProfileAddictionDAO
+import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserAddictionDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserProfileDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.toDomain
 import com.wesley.beefree.infrastructure.storage.adapters.db.toEntity
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 
 class RoomUserProfileRepository(
     private val userProfileDao: UserProfileDAO,
-    private val userProfileAddictionDao: UserProfileAddictionDAO,
+    private val userAddictionDao: UserAddictionDAO,
 ) : UserProfileRepository {
     override suspend fun insertProfile(profile: UserProfile): Long = userProfileDao.insert(profile.toEntity())
 
@@ -24,17 +24,12 @@ class RoomUserProfileRepository(
 
     override fun getAllProfiles(): Flow<List<UserProfile>> = userProfileDao.getAll().map { list -> list.map { it.toDomain() } }
 
-    override suspend fun associateAddictionToProfile(userProfileAddiction: UserProfileAddiction): Long =
-        userProfileAddictionDao.insert(userProfileAddiction.toEntity())
+    override suspend fun associateAddictionToProfile(userAddiction: UserAddiction): Long = userAddictionDao.insert(userAddiction.toEntity())
 
-    override suspend fun removeAddictionFromProfile(userProfileAddiction: UserProfileAddiction) {
-        userProfileAddictionDao.delete(userProfileAddiction.toEntity())
+    override suspend fun removeAddictionFromProfile(userAddiction: UserAddiction) {
+        userAddictionDao.delete(userAddiction.toEntity())
     }
 
-    override fun getAddictionsByUserId(userId: Int): Flow<List<UserProfileAddiction>> =
-        userProfileAddictionDao.getByUserId(userId).map { list ->
-            list.map {
-                it.toDomain()
-            }
-        }
+    override fun getAddictionsByUserId(userId: Int): Flow<List<UserAddiction>> =
+        userAddictionDao.getByUserId(userId).map { list -> list.map { it.toDomain() } }
 }

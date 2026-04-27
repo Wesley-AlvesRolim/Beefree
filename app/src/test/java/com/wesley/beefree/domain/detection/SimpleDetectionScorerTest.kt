@@ -1,6 +1,6 @@
 package com.wesley.beefree.domain.detection
 
-import com.wesley.beefree.domain.entities.AddictionTypeEnum
+import com.wesley.beefree.domain.entities.AddictionCategoryEnum
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -19,15 +19,15 @@ class SimpleDetectionScorerTest {
 
     @Test
     fun `should trigger intervention after three matches for ADULT_CONTENT`() {
-        val addictionId = AddictionTypeEnum.ADULT_CONTENT.ordinal + 1
+        val categoryId = AddictionCategoryEnum.ADULT_CONTENT.ordinal + 1
 
-        assertFalse(scorer.addMatch("Porn content 1", "porn1", addictionId, "com.test.app"))
-        assertFalse(scorer.addMatch("Porn content 2", "porn2", addictionId, "com.test.app"))
+        assertFalse(scorer.addMatch("Porn content 1", "porn1", categoryId, "com.test.app"))
+        assertFalse(scorer.addMatch("Porn content 2", "porn2", categoryId, "com.test.app"))
         val triggered =
             scorer.addMatch(
                 reason = "Porn content 3",
                 keyword = "porn3",
-                addictionTypeId = addictionId,
+                addictionCategoryId = categoryId,
                 appPackage = "com.test.app",
             )
 
@@ -36,21 +36,21 @@ class SimpleDetectionScorerTest {
         val intervention = scorer.getIntervention()
         assertNotNull(intervention)
         assertEquals("porn3", intervention?.keyword)
-        assertEquals(addictionId, intervention?.addictionTypeId)
+        assertEquals(categoryId, intervention?.addictionCategoryId)
         assertEquals("com.test.app", intervention?.appPackage)
     }
 
     @Test
     fun `should trigger intervention after three matches for BETS`() {
-        val addictionId = AddictionTypeEnum.BETS.ordinal + 1
+        val categoryId = AddictionCategoryEnum.BETS.ordinal + 1
 
-        assertFalse(scorer.addMatch("Bet site 1", "bet1", addictionId, "com.test.app"))
-        assertFalse(scorer.addMatch("Bet site 2", "bet2", addictionId, "com.test.app"))
+        assertFalse(scorer.addMatch("Bet site 1", "bet1", categoryId, "com.test.app"))
+        assertFalse(scorer.addMatch("Bet site 2", "bet2", categoryId, "com.test.app"))
         val triggered =
             scorer.addMatch(
                 reason = "Bet site 3",
                 keyword = "bet3",
-                addictionTypeId = addictionId,
+                addictionCategoryId = categoryId,
                 appPackage = "com.test.app",
             )
 
@@ -58,7 +58,7 @@ class SimpleDetectionScorerTest {
         assertTrue(scorer.isTriggered())
         assertNotNull(scorer.getIntervention())
         assertEquals("bet3", scorer.getIntervention()?.keyword)
-        assertEquals(addictionId, scorer.getIntervention()?.addictionTypeId)
+        assertEquals(categoryId, scorer.getIntervention()?.addictionCategoryId)
         assertEquals("com.test.app", scorer.getIntervention()?.appPackage)
     }
 
@@ -68,7 +68,7 @@ class SimpleDetectionScorerTest {
             scorer.addMatch(
                 reason = "Some keyword",
                 keyword = "something",
-                addictionTypeId = AddictionTypeEnum.OTHERS.ordinal,
+                addictionCategoryId = AddictionCategoryEnum.OTHERS.ordinal,
                 appPackage = "com.test.app",
             )
 
@@ -79,13 +79,13 @@ class SimpleDetectionScorerTest {
 
     @Test
     fun `should trigger intervention for OTHERS after nine matches`() {
-        val addictionId = AddictionTypeEnum.OTHERS.ordinal + 1
+        val categoryId = AddictionCategoryEnum.OTHERS.ordinal + 1
 
         repeat(8) { i ->
-            assertFalse(scorer.addMatch("Other $i", "k$i", addictionId, "pkg"))
+            assertFalse(scorer.addMatch("Other $i", "k$i", categoryId, "pkg"))
         }
 
-        val triggered = scorer.addMatch("Other 9", "k9", addictionId, "pkg")
+        val triggered = scorer.addMatch("Other 9", "k9", categoryId, "pkg")
         assertTrue(triggered)
         assertTrue(scorer.isTriggered())
         assertNotNull(scorer.getIntervention())
@@ -94,44 +94,44 @@ class SimpleDetectionScorerTest {
 
     @Test
     fun `should NOT count the same keyword twice`() {
-        val addictionId = AddictionTypeEnum.BETS.ordinal + 1
+        val categoryId = AddictionCategoryEnum.BETS.ordinal + 1
 
-        scorer.addMatch("First time", "duplicate", addictionId, "pkg")
-        scorer.addMatch("Second time", "duplicate", addictionId, "pkg")
+        scorer.addMatch("First time", "duplicate", categoryId, "pkg")
+        scorer.addMatch("Second time", "duplicate", categoryId, "pkg")
         assertFalse(scorer.isTriggered())
 
-        scorer.addMatch("Third time", "new_keyword", addictionId, "pkg")
+        scorer.addMatch("Third time", "new_keyword", categoryId, "pkg")
         assertFalse(scorer.isTriggered())
 
-        scorer.addMatch("Fourth time", "another_new", addictionId, "pkg")
+        scorer.addMatch("Fourth time", "another_new", categoryId, "pkg")
         assertTrue(scorer.isTriggered())
     }
 
     @Test
     fun `should ignore keyword case when checking for duplicates`() {
-        val addictionId = AddictionTypeEnum.BETS.ordinal + 1
+        val categoryId = AddictionCategoryEnum.BETS.ordinal + 1
 
-        scorer.addMatch("First", "BET", addictionId, "pkg")
-        scorer.addMatch("Second", "bet", addictionId, "pkg")
+        scorer.addMatch("First", "BET", categoryId, "pkg")
+        scorer.addMatch("Second", "bet", categoryId, "pkg")
         assertFalse(scorer.isTriggered())
 
-        scorer.addMatch("Third", "bEt", addictionId, "pkg")
+        scorer.addMatch("Third", "bEt", categoryId, "pkg")
         assertFalse(scorer.isTriggered())
     }
 
     @Test
     fun `should reset state after reset is called`() {
-        val addictionId = AddictionTypeEnum.BETS.ordinal + 1
+        val categoryId = AddictionCategoryEnum.BETS.ordinal + 1
 
-        scorer.addMatch("Match 1", "k1", addictionId, "pkg")
-        scorer.addMatch("Match 2", "k2", addictionId, "pkg")
-        scorer.addMatch("Match 3", "k3", addictionId, "pkg")
+        scorer.addMatch("Match 1", "k1", categoryId, "pkg")
+        scorer.addMatch("Match 2", "k2", categoryId, "pkg")
+        scorer.addMatch("Match 3", "k3", categoryId, "pkg")
         assertTrue(scorer.isTriggered())
 
         scorer.reset()
 
         assertFalse(scorer.isTriggered())
         assertNull(scorer.getIntervention())
-        assertFalse(scorer.addMatch("Match 1", "k1", addictionId, "pkg"))
+        assertFalse(scorer.addMatch("Match 1", "k1", categoryId, "pkg"))
     }
 }

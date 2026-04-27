@@ -120,19 +120,17 @@ open class OnboardingViewModelImpl(
                     val database = AppDatabase.getDatabase(application)
                     val addictionRepository =
                         RoomAddictionRepository(
-                            database.addictionTypeDao(),
-                            database.addictionKeywordDao(),
-                            database.relapseHistoryDao(),
+                            database.addictionCategoryDao(),
+                            database.relapseRecordDao(),
                         )
                     val userProfileRepository =
                         RoomUserProfileRepository(
                             database.userProfileDao(),
-                            database.userProfileAddictionDao(),
+                            database.userAddictionDao(),
                         )
                     val onboardingRepository =
                         RoomOnboardingRepository(
-                            database.userProfileOnboardingResultDao(),
-                            database.onboardingScaleAnswerDao(),
+                            database.userOnboardingSessionDao(),
                             database.userCoreValueDao(),
                             database.userHobbyDao(),
                             database.userObjectiveDao(),

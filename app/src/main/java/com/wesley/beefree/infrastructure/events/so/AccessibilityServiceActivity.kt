@@ -4,6 +4,8 @@ import android.accessibilityservice.AccessibilityService
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.wesley.beefree.data.keywords.buildKeywordsMap
+import com.wesley.beefree.data.keywords.getBetsKeyWords
+import com.wesley.beefree.data.keywords.getPornKeywords
 import com.wesley.beefree.domain.detection.KeywordsDetectionEngine
 import com.wesley.beefree.domain.detection.ports.WindowContentProvider
 import com.wesley.beefree.domain.intervention.ports.DeviceActionProvider
@@ -47,19 +49,24 @@ class AccessibilityServiceActivity :
         super.onCreate()
         keyValueStorageRepository =
             KeyValueStorageRepository(SharedPreferencesKeyValueStorage(this))
-        val db = AppDatabase.Companion.getDatabase(this)
+        val db = AppDatabase.getDatabase(this)
         addictionRepository =
             RoomAddictionRepository(
-                db.addictionTypeDao(),
-                db.addictionKeywordDao(),
-                db.relapseHistoryDao(),
+                db.addictionCategoryDao(),
+                db.relapseRecordDao(),
             )
         dispatcher = AccessibilityEventDispatcher(eventBus, keyValueStorageRepository)
 
+        val hardcodedKeywords =
+            mapOf(
+                "ADULT_CONTENT" to getPornKeywords(),
+                "BETS" to getBetsKeyWords(),
+            )
+
         keyWordsDetectionEngine = KeywordsDetectionEngine(eventBus, emptyMap())
         launch {
-            addictionRepository!!.getAllAddictionTypes().collect { types ->
-                val keywords = buildKeywordsMap(types, addictionRepository!!)
+            addictionRepository!!.getAllAddictionCategories().collect { categories ->
+                val keywords = buildKeywordsMap(categories, hardcodedKeywords)
                 keyWordsDetectionEngine.updateKeywords(keywords)
             }
         }

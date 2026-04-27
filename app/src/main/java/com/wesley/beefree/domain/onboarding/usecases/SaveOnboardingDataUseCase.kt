@@ -1,24 +1,19 @@
 package com.wesley.beefree.domain.onboarding.usecases
 
-import com.wesley.beefree.data.keywords.getBetsKeyWords
-import com.wesley.beefree.data.keywords.getPornKeywords
-import com.wesley.beefree.domain.entities.AddictionKeyword
-import com.wesley.beefree.domain.entities.AddictionType
-import com.wesley.beefree.domain.entities.AddictionTypeEnum
-import com.wesley.beefree.domain.entities.OnboardingScaleAnswer
+import com.wesley.beefree.domain.entities.AddictionCategory
+import com.wesley.beefree.domain.entities.AddictionCategoryEnum
+import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserCoreValue
 import com.wesley.beefree.domain.entities.UserHobby
 import com.wesley.beefree.domain.entities.UserObjective
+import com.wesley.beefree.domain.entities.UserOnboardingSession
 import com.wesley.beefree.domain.entities.UserProfile
-import com.wesley.beefree.domain.entities.UserProfileAddiction
-import com.wesley.beefree.domain.entities.UserProfileOnboardingResult
 import com.wesley.beefree.domain.entities.UserSymptom
 import com.wesley.beefree.domain.onboarding.AddictionProfile
 import com.wesley.beefree.domain.onboarding.ClinicalProfile
 import com.wesley.beefree.domain.onboarding.NeurodivergenceAnswer
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.domain.onboarding.ScaleResult
-import com.wesley.beefree.domain.onboarding.ScaleType
 import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
 import com.wesley.beefree.infrastructure.storage.ports.OnboardingRepository
 import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
@@ -41,14 +36,13 @@ class SaveOnboardingDataUseCase(
             val now = System.currentTimeMillis()
 
             val userProfileId = insertUserProfile(answers, now)
-            val selectedAddictionTypeId = insertAddictionTypes(profile, userProfileId, now)
+            val selectedCategoryId = insertAddictionCategories(profile, userProfileId, now)
             val scoreResult = computeScoreUseCase.execute(answers)
             val clinicalProfile =
                 computeClinicalProfileUseCase.execute(answers)
                     ?: throw IllegalStateException("Clinical profile could not be computed")
 
-            insertOnboardingResult(userProfileId, selectedAddictionTypeId, profile, scoreResult, clinicalProfile, answers, now)
-            insertScaleAnswers(userProfileId, answers, now)
+            insertOnboardingSession(userProfileId, selectedCategoryId, profile, scoreResult, clinicalProfile, answers, now)
             insertUserChoices(userProfileId, answers, now)
 
             keyValueStorageRepository.saveOnboardingCompleted(true)
@@ -70,27 +64,26 @@ class SaveOnboardingDataUseCase(
                 ),
             ).toInt()
 
-    private suspend fun insertAddictionTypes(
+    private suspend fun insertAddictionCategories(
         profile: AddictionProfile,
         userProfileId: Int,
         now: Long,
     ): Int {
-        val addictionConfigs =
+        val categoryConfigs =
             listOf(
-                AddictionProfile.PPU to (AddictionTypeEnum.ADULT_CONTENT.name to getPornKeywords()),
-                AddictionProfile.GAMBLING to (AddictionTypeEnum.BETS.name to getBetsKeyWords()),
+                AddictionProfile.PPU to AddictionCategoryEnum.ADULT_CONTENT.name,
+                AddictionProfile.GAMBLING to AddictionCategoryEnum.BETS.name,
             )
 
-        var selectedAddictionTypeId = 0
+        var selectedCategoryId = 0
 
-        addictionConfigs.forEach { (typeProfile, data) ->
-            val (name, keywords) = data
+        categoryConfigs.forEach { (typeProfile, name) ->
             val isEnabled = typeProfile == profile
 
-            val addictionTypeId =
+            val categoryId =
                 addictionRepository
-                    .insertAddictionType(
-                        AddictionType(
+                    .insertAddictionCategory(
+                        AddictionCategory(
                             name = name,
                             isMonitoringEnabled = isEnabled,
                             createdAt = now,
@@ -98,39 +91,33 @@ class SaveOnboardingDataUseCase(
                         ),
                     ).toInt()
 
-            keywords.forEach { keyword ->
-                addictionRepository.insertKeyword(
-                    AddictionKeyword(addictionTypeId = addictionTypeId, keyword = keyword),
-                )
-            }
-
             userProfileRepository.associateAddictionToProfile(
-                UserProfileAddiction(
+                UserAddiction(
                     userProfileId = userProfileId,
-                    addictionTypeId = addictionTypeId,
+                    addictionCategoryId = categoryId,
                     createdAt = now,
                 ),
             )
 
-            if (isEnabled) selectedAddictionTypeId = addictionTypeId
+            if (isEnabled) selectedCategoryId = categoryId
         }
 
-        return selectedAddictionTypeId
+        return selectedCategoryId
     }
 
-    private suspend fun insertOnboardingResult(
+    private suspend fun insertOnboardingSession(
         userProfileId: Int,
-        addictionTypeId: Int,
+        addictionCategoryId: Int,
         profile: AddictionProfile,
         scoreResult: ScaleResult?,
         clinicalProfile: ClinicalProfile,
         answers: OnboardingAnswers,
         now: Long,
     ) {
-        onboardingRepository.insertOnboardingResult(
-            UserProfileOnboardingResult(
+        onboardingRepository.insertOnboardingSession(
+            UserOnboardingSession(
                 userProfileId = userProfileId,
-                addictionTypeId = addictionTypeId,
+                clinicalApproach = clinicalProfile.treatmentProfile.name,
                 ppcsScore = if (profile == AddictionProfile.PPU) scoreResult?.raw else null,
                 pgsiScore = if (profile == AddictionProfile.GAMBLING) scoreResult?.raw else null,
                 moralIncongruenceScore = clinicalProfile.moralIncongruenceScore,
@@ -142,62 +129,9 @@ class SaveOnboardingDataUseCase(
                         null
                     },
                 hasNeurodivergence = answers.neurodivergenceAnswer == NeurodivergenceAnswer.YES,
-                clinicalProfile = clinicalProfile.treatmentProfile.name,
-                moralIncongruenceBand = clinicalProfile.incongruenceLevel?.name,
                 createdAt = now,
             ),
         )
-    }
-
-    private suspend fun insertScaleAnswers(
-        userProfileId: Int,
-        answers: OnboardingAnswers,
-        now: Long,
-    ) {
-        answers.ppcs6Answers.forEachIndexed { index, value ->
-            onboardingRepository.insertScaleAnswer(
-                OnboardingScaleAnswer(
-                    userProfileId = userProfileId,
-                    scaleType = ScaleType.PPCS_6.name,
-                    questionIndex = index,
-                    answerValue = value,
-                    createdAt = now,
-                ),
-            )
-        }
-        answers.pgsiAnswers.forEachIndexed { index, value ->
-            onboardingRepository.insertScaleAnswer(
-                OnboardingScaleAnswer(
-                    userProfileId = userProfileId,
-                    scaleType = ScaleType.PGSI.name,
-                    questionIndex = index,
-                    answerValue = value,
-                    createdAt = now,
-                ),
-            )
-        }
-        answers.emaAnswers.forEachIndexed { index, value ->
-            onboardingRepository.insertScaleAnswer(
-                OnboardingScaleAnswer(
-                    userProfileId = userProfileId,
-                    scaleType = ScaleType.EMA.name,
-                    questionIndex = index,
-                    answerValue = value,
-                    createdAt = now,
-                ),
-            )
-        }
-        if (answers.frequencyAnswer > 0) {
-            onboardingRepository.insertScaleAnswer(
-                OnboardingScaleAnswer(
-                    userProfileId = userProfileId,
-                    scaleType = ScaleType.FREQUENCY.name,
-                    questionIndex = 0,
-                    answerValue = answers.frequencyAnswer,
-                    createdAt = now,
-                ),
-            )
-        }
     }
 
     private suspend fun insertUserChoices(

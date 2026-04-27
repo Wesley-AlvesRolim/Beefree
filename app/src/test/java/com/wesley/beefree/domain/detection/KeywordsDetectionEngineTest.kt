@@ -18,8 +18,8 @@ class KeywordsDetectionEngineTest {
     @Test
     fun `should publish InterventionTriggered when a blocked keyword is detected`() {
         val eventBus = InMemoryEventBus()
-        val keywordsByAddictionType = mapOf(1 to listOf("bet", "another_bet", "famous_bet"))
-        KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
+        val keywordsByCategory = mapOf(1 to listOf("bet", "another_bet", "famous_bet"))
+        KeywordsDetectionEngine(eventBus, keywordsByCategory)
 
         var receivedEvent: InterventionTriggered? = null
         eventBus.subscribe(InterventionTriggered::class.java) {
@@ -27,22 +27,22 @@ class KeywordsDetectionEngineTest {
         }
 
         val reasonContent =
-            keywordsByAddictionType[1]?.joinToString(", ", limit = 3, truncated = "...")
+            keywordsByCategory[1]?.joinToString(", ", limit = 3, truncated = "...")
         val captureEvent = ScreenContentCaptured(listOf(reasonContent!!), "com.example.app")
         eventBus.publish(captureEvent)
 
         assertNotNull(receivedEvent)
         assertEquals(reasonContent, receivedEvent?.reason)
-        assertEquals(keywordsByAddictionType[1]?.last(), receivedEvent?.keyword)
-        assertEquals(1, receivedEvent?.addictionTypeId)
+        assertEquals(keywordsByCategory[1]?.last(), receivedEvent?.keyword)
+        assertEquals(1, receivedEvent?.addictionCategoryId)
         assertEquals("com.example.app", receivedEvent?.appPackage)
     }
 
     @Test
     fun `should NOT publish InterventionTriggered when no blocked keyword is detected`() {
         val eventBus = InMemoryEventBus()
-        val keywordsByAddictionType = mapOf(1 to listOf("bet", "porn"))
-        KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
+        val keywordsByCategory = mapOf(1 to listOf("bet", "porn"))
+        KeywordsDetectionEngine(eventBus, keywordsByCategory)
 
         var receivedEvent: InterventionTriggered? = null
         eventBus.subscribe(InterventionTriggered::class.java) {
@@ -58,8 +58,8 @@ class KeywordsDetectionEngineTest {
     @Test
     fun `should be case-insensitive when detecting blocked keywords`() {
         val eventBus = InMemoryEventBus()
-        val keywordsByAddictionType = mapOf(1 to listOf("BET", "ANOTHER_BET", "FAMOUS_BET"))
-        KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
+        val keywordsByCategory = mapOf(1 to listOf("BET", "ANOTHER_BET", "FAMOUS_BET"))
+        KeywordsDetectionEngine(eventBus, keywordsByCategory)
 
         var receivedEvent: InterventionTriggered? = null
         eventBus.subscribe(InterventionTriggered::class.java) {
@@ -67,7 +67,7 @@ class KeywordsDetectionEngineTest {
         }
 
         val reasonContent =
-            keywordsByAddictionType[1]
+            keywordsByCategory[1]
                 ?.joinToString(", ", limit = 3, truncated = "...")
                 ?.lowercase()
         val captureEvent = ScreenContentCaptured(listOf(reasonContent!!), "com.example.app")
@@ -80,8 +80,8 @@ class KeywordsDetectionEngineTest {
     @Test
     fun `should reset scorer after triggering intervention`() {
         val eventBus = InMemoryEventBus()
-        val keywordsByAddictionType = mapOf(1 to listOf("k1", "k2", "k3", "k4", "k5", "k6"))
-        val engine = KeywordsDetectionEngine(eventBus, keywordsByAddictionType)
+        val keywordsByCategory = mapOf(1 to listOf("k1", "k2", "k3", "k4", "k5", "k6"))
+        val engine = KeywordsDetectionEngine(eventBus, keywordsByCategory)
 
         var triggerCount = 0
         eventBus.subscribe(InterventionTriggered::class.java) {
@@ -116,8 +116,8 @@ class KeywordsDetectionEngineTest {
                     )
                 } doThrow RuntimeException("Failure during detection")
             }
-        val keywordsByAddictionType = mapOf(1 to listOf("bet"))
-        val engine = KeywordsDetectionEngine(eventBus, keywordsByAddictionType, mockScorer)
+        val keywordsByCategory = mapOf(1 to listOf("bet"))
+        val engine = KeywordsDetectionEngine(eventBus, keywordsByCategory, mockScorer)
 
         try {
             engine.detect(ScreenContentCaptured(listOf("bet"), "pkg"))
@@ -166,6 +166,6 @@ class KeywordsDetectionEngineTest {
         engine.detect(ScreenContentCaptured(listOf("k1, k2, k3"), "pkg"))
 
         assertNotNull(receivedEvent)
-        assertEquals(1, receivedEvent?.addictionTypeId)
+        assertEquals(1, receivedEvent?.addictionCategoryId)
     }
 }

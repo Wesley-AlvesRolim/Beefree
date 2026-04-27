@@ -11,7 +11,7 @@ class KeywordsDetectionEngine(
     private val scorer: DetectionScorer = SimpleDetectionScorer(),
 ) : DetectionEngine<ScreenContentCaptured> {
     @Volatile
-    private var regexByAddictionType: Map<Int, List<Pair<String, Regex>>> =
+    private var regexByCategory: Map<Int, List<Pair<String, Regex>>> =
         buildRegexMap(keywords)
 
     init {
@@ -35,18 +35,18 @@ class KeywordsDetectionEngine(
         event.texts
             .filter { it.isNotBlank() }
             .flatMap { findMatchesInText(it) }
-            .forEach { scorer.addMatch(it.text, it.keyword, it.typeId, event.packageName) }
+            .forEach { scorer.addMatch(it.text, it.keyword, it.categoryId, event.packageName) }
     }
 
     private fun findMatchesInText(text: String): List<MatchResult> =
-        regexByAddictionType.flatMap { (typeId, regexes) ->
+        regexByCategory.flatMap { (categoryId, regexes) ->
             regexes
                 .filter { (_, regex) -> regex.containsMatchIn(text) }
-                .map { (keyword, _) -> MatchResult(text, keyword, typeId) }
+                .map { (keyword, _) -> MatchResult(text, keyword, categoryId) }
         }
 
     fun updateKeywords(keywords: Map<Int, List<String>>) {
-        regexByAddictionType = buildRegexMap(keywords)
+        regexByCategory = buildRegexMap(keywords)
     }
 
     private fun buildRegexMap(map: Map<Int, List<String>>): Map<Int, List<Pair<String, Regex>>> =
@@ -57,6 +57,6 @@ class KeywordsDetectionEngine(
     private data class MatchResult(
         val text: String,
         val keyword: String,
-        val typeId: Int,
+        val categoryId: Int,
     )
 }

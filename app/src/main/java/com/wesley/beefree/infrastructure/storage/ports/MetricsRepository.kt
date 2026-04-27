@@ -1,24 +1,27 @@
 package com.wesley.beefree.infrastructure.storage.ports
 
-import com.wesley.beefree.domain.entities.HolisticMetrics
-import com.wesley.beefree.domain.entities.NotificationLog
-import com.wesley.beefree.domain.entities.RiskPrediction
+import com.wesley.beefree.domain.entities.EmotionRecord
+import com.wesley.beefree.domain.entities.RiskAssessment
+import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
 import kotlinx.coroutines.flow.Flow
 
 interface MetricsRepository {
-    suspend fun insertHolisticMetrics(metrics: HolisticMetrics): Long
+    suspend fun insertEmotionRecord(record: EmotionRecord): Long
 
-    fun getHolisticMetrics(userId: Int): Flow<List<HolisticMetrics>>
+    fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>>
 
-    suspend fun insertRiskPrediction(prediction: RiskPrediction): Long
+    fun getEmotionRecordsByType(
+        userId: Int,
+        feelingType: String,
+    ): Flow<List<EmotionRecord>>
 
-    suspend fun updateRiskPrediction(prediction: RiskPrediction)
+    suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long
 
-    fun getRiskPredictions(userId: Int): Flow<List<RiskPrediction>>
+    fun getRiskFeatureSnapshots(userId: Int): Flow<List<RiskFeatureSnapshot>>
 
-    suspend fun insertNotificationLog(log: NotificationLog): Long
+    suspend fun getLatestRiskFeatureSnapshot(userId: Int): RiskFeatureSnapshot?
 
-    suspend fun updateNotificationLog(log: NotificationLog)
+    suspend fun insertRiskAssessment(assessment: RiskAssessment): Long
 
-    fun getNotificationLogs(userId: Int): Flow<List<NotificationLog>>
+    fun getRiskAssessments(userId: Int): Flow<List<RiskAssessment>>
 }

@@ -1,27 +1,14 @@
 package com.wesley.beefree.infrastructure.storage.ports
 
-import com.wesley.beefree.domain.entities.AppRestriction
-import com.wesley.beefree.domain.entities.AppUse
+import com.wesley.beefree.domain.entities.AppUsageSession
 import kotlinx.coroutines.flow.Flow
 
 interface AppUsageRepository {
-    suspend fun insertRestriction(restriction: AppRestriction): Long
+    suspend fun insertAppUsageSession(session: AppUsageSession): Long
 
-    suspend fun updateRestriction(restriction: AppRestriction)
+    suspend fun updateAppUsageSession(session: AppUsageSession)
 
-    suspend fun deleteRestriction(restriction: AppRestriction)
+    suspend fun getLastSessionByPackage(packageName: String): AppUsageSession?
 
-    suspend fun getRestrictionById(id: Int): AppRestriction?
-
-    suspend fun getRestrictionByPackage(packageName: String): AppRestriction?
-
-    fun getAllRestrictions(): Flow<List<AppRestriction>>
-
-    suspend fun insertAppUse(appUse: AppUse): Long
-
-    suspend fun updateAppUse(appUse: AppUse)
-
-    suspend fun getLastAppUse(packageName: String): AppUse?
-
-    fun getAppUseHistory(): Flow<List<AppUse>>
+    fun getAppUsageHistory(): Flow<List<AppUsageSession>>
 }

@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
-import com.wesley.beefree.infrastructure.storage.adapters.db.entities.AddictionKeywordEntity
-import com.wesley.beefree.infrastructure.storage.adapters.db.entities.AddictionTypeEntity
+import com.wesley.beefree.infrastructure.storage.adapters.db.entities.AddictionCategoryEntity
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertTrue
@@ -37,20 +36,15 @@ class SqlDatabaseExporterTest {
     @Test
     fun `should export database to sql file with schema and data`() {
         runBlocking {
-            val addictionType =
-                AddictionTypeEntity(
+            val category =
+                AddictionCategoryEntity(
                     id = 1,
-                    name = "Pornography",
+                    name = "ADULT_CONTENT",
                     isMonitoringEnabled = true,
                     createdAt = System.currentTimeMillis(),
                     updatedAt = System.currentTimeMillis(),
                 )
-            database.addictionTypeDao().insert(addictionType)
-
-            val keyword1 = AddictionKeywordEntity(id = 1, addictionTypeId = 1, keyword = "porn")
-            val keyword2 = AddictionKeywordEntity(id = 2, addictionTypeId = 1, keyword = "onlyfans")
-            database.addictionKeywordDao().insert(keyword1)
-            database.addictionKeywordDao().insert(keyword2)
+            database.addictionCategoryDao().insert(category)
 
             val exporter = FileDatabaseExporter()
             val strategy = SqlDatabaseExporterStrategy(database)
@@ -60,15 +54,9 @@ class SqlDatabaseExporterTest {
             assertTrue(exportedFile.exists())
             val content = exportedFile.readText()
 
-            assertTrue(content.contains("CREATE TABLE `AddictionTypes`"))
-            assertTrue(content.contains("CREATE TABLE `AddictionKeywords`"))
-
-            assertTrue(content.contains("INSERT INTO `AddictionTypes`"))
-            assertTrue(content.contains("'Pornography'"))
-
-            assertTrue(content.contains("INSERT INTO `AddictionKeywords`"))
-            assertTrue(content.contains("'porn'"))
-            assertTrue(content.contains("'onlyfans'"))
+            assertTrue(content.contains("CREATE TABLE `AddictionCategory`"))
+            assertTrue(content.contains("INSERT INTO `AddictionCategory`"))
+            assertTrue(content.contains("'ADULT_CONTENT'"))
         }
     }
 }

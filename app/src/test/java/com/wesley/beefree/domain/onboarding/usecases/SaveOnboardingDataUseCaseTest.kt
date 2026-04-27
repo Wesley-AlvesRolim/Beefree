@@ -1,6 +1,6 @@
 package com.wesley.beefree.domain.onboarding.usecases
 
-import com.wesley.beefree.domain.entities.AddictionType
+import com.wesley.beefree.domain.entities.AddictionCategory
 import com.wesley.beefree.domain.onboarding.AddictionProfile
 import com.wesley.beefree.domain.onboarding.ClinicalProfile
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
@@ -56,17 +56,16 @@ class SaveOnboardingDataUseCaseTest {
             val result = useCase.execute(answers)
 
             assertTrue(result.isFailure)
-            verify(addictionRepository, never()).insertAddictionType(any())
+            verify(addictionRepository, never()).insertAddictionCategory(any())
             verify(keyValueStorageRepository, never()).saveOnboardingCompleted(any())
         }
 
     @Test
-    fun `saves addiction type and marks onboarding completed for PPU profile`() =
+    fun `saves addiction category and marks onboarding completed for PPU profile`() =
         runBlocking {
             whenever(userProfileRepository.insertProfile(any())).thenReturn(1L)
-            whenever(addictionRepository.insertAddictionType(any<AddictionType>())).thenReturn(1L)
-            whenever(addictionRepository.insertKeyword(any())).thenReturn(1L)
-            whenever(onboardingRepository.insertOnboardingResult(any())).thenReturn(1L)
+            whenever(addictionRepository.insertAddictionCategory(any<AddictionCategory>())).thenReturn(1L)
+            whenever(onboardingRepository.insertOnboardingSession(any())).thenReturn(1L)
             val answers =
                 OnboardingAnswers(
                     addictionProfile = AddictionProfile.PPU,
@@ -77,17 +76,16 @@ class SaveOnboardingDataUseCaseTest {
             val result = useCase.execute(answers)
 
             assertTrue(result.isSuccess)
-            verify(addictionRepository, times(2)).insertAddictionType(any())
+            verify(addictionRepository, times(2)).insertAddictionCategory(any())
             verify(keyValueStorageRepository).saveOnboardingCompleted(true)
         }
 
     @Test
-    fun `saves addiction type and marks onboarding completed for GAMBLING profile`() =
+    fun `saves addiction category and marks onboarding completed for GAMBLING profile`() =
         runBlocking {
             whenever(userProfileRepository.insertProfile(any())).thenReturn(1L)
-            whenever(addictionRepository.insertAddictionType(any<AddictionType>())).thenReturn(1L)
-            whenever(addictionRepository.insertKeyword(any())).thenReturn(1L)
-            whenever(onboardingRepository.insertOnboardingResult(any())).thenReturn(1L)
+            whenever(addictionRepository.insertAddictionCategory(any<AddictionCategory>())).thenReturn(1L)
+            whenever(onboardingRepository.insertOnboardingSession(any())).thenReturn(1L)
             val answers =
                 OnboardingAnswers(
                     addictionProfile = AddictionProfile.GAMBLING,
@@ -97,7 +95,7 @@ class SaveOnboardingDataUseCaseTest {
             val result = useCase.execute(answers)
 
             assertTrue(result.isSuccess)
-            verify(addictionRepository, times(2)).insertAddictionType(any())
+            verify(addictionRepository, times(2)).insertAddictionCategory(any())
             verify(keyValueStorageRepository).saveOnboardingCompleted(true)
         }
 
@@ -105,9 +103,8 @@ class SaveOnboardingDataUseCaseTest {
     fun `saves hobbies, symptoms, goals and core values`() {
         runBlocking {
             whenever(userProfileRepository.insertProfile(any())).thenReturn(1L)
-            whenever(addictionRepository.insertAddictionType(any<AddictionType>())).thenReturn(1L)
-            whenever(addictionRepository.insertKeyword(any())).thenReturn(1L)
-            whenever(onboardingRepository.insertOnboardingResult(any())).thenReturn(1L)
+            whenever(addictionRepository.insertAddictionCategory(any<AddictionCategory>())).thenReturn(1L)
+            whenever(onboardingRepository.insertOnboardingSession(any())).thenReturn(1L)
             val answers =
                 OnboardingAnswers(
                     addictionProfile = AddictionProfile.PPU,

@@ -1,10 +1,11 @@
 package com.wesley.beefree.infrastructure.storage.adapters.db
 
 import com.wesley.beefree.domain.entities.*
+import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.infrastructure.storage.adapters.db.entities.*
 
-fun AddictionTypeEntity.toDomain() =
-    AddictionType(
+fun AddictionCategoryEntity.toDomain() =
+    AddictionCategory(
         id = id,
         name = name,
         isMonitoringEnabled = isMonitoringEnabled,
@@ -12,8 +13,8 @@ fun AddictionTypeEntity.toDomain() =
         updatedAt = updatedAt,
     )
 
-fun AddictionType.toEntity() =
-    AddictionTypeEntity(
+fun AddictionCategory.toEntity() =
+    AddictionCategoryEntity(
         id = id,
         name = name,
         isMonitoringEnabled = isMonitoringEnabled,
@@ -21,44 +22,38 @@ fun AddictionType.toEntity() =
         updatedAt = updatedAt,
     )
 
-fun AddictionKeywordEntity.toDomain() =
-    AddictionKeyword(
-        id = id,
-        addictionTypeId = addictionTypeId,
-        keyword = keyword,
+fun UserAddictionEntity.toDomain() =
+    UserAddiction(
+        userProfileId = userProfileId,
+        addictionCategoryId = addictionCategoryId,
+        createdAt = createdAt,
     )
 
-fun AddictionKeyword.toEntity() =
-    AddictionKeywordEntity(
-        id = id,
-        addictionTypeId = addictionTypeId,
-        keyword = keyword,
+fun UserAddiction.toEntity() =
+    UserAddictionEntity(
+        userProfileId = userProfileId,
+        addictionCategoryId = addictionCategoryId,
+        createdAt = createdAt,
     )
 
-fun RelapseHistoryEntity.toDomain() =
-    RelapseHistory(
+fun RelapseRecordEntity.toDomain() =
+    RelapseRecord(
         id = id,
-        addictionTypeId = addictionTypeId,
+        addictionCategoryId = addictionCategoryId,
         keywordDetected = keywordDetected,
         detectedText = detectedText,
-        appPackage = appPackage,
-        externalApp = externalApp,
-        wasSentToExternal = wasSentToExternal,
-        relapseAt = relapseAt,
-        updatedAt = updatedAt,
+        appUsageSessionId = appUsageSessionId,
+        createdAt = createdAt,
     )
 
-fun RelapseHistory.toEntity() =
-    RelapseHistoryEntity(
+fun RelapseRecord.toEntity() =
+    RelapseRecordEntity(
         id = id,
-        addictionTypeId = addictionTypeId,
+        addictionCategoryId = addictionCategoryId,
         keywordDetected = keywordDetected,
         detectedText = detectedText,
-        appPackage = appPackage,
-        externalApp = externalApp,
-        wasSentToExternal = wasSentToExternal,
-        relapseAt = relapseAt,
-        updatedAt = updatedAt,
+        appUsageSessionId = appUsageSessionId,
+        createdAt = createdAt,
     )
 
 fun UserProfileEntity.toDomain() =
@@ -79,157 +74,67 @@ fun UserProfile.toEntity() =
         updatedAt = updatedAt,
     )
 
-fun UserProfileAddictionEntity.toDomain() =
-    UserProfileAddiction(
-        userProfileId = userProfileId,
-        addictionTypeId = addictionTypeId,
-        createdAt = createdAt,
-    )
-
-fun UserProfileAddiction.toEntity() =
-    UserProfileAddictionEntity(
-        userProfileId = userProfileId,
-        addictionTypeId = addictionTypeId,
-        createdAt = createdAt,
-    )
-
-fun AppRestrictionEntity.toDomain() =
-    AppRestriction(
-        id = id,
-        addictionTypeId = addictionTypeId,
-        appPackage = appPackage,
-        screenTimeLimitMillis = screenTimeLimitMillis,
-    )
-
-fun AppRestriction.toEntity() =
-    AppRestrictionEntity(
-        id = id,
-        addictionTypeId = addictionTypeId,
-        appPackage = appPackage,
-        screenTimeLimitMillis = screenTimeLimitMillis,
-    )
-
-fun AppUseEntity.toDomain() =
-    AppUse(
+fun AppUsageSessionEntity.toDomain() =
+    AppUsageSession(
         id = id,
         packageName = packageName,
         enterTime = enterTime,
         exitTime = exitTime,
     )
 
-fun AppUse.toEntity() =
-    AppUseEntity(
+fun AppUsageSession.toEntity() =
+    AppUsageSessionEntity(
         id = id,
         packageName = packageName,
         enterTime = enterTime,
         exitTime = exitTime,
     )
 
-fun SupportContactEntity.toDomain() =
-    SupportContact(
+fun UserSupportContactEntity.toDomain() =
+    UserSupportContact(
         id = id,
+        userProfileId = userProfileId,
+        name = name,
         phoneNumber = phoneNumber,
         isActive = isActive,
         createdAt = createdAt,
     )
 
-fun SupportContact.toEntity() =
-    SupportContactEntity(
+fun UserSupportContact.toEntity() =
+    UserSupportContactEntity(
         id = id,
+        userProfileId = userProfileId,
+        name = name,
         phoneNumber = phoneNumber,
         isActive = isActive,
         createdAt = createdAt,
     )
 
-fun BlockScreenConfigEntity.toDomain() =
-    BlockScreenConfig(
-        id = id,
-        addictionTypeId = addictionTypeId,
-        titleText = titleText,
-        subtitleText = subtitleText,
-        imageUri = imageUri,
-        backgroundColor = backgroundColor,
-        textColor = textColor,
-        updatedAt = updatedAt,
-    )
-
-fun BlockScreenConfig.toEntity() =
-    BlockScreenConfigEntity(
-        id = id,
-        addictionTypeId = addictionTypeId,
-        titleText = titleText,
-        subtitleText = subtitleText,
-        imageUri = imageUri,
-        backgroundColor = backgroundColor,
-        textColor = textColor,
-        updatedAt = updatedAt,
-    )
-
-fun MotivationalMessageEntity.toDomain() =
-    MotivationalMessage(
-        id = id,
-        addictionTypeId = addictionTypeId,
-        messageText = messageText,
-        isActive = isActive,
-    )
-
-fun MotivationalMessage.toEntity() =
-    MotivationalMessageEntity(
-        id = id,
-        addictionTypeId = addictionTypeId,
-        messageText = messageText,
-        isActive = isActive,
-    )
-
-fun OnboardingScaleAnswerEntity.toDomain() =
-    OnboardingScaleAnswer(
+fun UserOnboardingSessionEntity.toDomain() =
+    UserOnboardingSession(
         id = id,
         userProfileId = userProfileId,
-        scaleType = scaleType,
-        questionIndex = questionIndex,
-        answerValue = answerValue,
-        createdAt = createdAt,
-    )
-
-fun OnboardingScaleAnswer.toEntity() =
-    OnboardingScaleAnswerEntity(
-        id = id,
-        userProfileId = userProfileId,
-        scaleType = scaleType,
-        questionIndex = questionIndex,
-        answerValue = answerValue,
-        createdAt = createdAt,
-    )
-
-fun UserProfileOnboardingResultEntity.toDomain() =
-    UserProfileOnboardingResult(
-        id = id,
-        userProfileId = userProfileId,
-        addictionTypeId = addictionTypeId,
+        clinicalApproach = clinicalApproach,
         ppcsScore = ppcsScore,
         pgsiScore = pgsiScore,
         moralIncongruenceScore = moralIncongruenceScore,
         frequencyScore = frequencyScore,
         moralDisapprovalScore = moralDisapprovalScore,
         hasNeurodivergence = hasNeurodivergence,
-        clinicalProfile = clinicalProfile,
-        moralIncongruenceBand = moralIncongruenceBand,
         createdAt = createdAt,
     )
 
-fun UserProfileOnboardingResult.toEntity() =
-    UserProfileOnboardingResultEntity(
+fun UserOnboardingSession.toEntity() =
+    UserOnboardingSessionEntity(
         id = id,
         userProfileId = userProfileId,
-        addictionTypeId = addictionTypeId,
+        clinicalApproach = clinicalApproach,
         ppcsScore = ppcsScore,
         pgsiScore = pgsiScore,
         moralIncongruenceScore = moralIncongruenceScore,
         frequencyScore = frequencyScore,
         moralDisapprovalScore = moralDisapprovalScore,
         hasNeurodivergence = hasNeurodivergence,
-        clinicalProfile = clinicalProfile,
-        moralIncongruenceBand = moralIncongruenceBand,
         createdAt = createdAt,
     )
 
@@ -301,9 +206,8 @@ fun DailyCheckInEntity.toDomain() =
     DailyCheckIn(
         id = id,
         userProfileId = userProfileId,
-        dopamineLevel = dopamineLevel,
-        mood = mood,
-        anxietyLevel = anxietyLevel,
+        treatmentProfile = TreatmentProfile.valueOf(treatmentProfile),
+        answers = DailyCheckInCodec.decode(answersJson),
         checkedInAt = checkedInAt,
     )
 
@@ -311,9 +215,8 @@ fun DailyCheckIn.toEntity() =
     DailyCheckInEntity(
         id = id,
         userProfileId = userProfileId,
-        dopamineLevel = dopamineLevel,
-        mood = mood,
-        anxietyLevel = anxietyLevel,
+        treatmentProfile = treatmentProfile.name,
+        answersJson = DailyCheckInCodec.encode(answers),
         checkedInAt = checkedInAt,
     )
 
@@ -337,216 +240,128 @@ fun WeeklyCheckIn.toEntity() =
         createdAt = createdAt,
     )
 
-fun TriggerMappingEntity.toDomain() =
-    TriggerMapping(
-        id = id,
-        userProfileId = userProfileId,
-        appPackage = appPackage,
-        triggerContext = triggerContext,
-        cravingIntensity = cravingIntensity,
-        didRelapse = didRelapse,
-        loggedAt = loggedAt,
-    )
-
-fun TriggerMapping.toEntity() =
-    TriggerMappingEntity(
-        id = id,
-        userProfileId = userProfileId,
-        appPackage = appPackage,
-        triggerContext = triggerContext,
-        cravingIntensity = cravingIntensity,
-        didRelapse = didRelapse,
-        loggedAt = loggedAt,
-    )
-
-fun InterventionLogEntity.toDomain() =
-    InterventionLog(
+fun InterventionRecordEntity.toDomain() =
+    InterventionRecord(
         id = id,
         userProfileId = userProfileId,
         interventionType = interventionType,
-        triggeredBy = triggeredBy,
+        triggerType = triggerType,
         wasCompleted = wasCompleted,
         createdAt = createdAt,
     )
 
-fun InterventionLog.toEntity() =
-    InterventionLogEntity(
+fun InterventionRecord.toEntity() =
+    InterventionRecordEntity(
         id = id,
         userProfileId = userProfileId,
         interventionType = interventionType,
-        triggeredBy = triggeredBy,
+        triggerType = triggerType,
         wasCompleted = wasCompleted,
         createdAt = createdAt,
     )
 
-fun ThoughtRecordEntity.toDomain() =
-    ThoughtRecord(
+fun CognitiveThoughtRecordEntity.toDomain() =
+    CognitiveThoughtRecord(
         id = id,
         userProfileId = userProfileId,
-        triggerId = triggerId,
         automaticThought = automaticThought,
         rationalResponse = rationalResponse,
         createdAt = createdAt,
     )
 
-fun ThoughtRecord.toEntity() =
-    ThoughtRecordEntity(
+fun CognitiveThoughtRecord.toEntity() =
+    CognitiveThoughtRecordEntity(
         id = id,
         userProfileId = userProfileId,
-        triggerId = triggerId,
         automaticThought = automaticThought,
         rationalResponse = rationalResponse,
         createdAt = createdAt,
     )
 
-fun UrgeSurfingSessionEntity.toDomain() =
-    UrgeSurfingSession(
+fun PsychoeducationContentEntity.toDomain() =
+    PsychoeducationContent(
         id = id,
-        userProfileId = userProfileId,
-        interventionId = interventionId,
-        peakIntensity = peakIntensity,
-        durationSeconds = durationSeconds,
-        completed = completed,
-        loggedAt = loggedAt,
+        addictionCategoryId = addictionCategoryId,
+        contentText = contentText,
+        isActive = isActive,
     )
 
-fun UrgeSurfingSession.toEntity() =
-    UrgeSurfingSessionEntity(
+fun PsychoeducationContent.toEntity() =
+    PsychoeducationContentEntity(
         id = id,
-        userProfileId = userProfileId,
-        interventionId = interventionId,
-        peakIntensity = peakIntensity,
-        durationSeconds = durationSeconds,
-        completed = completed,
-        loggedAt = loggedAt,
+        addictionCategoryId = addictionCategoryId,
+        contentText = contentText,
+        isActive = isActive,
     )
 
-fun MicroActivityEntity.toDomain() =
-    MicroActivity(
+fun EmotionRecordEntity.toDomain() =
+    EmotionRecord(
         id = id,
-        addictionTypeId = addictionTypeId,
-        activityType = activityType,
-        activityName = activityName,
+        userProfileId = userProfileId,
+        feelingType = feelingType,
+        intensity = intensity,
         createdAt = createdAt,
     )
 
-fun MicroActivity.toEntity() =
-    MicroActivityEntity(
+fun EmotionRecord.toEntity() =
+    EmotionRecordEntity(
         id = id,
-        addictionTypeId = addictionTypeId,
-        activityType = activityType,
-        activityName = activityName,
+        userProfileId = userProfileId,
+        feelingType = feelingType,
+        intensity = intensity,
         createdAt = createdAt,
     )
 
-fun DailyMicroActivityLogEntity.toDomain() =
-    DailyMicroActivityLog(
+fun RiskFeatureSnapshotEntity.toDomain() =
+    RiskFeatureSnapshot(
         id = id,
         userProfileId = userProfileId,
-        activityId = activityId,
-        dayDate = dayDate,
-        completedAt = completedAt,
-    )
-
-fun DailyMicroActivityLog.toEntity() =
-    DailyMicroActivityLogEntity(
-        id = id,
-        userProfileId = userProfileId,
-        activityId = activityId,
-        dayDate = dayDate,
-        completedAt = completedAt,
-    )
-
-fun DailyLessonEntity.toDomain() =
-    DailyLesson(
-        id = id,
-        title = title,
-        contentBody = contentBody,
-        targetProfile = targetProfile,
+        previousSnapshotId = previousSnapshotId,
+        humor = humor,
+        stress = stress,
+        anxiety = anxiety,
+        urge = urge,
+        hoursSinceLastRelapse = hoursSinceLastRelapse,
+        hourOfDay = hourOfDay,
+        dayOfWeek = dayOfWeek,
+        timeSinceLastAppOpen = timeSinceLastAppOpen,
+        missingCheckins = missingCheckins,
+        recentIntenseUsage = recentIntenseUsage,
         createdAt = createdAt,
     )
 
-fun DailyLesson.toEntity() =
-    DailyLessonEntity(
+fun RiskFeatureSnapshot.toEntity() =
+    RiskFeatureSnapshotEntity(
         id = id,
-        title = title,
-        contentBody = contentBody,
-        targetProfile = targetProfile,
+        userProfileId = userProfileId,
+        previousSnapshotId = previousSnapshotId,
+        humor = humor,
+        stress = stress,
+        anxiety = anxiety,
+        urge = urge,
+        hoursSinceLastRelapse = hoursSinceLastRelapse,
+        hourOfDay = hourOfDay,
+        dayOfWeek = dayOfWeek,
+        timeSinceLastAppOpen = timeSinceLastAppOpen,
+        missingCheckins = missingCheckins,
+        recentIntenseUsage = recentIntenseUsage,
         createdAt = createdAt,
     )
 
-fun UserLessonProgressEntity.toDomain() =
-    UserLessonProgress(
-        id = id,
-        userProfileId = userProfileId,
-        lessonId = lessonId,
-        completedAt = completedAt,
-    )
-
-fun UserLessonProgress.toEntity() =
-    UserLessonProgressEntity(
-        id = id,
-        userProfileId = userProfileId,
-        lessonId = lessonId,
-        completedAt = completedAt,
-    )
-
-fun HolisticMetricsEntity.toDomain() =
-    HolisticMetrics(
-        id = id,
-        userProfileId = userProfileId,
-        anxietyLevel = anxietyLevel,
-        emotionalSatisfaction = emotionalSatisfaction,
-        mood = mood,
-        loggedAt = loggedAt,
-    )
-
-fun HolisticMetrics.toEntity() =
-    HolisticMetricsEntity(
-        id = id,
-        userProfileId = userProfileId,
-        anxietyLevel = anxietyLevel,
-        emotionalSatisfaction = emotionalSatisfaction,
-        mood = mood,
-        loggedAt = loggedAt,
-    )
-
-fun RiskPredictionEntity.toDomain() =
-    RiskPrediction(
+fun RiskAssessmentEntity.toDomain() =
+    RiskAssessment(
         id = id,
         userProfileId = userProfileId,
         riskScore = riskScore,
-        riskFactors = riskFactors,
-        notificationSent = notificationSent,
-        predictedAt = predictedAt,
+        timeWindow = timeWindow,
+        createdAt = createdAt,
     )
 
-fun RiskPrediction.toEntity() =
-    RiskPredictionEntity(
+fun RiskAssessment.toEntity() =
+    RiskAssessmentEntity(
         id = id,
         userProfileId = userProfileId,
         riskScore = riskScore,
-        riskFactors = riskFactors,
-        notificationSent = notificationSent,
-        predictedAt = predictedAt,
-    )
-
-fun NotificationLogEntity.toDomain() =
-    NotificationLog(
-        id = id,
-        userProfileId = userProfileId,
-        notificationType = notificationType,
-        contentRefId = contentRefId,
-        sentAt = sentAt,
-        openedAt = openedAt,
-    )
-
-fun NotificationLog.toEntity() =
-    NotificationLogEntity(
-        id = id,
-        userProfileId = userProfileId,
-        notificationType = notificationType,
-        contentRefId = contentRefId,
-        sentAt = sentAt,
-        openedAt = openedAt,
+        timeWindow = timeWindow,
+        createdAt = createdAt,
     )

@@ -6,7 +6,7 @@ interface DetectionScorer {
     fun addMatch(
         reason: String,
         keyword: String,
-        addictionTypeId: Int,
+        addictionCategoryId: Int,
         appPackage: String?,
     ): Boolean
 

@@ -2,6 +2,7 @@ package com.wesley.beefree.domain.checkin.usecases
 
 import com.wesley.beefree.domain.entities.DailyCheckIn
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
+import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -28,7 +29,14 @@ class HasCompletedTodaysCheckInUseCaseTest {
         runBlocking {
             whenever(checkInRepository.getDailyCheckIns(userId)).thenReturn(
                 flowOf(
-                    listOf(DailyCheckIn(userProfileId = userId, dopamineLevel = 3, mood = "ok", anxietyLevel = null, checkedInAt = now)),
+                    listOf(
+                        DailyCheckIn(
+                            userProfileId = userId,
+                            treatmentProfile = TreatmentProfile.TCC,
+                            answers = emptyMap(),
+                            checkedInAt = now,
+                        ),
+                    ),
                 ),
             )
 
@@ -43,7 +51,12 @@ class HasCompletedTodaysCheckInUseCaseTest {
             whenever(checkInRepository.getDailyCheckIns(userId)).thenReturn(
                 flowOf(
                     listOf(
-                        DailyCheckIn(userProfileId = userId, dopamineLevel = 3, mood = "ok", anxietyLevel = null, checkedInAt = yesterday),
+                        DailyCheckIn(
+                            userProfileId = userId,
+                            treatmentProfile = TreatmentProfile.TCC,
+                            answers = emptyMap(),
+                            checkedInAt = yesterday,
+                        ),
                     ),
                 ),
             )

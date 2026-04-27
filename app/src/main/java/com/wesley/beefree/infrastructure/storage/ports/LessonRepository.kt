@@ -1,17 +1,12 @@
 package com.wesley.beefree.infrastructure.storage.ports
 
-import com.wesley.beefree.domain.entities.DailyLesson
-import com.wesley.beefree.domain.entities.UserLessonProgress
+import com.wesley.beefree.domain.entities.PsychoeducationContent
 import kotlinx.coroutines.flow.Flow
 
 interface LessonRepository {
-    suspend fun insertLesson(lesson: DailyLesson): Long
+    suspend fun insertContent(content: PsychoeducationContent): Long
 
-    fun getAllLessons(): Flow<List<DailyLesson>>
+    fun getActiveContent(): Flow<List<PsychoeducationContent>>
 
-    fun getLessonsByProfile(profile: String): Flow<List<DailyLesson>>
-
-    suspend fun insertProgress(progress: UserLessonProgress): Long
-
-    fun getProgress(userId: Int): Flow<List<UserLessonProgress>>
+    fun getContentByCategory(categoryId: Int): Flow<List<PsychoeducationContent>>
 }

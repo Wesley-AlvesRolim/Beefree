@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.R
-import com.wesley.beefree.domain.entities.AddictionTypeEnum
+import com.wesley.beefree.domain.entities.AddictionCategoryEnum
 import com.wesley.beefree.infrastructure.events.so.AccessibilityServiceActivity
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
@@ -52,11 +52,11 @@ class SettingsViewModel(
     init {
         updateStatuses()
         viewModelScope.launch {
-            addictionRepository.getAllAddictionTypes().collect { types ->
-                types.find { it.name == AddictionTypeEnum.ADULT_CONTENT.label }?.let {
+            addictionRepository.getAllAddictionCategories().collect { types ->
+                types.find { it.name == AddictionCategoryEnum.ADULT_CONTENT.label }?.let {
                     _isAdultMonitoringEnabled.value = it.isMonitoringEnabled
                 }
-                types.find { it.name == AddictionTypeEnum.BETS.label }?.let {
+                types.find { it.name == AddictionCategoryEnum.BETS.label }?.let {
                     _isBetsMonitoringEnabled.value = it.isMonitoringEnabled
                 }
             }
@@ -121,10 +121,10 @@ class SettingsViewModel(
         viewModelScope.launch {
             val type =
                 addictionRepository
-                    .getAllAddictionTypes()
+                    .getAllAddictionCategories()
                     .first()
-                    .find { it.name == AddictionTypeEnum.ADULT_CONTENT.label } ?: return@launch
-            addictionRepository.updateAddictionType(type.copy(isMonitoringEnabled = !type.isMonitoringEnabled))
+                    .find { it.name == AddictionCategoryEnum.ADULT_CONTENT.label } ?: return@launch
+            addictionRepository.updateAddictionCategory(type.copy(isMonitoringEnabled = !type.isMonitoringEnabled))
         }
     }
 
@@ -132,10 +132,10 @@ class SettingsViewModel(
         viewModelScope.launch {
             val type =
                 addictionRepository
-                    .getAllAddictionTypes()
+                    .getAllAddictionCategories()
                     .first()
-                    .find { it.name == AddictionTypeEnum.BETS.label } ?: return@launch
-            addictionRepository.updateAddictionType(type.copy(isMonitoringEnabled = !type.isMonitoringEnabled))
+                    .find { it.name == AddictionCategoryEnum.BETS.label } ?: return@launch
+            addictionRepository.updateAddictionCategory(type.copy(isMonitoringEnabled = !type.isMonitoringEnabled))
         }
     }
 
@@ -154,9 +154,8 @@ class SettingsViewModel(
                         appContext,
                         KeyValueStorageRepository(SharedPreferencesKeyValueStorage(appContext)),
                         RoomAddictionRepository(
-                            db.addictionTypeDao(),
-                            db.addictionKeywordDao(),
-                            db.relapseHistoryDao(),
+                            db.addictionCategoryDao(),
+                            db.relapseRecordDao(),
                         ),
                     ) as T
                 }

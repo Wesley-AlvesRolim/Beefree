@@ -1,11 +1,11 @@
 package com.wesley.beefree.infrastructure.storage.adapters
 
-import com.wesley.beefree.domain.entities.HolisticMetrics
-import com.wesley.beefree.domain.entities.NotificationLog
-import com.wesley.beefree.domain.entities.RiskPrediction
-import com.wesley.beefree.infrastructure.storage.adapters.db.dao.HolisticMetricsDAO
-import com.wesley.beefree.infrastructure.storage.adapters.db.dao.NotificationLogDAO
-import com.wesley.beefree.infrastructure.storage.adapters.db.dao.RiskPredictionDAO
+import com.wesley.beefree.domain.entities.EmotionRecord
+import com.wesley.beefree.domain.entities.RiskAssessment
+import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
+import com.wesley.beefree.infrastructure.storage.adapters.db.dao.EmotionRecordDAO
+import com.wesley.beefree.infrastructure.storage.adapters.db.dao.RiskAssessmentDAO
+import com.wesley.beefree.infrastructure.storage.adapters.db.dao.RiskFeatureSnapshotDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.toDomain
 import com.wesley.beefree.infrastructure.storage.adapters.db.toEntity
 import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
@@ -13,30 +13,30 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class RoomMetricsRepository(
-    private val holisticMetricsDao: HolisticMetricsDAO,
-    private val riskPredictionDao: RiskPredictionDAO,
-    private val notificationLogDao: NotificationLogDAO,
+    private val emotionRecordDao: EmotionRecordDAO,
+    private val riskFeatureSnapshotDao: RiskFeatureSnapshotDAO,
+    private val riskAssessmentDao: RiskAssessmentDAO,
 ) : MetricsRepository {
-    override suspend fun insertHolisticMetrics(metrics: HolisticMetrics): Long = holisticMetricsDao.insert(metrics.toEntity())
+    override suspend fun insertEmotionRecord(record: EmotionRecord): Long = emotionRecordDao.insert(record.toEntity())
 
-    override fun getHolisticMetrics(userId: Int): Flow<List<HolisticMetrics>> =
-        holisticMetricsDao.getAllByUser(userId).map { list -> list.map { it.toDomain() } }
+    override fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>> =
+        emotionRecordDao.getAllByUser(userId).map { list -> list.map { it.toDomain() } }
 
-    override suspend fun insertRiskPrediction(prediction: RiskPrediction): Long = riskPredictionDao.insert(prediction.toEntity())
+    override fun getEmotionRecordsByType(
+        userId: Int,
+        feelingType: String,
+    ): Flow<List<EmotionRecord>> = emotionRecordDao.getByUserAndType(userId, feelingType).map { list -> list.map { it.toDomain() } }
 
-    override suspend fun updateRiskPrediction(prediction: RiskPrediction) {
-        riskPredictionDao.update(prediction.toEntity())
-    }
+    override suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long = riskFeatureSnapshotDao.insert(snapshot.toEntity())
 
-    override fun getRiskPredictions(userId: Int): Flow<List<RiskPrediction>> =
-        riskPredictionDao.getAllByUser(userId).map { list -> list.map { it.toDomain() } }
+    override fun getRiskFeatureSnapshots(userId: Int): Flow<List<RiskFeatureSnapshot>> =
+        riskFeatureSnapshotDao.getAllByUser(userId).map { list -> list.map { it.toDomain() } }
 
-    override suspend fun insertNotificationLog(log: NotificationLog): Long = notificationLogDao.insert(log.toEntity())
+    override suspend fun getLatestRiskFeatureSnapshot(userId: Int): RiskFeatureSnapshot? =
+        riskFeatureSnapshotDao.getLatestByUser(userId)?.toDomain()
 
-    override suspend fun updateNotificationLog(log: NotificationLog) {
-        notificationLogDao.update(log.toEntity())
-    }
+    override suspend fun insertRiskAssessment(assessment: RiskAssessment): Long = riskAssessmentDao.insert(assessment.toEntity())
 
-    override fun getNotificationLogs(userId: Int): Flow<List<NotificationLog>> =
-        notificationLogDao.getAllByUser(userId).map { list -> list.map { it.toDomain() } }
+    override fun getRiskAssessments(userId: Int): Flow<List<RiskAssessment>> =
+        riskAssessmentDao.getAllByUser(userId).map { list -> list.map { it.toDomain() } }
 }

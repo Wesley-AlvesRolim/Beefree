@@ -35,7 +35,7 @@ class DailyCheckInWorker(
         val profile =
             RoomUserProfileRepository(
                 userProfileDao = database.userProfileDao(),
-                userProfileAddictionDao = database.userProfileAddictionDao(),
+                userAddictionDao = database.userAddictionDao(),
             ).getAllProfiles()
                 .first()
                 .firstOrNull() ?: return true

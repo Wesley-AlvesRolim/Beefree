@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wesley.beefree.R
-import com.wesley.beefree.domain.entities.RelapseHistory
+import com.wesley.beefree.domain.entities.RelapseRecord
 import com.wesley.beefree.ui.components.Heatmap
 import com.wesley.beefree.ui.components.MotivationalCard
 import com.wesley.beefree.ui.components.StatsSummary
@@ -40,7 +40,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
 @Composable
 fun HomeScreenContent(
-    relapseHistory: List<RelapseHistory>,
+    relapseHistory: List<RelapseRecord>,
     motivationalMessage: String,
 ) {
     Column(
