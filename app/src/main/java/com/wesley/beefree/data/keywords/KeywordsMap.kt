@@ -1,16 +1,14 @@
 package com.wesley.beefree.data.keywords
 
-import com.wesley.beefree.domain.entities.AddictionType
-import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
-import kotlinx.coroutines.flow.first
+import com.wesley.beefree.domain.entities.AddictionCategory
 
 suspend fun buildKeywordsMap(
-    types: List<AddictionType>,
-    repository: AddictionRepository,
+    categories: List<AddictionCategory>,
+    keywords: Map<String, List<String>>,
 ): Map<Int, List<String>> =
     buildMap {
-        types.filter { it.isMonitoringEnabled }.forEach { type ->
-            val keywords = repository.getKeywordsByAddictionType(type.id!!).first()
-            put(type.id, keywords.map { it.keyword })
+        categories.filter { it.isMonitoringEnabled }.forEach { category ->
+            val categoryKeywords = keywords[category.name] ?: return@forEach
+            put(category.id!!, categoryKeywords)
         }
     }

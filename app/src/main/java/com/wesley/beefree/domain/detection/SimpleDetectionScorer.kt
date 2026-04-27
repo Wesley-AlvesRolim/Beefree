@@ -1,7 +1,7 @@
 package com.wesley.beefree.domain.detection
 
 import com.wesley.beefree.domain.detection.ports.DetectionScorer
-import com.wesley.beefree.domain.entities.AddictionTypeEnum
+import com.wesley.beefree.domain.entities.AddictionCategoryEnum
 import com.wesley.beefree.domain.events.InterventionTriggered
 
 class SimpleDetectionScorer : DetectionScorer {
@@ -14,7 +14,7 @@ class SimpleDetectionScorer : DetectionScorer {
     override fun addMatch(
         reason: String,
         keyword: String,
-        addictionTypeId: Int,
+        addictionCategoryId: Int,
         appPackage: String?,
     ): Boolean {
         if (matchedKeywords.contains(keyword.lowercase())) {
@@ -23,11 +23,11 @@ class SimpleDetectionScorer : DetectionScorer {
 
         matchedKeywords.add(keyword.lowercase())
 
-        val addictionTypeIndex = addictionTypeId - 1
+        val categoryIndex = addictionCategoryId - 1
         val points =
-            when (addictionTypeIndex) {
-                AddictionTypeEnum.ADULT_CONTENT.ordinal,
-                AddictionTypeEnum.BETS.ordinal,
+            when (categoryIndex) {
+                AddictionCategoryEnum.ADULT_CONTENT.ordinal,
+                AddictionCategoryEnum.BETS.ordinal,
                 -> 3
 
                 else -> 1
@@ -40,7 +40,7 @@ class SimpleDetectionScorer : DetectionScorer {
                 InterventionTriggered(
                     reason = reason,
                     keyword = keyword,
-                    addictionTypeId = addictionTypeId,
+                    addictionCategoryId = addictionCategoryId,
                     appPackage = appPackage,
                 )
         }

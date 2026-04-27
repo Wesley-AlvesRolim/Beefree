@@ -1,7 +1,7 @@
 package com.wesley.beefree.infrastructure.bus.subscribers.history
 
 import com.wesley.beefree.domain.bus.ports.EventBus
-import com.wesley.beefree.domain.entities.RelapseHistory
+import com.wesley.beefree.domain.entities.RelapseRecord
 import com.wesley.beefree.domain.events.InterventionTriggered
 import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
 import kotlinx.coroutines.CoroutineScope
@@ -30,13 +30,11 @@ class RelapseRecorderModule(
 
     private suspend fun recordRelapse(event: InterventionTriggered) {
         addictionRepository.insertRelapse(
-            RelapseHistory(
-                addictionTypeId = event.addictionTypeId,
+            RelapseRecord(
+                addictionCategoryId = event.addictionCategoryId,
                 keywordDetected = event.keyword,
                 detectedText = extractPhraseContaining(event.reason, event.keyword),
-                appPackage = event.appPackage,
-                relapseAt = event.timestamp,
-                updatedAt = event.timestamp,
+                createdAt = event.timestamp,
             ),
         )
     }

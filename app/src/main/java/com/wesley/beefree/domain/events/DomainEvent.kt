@@ -12,7 +12,7 @@ data class ScreenContentCaptured(
 data class InterventionTriggered(
     val reason: String,
     val keyword: String,
-    val addictionTypeId: Int,
+    val addictionCategoryId: Int,
     val appPackage: String? = null,
 ) : DomainEvent()
 
