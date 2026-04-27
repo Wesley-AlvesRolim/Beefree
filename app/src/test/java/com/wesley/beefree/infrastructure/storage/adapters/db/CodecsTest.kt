@@ -1,6 +1,6 @@
 package com.wesley.beefree.infrastructure.storage.adapters.db
 
-import com.wesley.beefree.domain.checkin.DailyCheckInAnswer
+import com.wesley.beefree.domain.entities.DailyCheckInAnswer
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

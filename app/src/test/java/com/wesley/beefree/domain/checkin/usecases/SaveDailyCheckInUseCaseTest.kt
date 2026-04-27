@@ -3,11 +3,8 @@ package com.wesley.beefree.domain.checkin.usecases
 import com.wesley.beefree.domain.checkin.ArtificialDopamineSource
 import com.wesley.beefree.domain.checkin.DopamineType
 import com.wesley.beefree.domain.checkin.NaturalDopamineSource
-import com.wesley.beefree.domain.entities.MicroActivity
-import com.wesley.beefree.infrastructure.storage.ports.ActivityRepository
 import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
 import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -20,18 +17,13 @@ import org.mockito.kotlin.whenever
 class SaveDailyCheckInUseCaseTest {
     private val checkInRepository: CheckInRepository = mock()
     private val addictionRepository: AddictionRepository = mock()
-    private val activityRepository: ActivityRepository = mock()
 
-    private val useCase = SaveDailyCheckInUseCase(checkInRepository, addictionRepository, activityRepository)
+    private val useCase = SaveDailyCheckInUseCase(checkInRepository, addictionRepository)
 
     @Test
     fun `natural dopamine saves check-in and micro-activity log, no relapse`() {
-        val activity = MicroActivity(id = 1, addictionTypeId = null, activityType = "HOBBY", activityName = "Hobby", createdAt = 0L)
         runBlocking {
             whenever(checkInRepository.insertDailyCheckIn(any())).thenReturn(1L)
-            whenever(activityRepository.getAllMicroActivities()).thenReturn(flowOf(listOf(activity)))
-            whenever(activityRepository.insertDailyLog(any())).thenReturn(1L)
-
             val result =
                 useCase.execute(
                     userId = 1,
@@ -43,7 +35,6 @@ class SaveDailyCheckInUseCaseTest {
 
             assertTrue(result.isSuccess)
             verify(checkInRepository).insertDailyCheckIn(any())
-            verify(activityRepository).insertDailyLog(any())
             verify(addictionRepository, never()).insertRelapse(any())
         }
     }
@@ -52,9 +43,6 @@ class SaveDailyCheckInUseCaseTest {
     fun `natural dopamine with no existing activity creates micro-activity first`() {
         runBlocking {
             whenever(checkInRepository.insertDailyCheckIn(any())).thenReturn(1L)
-            whenever(activityRepository.getAllMicroActivities()).thenReturn(flowOf(emptyList()))
-            whenever(activityRepository.insertMicroActivity(any())).thenReturn(1L)
-            whenever(activityRepository.insertDailyLog(any())).thenReturn(1L)
 
             val result =
                 useCase.execute(
@@ -66,8 +54,6 @@ class SaveDailyCheckInUseCaseTest {
                 )
 
             assertTrue(result.isSuccess)
-            verify(activityRepository).insertMicroActivity(any())
-            verify(activityRepository).insertDailyLog(any())
             verify(addictionRepository, never()).insertRelapse(any())
         }
     }
@@ -91,7 +77,6 @@ class SaveDailyCheckInUseCaseTest {
             assertTrue(result.isSuccess)
             verify(checkInRepository).insertDailyCheckIn(any())
             verify(addictionRepository).insertRelapse(any())
-            verify(activityRepository, never()).insertDailyLog(any())
         }
     }
 
