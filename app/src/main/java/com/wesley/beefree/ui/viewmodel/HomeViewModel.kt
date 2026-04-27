@@ -4,20 +4,10 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.wesley.beefree.domain.entities.RelapseHistory
-import com.wesley.beefree.infrastructure.storage.adapters.RoomActivityRepository
+import com.wesley.beefree.domain.entities.RelapseRecord
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
-import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
-import com.wesley.beefree.infrastructure.storage.adapters.RoomEMIRepository
-import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
-import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
-import com.wesley.beefree.infrastructure.storage.ports.ActivityRepository
 import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
-import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
-import com.wesley.beefree.infrastructure.storage.ports.EMIRepository
-import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
-import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,8 +20,8 @@ import java.util.concurrent.TimeUnit
 class HomeViewModel(
     private val addictionRepository: AddictionRepository,
 ) : ViewModel() {
-    private val _relapseHistory = MutableStateFlow<List<RelapseHistory>>(emptyList())
-    val relapseHistory: StateFlow<List<RelapseHistory>> = _relapseHistory.asStateFlow()
+    private val _relapseHistory = MutableStateFlow<List<RelapseRecord>>(emptyList())
+    val relapseHistory: StateFlow<List<RelapseRecord>> = _relapseHistory.asStateFlow()
 
     private val _motivationalMessage = MutableStateFlow("")
     val motivationalMessage: StateFlow<String> = _motivationalMessage.asStateFlow()
@@ -53,14 +43,14 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun getTheLast30DaysOfHistory(): List<RelapseHistory> {
+    private suspend fun getTheLast30DaysOfHistory(): List<RelapseRecord> {
         val relapseHistory = addictionRepository.getRelapseHistory().first()
 
         val thirtyDaysAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)
 
         return relapseHistory
-            .filter { it.relapseAt >= thirtyDaysAgo }
-            .sortedByDescending { it.relapseAt }
+            .filter { it.createdAt >= thirtyDaysAgo }
+            .sortedByDescending { it.createdAt }
     }
 
     private fun getRandomMotivationalMessage(): String {
@@ -85,9 +75,8 @@ class HomeViewModel(
                     @Suppress("UNCHECKED_CAST")
                     return HomeViewModel(
                         RoomAddictionRepository(
-                            database.addictionTypeDao(),
-                            database.addictionKeywordDao(),
-                            database.relapseHistoryDao(),
+                            database.addictionCategoryDao(),
+                            database.relapseRecordDao(),
                         ),
                     ) as T
                 }

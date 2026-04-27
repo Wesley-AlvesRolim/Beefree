@@ -19,7 +19,12 @@ suspend fun seed(database: AppDatabase) {
             Build.PRODUCT == "sdk_gphone64_x86_64"
     if (!isProbablyAnEmulator) return
 
-    val isNotCreatedTheUser = database.userProfileDao().getAll().first().isEmpty()
+    val isNotCreatedTheUser =
+        database
+            .userProfileDao()
+            .getAll()
+            .first()
+            .isEmpty()
     if (isNotCreatedTheUser) return
 
     seedAddictionCategories(database)

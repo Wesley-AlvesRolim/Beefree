@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 const val INTERVENTION_REASON = "INTERVENTION_REASON"
@@ -60,8 +61,17 @@ class InterventionActivity : ComponentActivity() {
         scope.launch {
             val db = AppDatabase.getDatabase(this@InterventionActivity)
             val userId = resolveUserId(db) ?: return@launch
-            val result = db.userProfileOnboardingResultDao().getByUser(userId)
-            val strategy = resolveStrategy(result?.clinicalProfile)
+            val userAddiction =
+                db
+                    .userAddictionDao()
+                    .getByUserId(userId)
+                    .firstOrNull()
+                    ?.firstOrNull()
+            val addictionCategory =
+                userAddiction?.addictionCategoryId?.let {
+                    db.addictionCategoryDao().getById(it)
+                }
+            val strategy = resolveStrategy(addictionCategory?.name)
             val coreValues =
                 if (strategy.showsCoreValuesInEmi) {
                     loadCoreValues(db, userId)

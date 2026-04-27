@@ -12,13 +12,11 @@ import com.wesley.beefree.domain.checkin.usecases.HasCompletedTodaysCheckInUseCa
 import com.wesley.beefree.domain.checkin.usecases.SaveDailyCheckInUseCase
 import com.wesley.beefree.domain.checkin.usecases.SaveWeeklyCheckInUseCase
 import com.wesley.beefree.domain.entities.UserCoreValue
-import com.wesley.beefree.infrastructure.storage.adapters.RoomActivityRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomOnboardingRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
-import com.wesley.beefree.infrastructure.storage.ports.ActivityRepository
 import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
 import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
 import com.wesley.beefree.infrastructure.storage.ports.OnboardingRepository
@@ -34,7 +32,6 @@ import kotlinx.coroutines.withContext
 class CheckInViewModel(
     private val checkInRepository: CheckInRepository,
     private val addictionRepository: AddictionRepository,
-    private val activityRepository: ActivityRepository,
     private val userProfileRepository: UserProfileRepository,
     private val onboardingRepository: OnboardingRepository,
 ) : ViewModel() {
@@ -98,7 +95,7 @@ class CheckInViewModel(
                 _coreValues.value = onboardingRepository.getCoreValues(userId).first()
 
                 val addiction = userProfileRepository.getAddictionsByUserId(userId).first().firstOrNull()
-                addictionTypeId = addiction?.addictionTypeId
+                addictionTypeId = addiction?.userProfileId
 
                 val alreadyDone =
                     HasCompletedTodaysCheckInUseCase(
@@ -174,7 +171,7 @@ class CheckInViewModel(
             withContext(Dispatchers.IO) {
                 when (_checkInType.value) {
                     CheckInType.DAILY ->
-                        SaveDailyCheckInUseCase(checkInRepository, addictionRepository, activityRepository).execute(
+                        SaveDailyCheckInUseCase(checkInRepository, addictionRepository).execute(
                             userId = userId,
                             dopamineLevel = _dopamineLevel.value,
                             mood = _mood.value,
@@ -208,24 +205,17 @@ class CheckInViewModel(
                             ),
                         addictionRepository =
                             RoomAddictionRepository(
-                                database.addictionTypeDao(),
-                                database.addictionKeywordDao(),
-                                database.relapseHistoryDao(),
-                            ),
-                        activityRepository =
-                            RoomActivityRepository(
-                                database.microActivityDao(),
-                                database.dailyMicroActivityLogDao(),
+                                database.addictionCategoryDao(),
+                                database.relapseRecordDao(),
                             ),
                         userProfileRepository =
                             RoomUserProfileRepository(
                                 database.userProfileDao(),
-                                database.userProfileAddictionDao(),
+                                database.userAddictionDao(),
                             ),
                         onboardingRepository =
                             RoomOnboardingRepository(
-                                database.userProfileOnboardingResultDao(),
-                                database.onboardingScaleAnswerDao(),
+                                database.userOnboardingSessionDao(),
                                 database.userCoreValueDao(),
                                 database.userHobbyDao(),
                                 database.userObjectiveDao(),

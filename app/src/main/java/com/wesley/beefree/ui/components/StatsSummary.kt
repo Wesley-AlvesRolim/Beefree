@@ -13,17 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.wesley.beefree.R
-import com.wesley.beefree.domain.entities.RelapseHistory
+import com.wesley.beefree.domain.entities.RelapseRecord
 import java.util.Calendar
 
 @Composable
-fun StatsSummary(data: List<RelapseHistory>) {
+fun StatsSummary(data: List<RelapseRecord>) {
     val total = data.size
     val lastWeekCount =
         remember(data) {
             val cal = Calendar.getInstance()
             cal.add(Calendar.DAY_OF_YEAR, -7)
-            data.count { it.relapseAt > cal.time.time }
+            data.count { it.createdAt > cal.time.time }
         }
 
     Row(

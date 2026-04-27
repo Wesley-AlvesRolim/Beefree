@@ -25,19 +25,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.wesley.beefree.R
-import com.wesley.beefree.domain.entities.RelapseHistory
+import com.wesley.beefree.domain.entities.RelapseRecord
 import java.util.Calendar
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Heatmap(data: List<RelapseHistory>) {
+fun Heatmap(data: List<RelapseRecord>) {
     val countsPerDay =
         remember(data) {
             val counts = mutableMapOf<String, Int>()
             val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
 
             data.forEach {
-                val dateStr = sdf.format(it.relapseAt)
+                val dateStr = sdf.format(it.createdAt)
                 counts[dateStr] = counts.getOrDefault(dateStr, 0) + 1
             }
             counts

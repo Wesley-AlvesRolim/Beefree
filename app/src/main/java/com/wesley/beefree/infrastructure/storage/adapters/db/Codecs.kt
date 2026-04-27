@@ -1,6 +1,6 @@
 package com.wesley.beefree.infrastructure.storage.adapters.db
 
-import com.wesley.beefree.domain.checkin.DailyCheckInAnswer
+import com.wesley.beefree.domain.entities.DailyCheckInAnswer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json

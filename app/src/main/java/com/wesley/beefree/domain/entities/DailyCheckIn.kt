@@ -1,7 +1,7 @@
 package com.wesley.beefree.domain.entities
 
-import com.wesley.beefree.domain.checkin.DailyCheckInAnswer
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
+import kotlinx.serialization.Serializable
 
 data class DailyCheckIn(
     val id: Int? = null,
@@ -10,3 +10,6 @@ data class DailyCheckIn(
     val answers: Map<String, DailyCheckInAnswer>,
     val checkedInAt: Long,
 )
+
+@Serializable
+sealed interface DailyCheckInAnswer
