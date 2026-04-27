@@ -12,4 +12,36 @@ data class DailyCheckIn(
 )
 
 @Serializable
-sealed interface DailyCheckInAnswer
+sealed interface DailyCheckInAnswer {
+    @Serializable
+    data class Scale(
+        val value: Int,
+    ) : DailyCheckInAnswer
+
+    @Serializable
+    data class DualScale(
+        val first: Int,
+        val second: Int,
+    ) : DailyCheckInAnswer
+
+    @Serializable
+    data class MultiSelect(
+        val ids: List<String>,
+        val context: String? = null,
+    ) : DailyCheckInAnswer
+
+    @Serializable
+    data class SingleSelect(
+        val id: String,
+    ) : DailyCheckInAnswer
+
+    @Serializable
+    data class Text(
+        val value: String,
+    ) : DailyCheckInAnswer
+
+    @Serializable
+    data class Bool(
+        val value: Boolean,
+    ) : DailyCheckInAnswer
+}
