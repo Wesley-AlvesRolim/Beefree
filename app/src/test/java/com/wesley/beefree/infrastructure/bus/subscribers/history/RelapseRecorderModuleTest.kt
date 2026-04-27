@@ -1,9 +1,8 @@
 package com.wesley.beefree.infrastructure.bus.subscribers.history
 
 import com.wesley.beefree.domain.bus.ports.EventBus
-import com.wesley.beefree.domain.entities.RelapseHistory
+import com.wesley.beefree.domain.entities.RelapseRecord
 import com.wesley.beefree.domain.events.InterventionTriggered
-import com.wesley.beefree.infrastructure.bus.subscribers.history.RelapseRecorderModule
 import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,19 +43,17 @@ class RelapseRecorderModuleTest {
                 InterventionTriggered(
                     reason = "I bet you",
                     keyword = "bet",
-                    addictionTypeId = 1,
+                    addictionCategoryId = 1,
                     appPackage = "com.example.app",
                 )
             subscriber.invoke(event)
 
             verify(addictionRepository).insertRelapse(
-                RelapseHistory(
-                    addictionTypeId = 1,
+                RelapseRecord(
+                    addictionCategoryId = 1,
                     keywordDetected = "bet",
                     detectedText = "I bet you",
-                    appPackage = "com.example.app",
-                    relapseAt = event.timestamp,
-                    updatedAt = event.timestamp,
+                    createdAt = event.timestamp,
                 ),
             )
         }
@@ -85,19 +82,17 @@ class RelapseRecorderModuleTest {
                 InterventionTriggered(
                     reason = "Safe sentence. I bet you something bad. Another safe sentence.",
                     keyword = "bet",
-                    addictionTypeId = 1,
+                    addictionCategoryId = 1,
                     appPackage = "com.example.app",
                 )
             subscriber.invoke(event)
 
             verify(addictionRepository).insertRelapse(
-                RelapseHistory(
-                    addictionTypeId = 1,
+                RelapseRecord(
+                    addictionCategoryId = 1,
                     keywordDetected = "bet",
                     detectedText = "I bet you something bad.",
-                    appPackage = "com.example.app",
-                    relapseAt = event.timestamp,
-                    updatedAt = event.timestamp,
+                    createdAt = event.timestamp,
                 ),
             )
         }

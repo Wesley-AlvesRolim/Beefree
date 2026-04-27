@@ -34,7 +34,7 @@ class DeviceGoBackInterventionTest {
                 InterventionTriggered(
                     reason = "test reason",
                     keyword = "test keyword",
-                    addictionTypeId = 1,
+                    addictionCategoryId = 1,
                 )
             lambdaCaptor.firstValue.invoke(event)
 
