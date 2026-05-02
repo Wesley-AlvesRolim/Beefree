@@ -189,6 +189,7 @@
     <string name="onboarding_overlay_permission_enable">Ativar intervenção</string>
 
     <!-- Home screen -->
+    <string name="home_greeting">Olá, %1$s</string>
     <string name="home_welcome_title">Bem-vindo ao BeeFree</string>
     <string name="home_progress_section_title">Evolução em 30 dias</string>
     <string name="home_relapse_apps_title">Aplicativos com mais recaídas</string>
@@ -248,6 +249,46 @@
     <string name="settings_banking_warning_title">Compatibilidade com apps bancários</string>
     <string name="settings_banking_warning_body">Alguns aplicativos bancários podem bloquear transações enquanto o monitoramento de tela estiver ativo. Se isso ocorrer, desative temporariamente o serviço de acessibilidade antes de acessar seu banco.</string>
 
+    <!-- Home: sections -->
+    <string name="home_activity_section_title">Micro-atividades (30 dias)</string>
+    <string name="home_triggers_section_title">Gatilhos mapeados</string>
+    <string name="home_emotional_section_title">Evolução emocional</string>
+    <string name="home_checkin_banner_sub">~2 min</string>
+    <string name="home_checkin_banner_cta">Iniciar</string>
+    <string name="home_evolution_title">Evolução em 30 dias</string>
+    <string name="home_legend_aligned">Alinhado · %d</string>
+    <string name="home_legend_setback">Recaída · %d</string>
+    <string name="home_legend_today">Hoje</string>
+    <string name="home_dual_chart_title">Ansiedade × satisfação</string>
+    <string name="home_dual_chart_subtitle">Últimas semanas</string>
+    <string name="home_triggers_week_title">Gatilhos esta semana</string>
+    <string name="home_triggers_see_all">Ver todos</string>
+    <string name="home_track_days_aligned">DIAS ALINHADOS</string>
+    <string name="home_track_days_treatment_progress">Progresso no %s</string>
+
+    <!-- Relapse calendar -->
+    <string name="relapse_calendar_title">Calendário de recaídas</string>
+    <string name="relapse_calendar_success_rate">Taxa de sucesso</string>
+    <string name="relapse_calendar_clean_day">Dia limpo</string>
+    <string name="relapse_calendar_relapse_day">Recaída</string>
+    <string name="relapse_calendar_legend">Legenda:</string>
+
+    <!-- Activity calendar -->
+    <string name="activity_calendar_success_rate">Taxa de atividade: %d%%</string>
+    <string name="activity_calendar_active_day">Atividade realizada</string>
+    <string name="activity_calendar_inactive_day">Sem atividade</string>
+
+    <!-- Triggers list -->
+    <string name="triggers_empty">Nenhum gatilho registrado ainda.</string>
+    <string name="triggers_craving_label">Intensidade:</string>
+
+    <!-- Emotional chart -->
+    <string name="emotional_chart_anxiety">Ansiedade</string>
+    <string name="emotional_chart_satisfaction">Satisfação emocional</string>
+    <string name="emotional_chart_empty">Sem dados emocionais ainda.</string>
+
+    <!-- Quick help -->
+    <string name="quick_help_button_description">Ajuda rápida</string>
 
     <!-- Check-in -->
     <string name="check_in_title">Check-in</string>
@@ -335,4 +376,12 @@
     <!-- Errors -->
     <string name="export_data_error">Falha ao exportar os seus dados!</string>
     <string name="onboarding_save_error">Falha ao salvar os seus dados. Tente novamente.</string>
+</resources></resources>
+
+    <!-- Feeling types -->
+    <string name="feeling_type_anxiety">Ansiedade</string>
+    <string name="feeling_type_stress">Estresse</string>
+    <string name="feeling_type_loneliness">Solidão</string>
+    <string name="feeling_type_boredom">Tédio</string>
+
 </resources>
