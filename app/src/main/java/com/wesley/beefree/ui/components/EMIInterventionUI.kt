@@ -71,7 +71,7 @@ fun EMIInterventionUI(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 BeeHeadlineLarge(
-                    text = context.getString(R.string.dont_do_this),
+                    text = stringResource(R.string.dont_do_this),
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center,
                 )

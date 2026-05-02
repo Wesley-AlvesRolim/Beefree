@@ -36,11 +36,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
     buildFeatures {
         compose = true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
 }
 
@@ -76,6 +79,9 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.kotlinx.serialization.json)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
+    implementation(libs.vico.views)
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)

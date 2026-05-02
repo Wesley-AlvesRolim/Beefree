@@ -1,6 +1,7 @@
 package com.wesley.beefree.infrastructure.storage.ports
 
 import com.wesley.beefree.domain.entities.EmotionRecord
+import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.entities.RiskAssessment
 import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,7 @@ interface MetricsRepository {
 
     fun getEmotionRecordsByType(
         userId: Int,
-        feelingType: String,
+        feelingType: FeelingType,
     ): Flow<List<EmotionRecord>>
 
     suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long
