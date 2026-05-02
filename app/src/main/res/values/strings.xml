@@ -266,6 +266,13 @@
     <string name="home_track_days_aligned">DIAS ALINHADOS</string>
     <string name="home_track_days_treatment_progress">Progresso no %s</string>
 
+
+    <string name="trigger_map_title">Mapeamento de Gatilhos</string>
+    <string name="activity_trajectory_title">Atividade</string>
+    <string name="recovery_trajectory_title">Recuperação</string>
+    <string name="help_title">Ajuda</string>
+
+
     <!-- Relapse calendar -->
     <string name="relapse_calendar_title">Calendário de recaídas</string>
     <string name="relapse_calendar_success_rate">Taxa de sucesso</string>
