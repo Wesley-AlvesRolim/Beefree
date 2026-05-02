@@ -97,6 +97,14 @@ private fun TriggerEmotionRow(
             FeelingType.BOREDOM -> Icons.Default.AccessTime
         }
 
+    val text =
+        when (feelingType) {
+            FeelingType.ANXIETY -> stringResource(R.string.feeling_type_anxiety)
+            FeelingType.STRESS -> stringResource(R.string.feeling_type_stress)
+            FeelingType.LONELINESS -> stringResource(R.string.feeling_type_loneliness)
+            FeelingType.BOREDOM -> stringResource(R.string.feeling_type_boredom)
+        }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(BeeSpacing.S),
@@ -122,7 +130,7 @@ private fun TriggerEmotionRow(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom,
             ) {
-                BeeLabelMedium(feelingType.name.lowercase().replaceFirstChar { it.uppercase() })
+                BeeLabelMedium(text.lowercase().replaceFirstChar { it.uppercase() })
                 BeeBodySmall(
                     text = "$count×",
                     color = MaterialTheme.colorScheme.primary,
