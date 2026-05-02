@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.wesley.beefree.R
 import com.wesley.beefree.ui.components.designsystem.BeeBodySmall
 import com.wesley.beefree.ui.components.designsystem.BeeCardSection

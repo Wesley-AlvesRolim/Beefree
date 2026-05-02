@@ -128,9 +128,11 @@ class HomeViewModel(
                 val userId = user.id ?: throw IllegalStateException("User ID not found")
                 val userAddictionsList = userProfileRepository.getAddictionsByUserId(userId).first()
                 val userAddiction = userAddictionsList.firstOrNull()
-                if (userAddictionsList.isEmpty() || userAddiction == null) throw IllegalStateException(
-                    "User don't have a addiction profile"
-                )
+                if (userAddictionsList.isEmpty() || userAddiction == null) {
+                    throw IllegalStateException(
+                        "User don't have a addiction profile",
+                    )
+                }
 
                 val allPsychoeducationMessagesDeferred =
                     async(Dispatchers.IO) {
@@ -219,11 +221,11 @@ class HomeViewModel(
                 0f
             } else {
                 (
-                        records
-                            .map { it.intensity }
-                            .average()
-                            .toFloat() / maxIntensityLevel
-                        ) * 100f
+                    records
+                        .map { it.intensity }
+                        .average()
+                        .toFloat() / maxIntensityLevel
+                ) * 100f
             }
         }
     }
@@ -286,10 +288,11 @@ class HomeViewModel(
                     @Suppress("UNCHECKED_CAST")
                     return HomeViewModel(
                         computeRelapseSuccessRateUseCase = ComputeRelapseSuccessRateUseCase(),
-                        hasCompletedTodaysCheckInUseCase = HasCompletedTodaysCheckInUseCase(
-                            checkInRepository,
-                            DetermineCheckInTypeUseCase(),
-                        ),
+                        hasCompletedTodaysCheckInUseCase =
+                            HasCompletedTodaysCheckInUseCase(
+                                checkInRepository,
+                                DetermineCheckInTypeUseCase(),
+                            ),
                         lessonRepository =
                             RoomLessonRepository(
                                 database.psychoeducationContentDao(),
@@ -310,7 +313,7 @@ class HomeViewModel(
                                 database.userProfileDao(),
                                 database.userAddictionDao(),
                             ),
-                        checkInRepository = checkInRepository
+                        checkInRepository = checkInRepository,
                     ) as T
                 }
             }
