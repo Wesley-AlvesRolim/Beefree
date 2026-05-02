@@ -21,6 +21,7 @@ import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileReposit
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
 import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
+import com.wesley.beefree.infrastructure.storage.ports.LessonRepository
 import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
 import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
 import kotlinx.coroutines.Dispatchers
@@ -70,12 +71,13 @@ data class HomeUiState(
 )
 
 class HomeViewModel(
-    private val lessonRepository: RoomLessonRepository,
+    private val lessonRepository: LessonRepository,
     private val addictionRepository: AddictionRepository,
     private val metricsRepository: MetricsRepository,
     private val userProfileRepository: UserProfileRepository,
     private val checkInRepository: CheckInRepository,
     private val computeRelapseSuccessRateUseCase: ComputeRelapseSuccessRateUseCase,
+    private val hasCompletedTodaysCheckInUseCase: HasCompletedTodaysCheckInUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -124,14 +126,17 @@ class HomeViewModel(
             try {
                 val user = resolveUser() ?: throw IllegalStateException("User profile not found")
                 val userId = user.id ?: throw IllegalStateException("User ID not found")
-                val userAddiction = userProfileRepository.getAddictionsByUserId(userId).first()
-                if (userAddiction.isEmpty()) throw IllegalStateException("User don't have a addiction profile")
+                val userAddictionsList = userProfileRepository.getAddictionsByUserId(userId).first()
+                val userAddiction = userAddictionsList.firstOrNull()
+                if (userAddictionsList.isEmpty() || userAddiction == null) throw IllegalStateException(
+                    "User don't have a addiction profile"
+                )
 
                 val allPsychoeducationMessagesDeferred =
                     async(Dispatchers.IO) {
                         lessonRepository
                             .getContentByCategory(
-                                userAddiction[0].addictionCategoryId,
+                                userAddiction.addictionCategoryId,
                             ).first()
                     }
                 val allRelapsesDeferred =
@@ -158,10 +163,7 @@ class HomeViewModel(
                 val relapseRate = computeRelapseSuccessRateUseCase.execute(relapses)
 
                 val hasCheckedIn =
-                    HasCompletedTodaysCheckInUseCase(
-                        checkInRepository,
-                        DetermineCheckInTypeUseCase(),
-                    ).execute(userId, user.createdAt)
+                    hasCompletedTodaysCheckInUseCase.execute(userId, user.createdAt)
 
                 val treatmentProfile =
                     dailyCheckIns.lastOrNull()?.treatmentProfile ?: TreatmentProfile.ACT
@@ -192,7 +194,6 @@ class HomeViewModel(
                     )
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
                 _uiState.update { it.copy(isLoading = false, error = e.message ?: "Unknown error") }
             }
         }
@@ -204,9 +205,10 @@ class HomeViewModel(
             .firstOrNull()
 
     private fun computeAnxietySeries(emotionRecords: List<EmotionRecord>): List<Float> {
-        val weeks: Long = 7
+        val weeks = 6
+        val daysOnWeek: Long = 7
         val now = System.currentTimeMillis()
-        val weekMs = TimeUnit.DAYS.toMillis(weeks)
+        val weekMs = TimeUnit.DAYS.toMillis(daysOnWeek)
         val maxIntensityLevel = 5f
         return (weeks downTo 0).map { weeksAgo ->
             val weekEnd = now - weeksAgo * weekMs
@@ -217,11 +219,11 @@ class HomeViewModel(
                 0f
             } else {
                 (
-                    records
-                        .map { it.intensity }
-                        .average()
-                        .toFloat() / maxIntensityLevel
-                ) * 100f
+                        records
+                            .map { it.intensity }
+                            .average()
+                            .toFloat() / maxIntensityLevel
+                        ) * 100f
             }
         }
     }
@@ -257,9 +259,10 @@ class HomeViewModel(
     }
 
     private fun computeSatisfactionSeries(weeklyCheckIns: List<WeeklyCheckIn>): List<Float> {
-        val weeks: Long = 7
+        val weeks = 6
+        val daysOnWeek: Long = 7
         val now = System.currentTimeMillis()
-        val weekMs = TimeUnit.DAYS.toMillis(weeks)
+        val weekMs = TimeUnit.DAYS.toMillis(daysOnWeek)
         val maxRealConnectionLevel = 10f
         return (weeks downTo 0).map { weeksAgo ->
             val weekEnd = now - weeksAgo * weekMs
@@ -275,9 +278,18 @@ class HomeViewModel(
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     val database = AppDatabase.getDatabase(context)
+                    val checkInRepository =
+                        RoomCheckInRepository(
+                            database.dailyCheckInDao(),
+                            database.weeklyCheckInDao(),
+                        )
                     @Suppress("UNCHECKED_CAST")
                     return HomeViewModel(
                         computeRelapseSuccessRateUseCase = ComputeRelapseSuccessRateUseCase(),
+                        hasCompletedTodaysCheckInUseCase = HasCompletedTodaysCheckInUseCase(
+                            checkInRepository,
+                            DetermineCheckInTypeUseCase(),
+                        ),
                         lessonRepository =
                             RoomLessonRepository(
                                 database.psychoeducationContentDao(),
@@ -298,11 +310,7 @@ class HomeViewModel(
                                 database.userProfileDao(),
                                 database.userAddictionDao(),
                             ),
-                        checkInRepository =
-                            RoomCheckInRepository(
-                                database.dailyCheckInDao(),
-                                database.weeklyCheckInDao(),
-                            ),
+                        checkInRepository = checkInRepository
                     ) as T
                 }
             }

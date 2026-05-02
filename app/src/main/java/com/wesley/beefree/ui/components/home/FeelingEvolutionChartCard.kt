@@ -41,7 +41,7 @@ fun FeelingEvolutionChartCard(
     ) {
         Column(modifier = Modifier.padding(BeeSpacing.M)) {
             BeeHeadlineSmall(stringResource(R.string.home_dual_chart_title))
-            Spacer(Modifier.height(2.dp))
+            Spacer(Modifier.height(BeeSpacing.XS))
             BeeBodySmall(
                 text = stringResource(R.string.home_dual_chart_subtitle),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

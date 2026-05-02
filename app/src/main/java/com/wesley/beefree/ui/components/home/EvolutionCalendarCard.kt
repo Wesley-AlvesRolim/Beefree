@@ -98,7 +98,7 @@ private fun CalendarLegendItem(
         Box(
             modifier =
                 Modifier
-                    .size(10.dp)
+                    .size(BeeSpacing.S)
                     .clip(RoundedCornerShape(BeeSpacing.XS))
                     .background(color),
         )
