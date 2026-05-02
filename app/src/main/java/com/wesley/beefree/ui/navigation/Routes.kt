@@ -45,7 +45,7 @@ sealed class Screen(
     object CheckIn : Screen("check_in", R.string.check_in_title, Icons.Default.CheckCircle)
 
     object ActivityTrajectory :
-        Screen("activity_trajectory", R.string.values_crisis_title, Icons.Default.Map)
+        Screen("activity_trajectory", R.string.activity_trajectory_title, Icons.Default.Map)
 
     object RecoveryTrajectory : Screen(
         "recovery_trajectory",
