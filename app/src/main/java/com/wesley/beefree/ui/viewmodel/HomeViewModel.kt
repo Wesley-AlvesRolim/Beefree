@@ -11,8 +11,8 @@ import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.entities.RelapseRecord
 import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
-import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.domain.home.usecases.ComputeRelapseSuccessRateUseCase
+import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomLessonRepository
