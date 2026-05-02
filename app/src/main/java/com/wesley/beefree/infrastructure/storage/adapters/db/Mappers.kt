@@ -298,7 +298,7 @@ fun EmotionRecordEntity.toDomain() =
     EmotionRecord(
         id = id,
         userProfileId = userProfileId,
-        feelingType = feelingType,
+        feelingType = FeelingType.valueOf(feelingType),
         intensity = intensity,
         createdAt = createdAt,
     )
@@ -307,7 +307,7 @@ fun EmotionRecord.toEntity() =
     EmotionRecordEntity(
         id = id,
         userProfileId = userProfileId,
-        feelingType = feelingType,
+        feelingType = feelingType.name,
         intensity = intensity,
         createdAt = createdAt,
     )

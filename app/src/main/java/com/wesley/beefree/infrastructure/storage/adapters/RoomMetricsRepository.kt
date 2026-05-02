@@ -1,6 +1,7 @@
 package com.wesley.beefree.infrastructure.storage.adapters
 
 import com.wesley.beefree.domain.entities.EmotionRecord
+import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.entities.RiskAssessment
 import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.EmotionRecordDAO
@@ -24,8 +25,8 @@ class RoomMetricsRepository(
 
     override fun getEmotionRecordsByType(
         userId: Int,
-        feelingType: String,
-    ): Flow<List<EmotionRecord>> = emotionRecordDao.getByUserAndType(userId, feelingType).map { list -> list.map { it.toDomain() } }
+        feelingType: FeelingType,
+    ): Flow<List<EmotionRecord>> = emotionRecordDao.getByUserAndType(userId, feelingType.name).map { list -> list.map { it.toDomain() } }
 
     override suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long = riskFeatureSnapshotDao.insert(snapshot.toEntity())
 
