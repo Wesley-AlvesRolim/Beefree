@@ -4,10 +4,15 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.TagFaces
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -16,12 +21,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.wesley.beefree.R
+import com.wesley.beefree.ui.screens.ActivityTrajectoryScreen
+import com.wesley.beefree.ui.screens.HelpModalScreen
 import com.wesley.beefree.ui.screens.HomeScreen
+import com.wesley.beefree.ui.screens.RecoveryTrajectoryScreen
 import com.wesley.beefree.ui.screens.SettingsScreen
+import com.wesley.beefree.ui.screens.TriggerMapScreen
 import com.wesley.beefree.ui.screens.checkin.CheckInScreen
 import com.wesley.beefree.ui.viewmodel.CheckInViewModel
+import com.wesley.beefree.ui.viewmodel.HomeNavigationDestination
 import com.wesley.beefree.ui.viewmodel.HomeViewModel
+import com.wesley.beefree.ui.viewmodel.RecoveryTrajectoryViewModel
 import com.wesley.beefree.ui.viewmodel.SettingsViewModel
+import com.wesley.beefree.ui.viewmodel.TriggerMapViewModel
 
 sealed class Screen(
     val route: String,
@@ -30,9 +42,22 @@ sealed class Screen(
 ) {
     object Home : Screen("home", R.string.nav_home, Icons.Default.Home)
 
-    object Settings : Screen("settings", R.string.settings_title, Icons.Default.Settings)
-
     object CheckIn : Screen("check_in", R.string.check_in_title, Icons.Default.CheckCircle)
+
+    object ActivityTrajectory :
+        Screen("activity_trajectory", R.string.values_crisis_title, Icons.Default.Map)
+
+    object RecoveryTrajectory : Screen(
+        "recovery_trajectory",
+        R.string.recovery_trajectory_title,
+        Icons.AutoMirrored.Filled.TrendingUp,
+    )
+
+    object TriggerMap : Screen("trigger_map", R.string.trigger_map_title, Icons.Default.TagFaces)
+
+    object HelpModal : Screen("help_modal", R.string.help_title, Icons.AutoMirrored.Filled.Help)
+
+    object Settings : Screen("settings", R.string.settings_title, Icons.Default.Settings)
 }
 
 @Composable
@@ -52,11 +77,24 @@ fun Routes(
         modifier = Modifier.padding(innerPadding),
     ) {
         composable(Screen.Home.route) {
-            HomeScreen(
-                viewModel = homeViewModel,
-            )
+            LaunchedEffect(homeViewModel) {
+                homeViewModel.navigationEvents.collect { destination ->
+                    when (destination) {
+                        HomeNavigationDestination.CheckIn ->
+                            navController.navigate(Screen.CheckIn.route)
+                        HomeNavigationDestination.RecoveryTrajectory ->
+                            navController.navigate(Screen.ActivityTrajectory.route)
+                        HomeNavigationDestination.FeelingDetails ->
+                            navController.navigate(Screen.RecoveryTrajectory.route)
+                        HomeNavigationDestination.HelpModal ->
+                            navController.navigate(Screen.HelpModal.route)
+                        HomeNavigationDestination.TriggerMap ->
+                            navController.navigate(Screen.TriggerMap.route)
+                    }
+                }
+            }
+            HomeScreen(viewModel = homeViewModel)
         }
-        composable(Screen.Settings.route) { SettingsScreen(settingsViewModel) }
         composable(Screen.CheckIn.route) {
             CheckInScreen(
                 viewModel = viewModel(factory = CheckInViewModel.factory(context)),
@@ -64,6 +102,35 @@ fun Routes(
                     navController.popBackStack()
                     homeViewModel.refresh()
                 },
+            )
+        }
+        composable(Screen.ActivityTrajectory.route) {
+            ActivityTrajectoryScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.RecoveryTrajectory.route) {
+            RecoveryTrajectoryScreen(
+                viewModel = viewModel(factory = RecoveryTrajectoryViewModel.factory(context)),
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(Screen.TriggerMap.route) {
+            TriggerMapScreen(
+                viewModel = viewModel(factory = TriggerMapViewModel.factory(context)),
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(Screen.HelpModal.route) {
+            HelpModalScreen(
+                onDismiss = { navController.popBackStack() },
+                onRideUrge = {},
+                onChallengeThought = { navController.popBackStack() },
+                onSeeValues = {},
+                onReachAnchor = { navController.popBackStack() },
+            )
+        }
+        composable(Screen.Settings.route) {
+            SettingsScreen(
+                viewModel = settingsViewModel,
             )
         }
     }
