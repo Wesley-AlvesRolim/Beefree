@@ -12,7 +12,7 @@ import com.wesley.beefree.domain.entities.RelapseRecord
 import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
-import com.wesley.beefree.domain.onboarding.usecases.ComputeRelapseSuccessRateUseCase
+import com.wesley.beefree.domain.home.usecases.ComputeRelapseSuccessRateUseCase
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomLessonRepository
@@ -75,6 +75,7 @@ class HomeViewModel(
     private val metricsRepository: MetricsRepository,
     private val userProfileRepository: UserProfileRepository,
     private val checkInRepository: CheckInRepository,
+    private val computeRelapseSuccessRateUseCase: ComputeRelapseSuccessRateUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -154,7 +155,7 @@ class HomeViewModel(
                     allRelapses
                         .filter { it.createdAt >= thirtyDaysAgo }
                         .sortedByDescending { it.createdAt }
-                val relapseRate = ComputeRelapseSuccessRateUseCase().execute(relapses)
+                val relapseRate = computeRelapseSuccessRateUseCase.execute(relapses)
 
                 val hasCheckedIn =
                     HasCompletedTodaysCheckInUseCase(
@@ -276,6 +277,7 @@ class HomeViewModel(
                     val database = AppDatabase.getDatabase(context)
                     @Suppress("UNCHECKED_CAST")
                     return HomeViewModel(
+                        computeRelapseSuccessRateUseCase = ComputeRelapseSuccessRateUseCase(),
                         lessonRepository =
                             RoomLessonRepository(
                                 database.psychoeducationContentDao(),
