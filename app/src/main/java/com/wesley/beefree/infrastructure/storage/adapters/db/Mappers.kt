@@ -264,8 +264,15 @@ fun CognitiveThoughtRecordEntity.toDomain() =
     CognitiveThoughtRecord(
         id = id,
         userProfileId = userProfileId,
+        situation = situation,
         automaticThought = automaticThought,
-        rationalResponse = rationalResponse,
+        feeling = feeling,
+        consequence = consequence,
+        alternativeThought = alternativeThought,
+        cognitiveDistortions =
+            runCatching {
+                Json.decodeFromString(distortionsSerializer, cognitiveDistortions)
+            }.getOrDefault(emptyList()),
         createdAt = createdAt,
     )
 
@@ -273,9 +280,25 @@ fun CognitiveThoughtRecord.toEntity() =
     CognitiveThoughtRecordEntity(
         id = id,
         userProfileId = userProfileId,
+        situation = situation,
         automaticThought = automaticThought,
-        rationalResponse = rationalResponse,
+        feeling = feeling,
+        consequence = consequence,
+        alternativeThought = alternativeThought,
+        cognitiveDistortions = Json.encodeToString(distortionsSerializer, cognitiveDistortions),
         createdAt = createdAt,
+    )
+
+fun InterventionValueLinkEntity.toDomain() =
+    InterventionValueLink(
+        interventionId = interventionId,
+        userCoreValueId = userCoreValueId,
+    )
+
+fun InterventionValueLink.toEntity() =
+    InterventionValueLinkEntity(
+        interventionId = interventionId,
+        userCoreValueId = userCoreValueId,
     )
 
 fun PsychoeducationContentEntity.toDomain() =

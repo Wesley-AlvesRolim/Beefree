@@ -2,6 +2,7 @@ package com.wesley.beefree.infrastructure.storage.ports
 
 import com.wesley.beefree.domain.entities.CognitiveThoughtRecord
 import com.wesley.beefree.domain.entities.InterventionRecord
+import com.wesley.beefree.domain.entities.InterventionValueLink
 import kotlinx.coroutines.flow.Flow
 
 interface EMIRepository {
@@ -16,4 +17,6 @@ interface EMIRepository {
     suspend fun updateThoughtRecord(record: CognitiveThoughtRecord)
 
     fun getThoughtRecords(userId: Int): Flow<List<CognitiveThoughtRecord>>
+
+    suspend fun insertInterventionValueLink(link: InterventionValueLink)
 }
