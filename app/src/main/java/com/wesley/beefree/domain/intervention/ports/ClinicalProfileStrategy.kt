@@ -1,9 +1,11 @@
 package com.wesley.beefree.domain.intervention.ports
 
 import com.wesley.beefree.domain.intervention.EmiTool
+import com.wesley.beefree.domain.intervention.HelpInterventionFlow
 
 interface ClinicalProfileStrategy {
     val showsWeeklyCheckIn: Boolean
     val emiTool: EmiTool
     val showsCoreValuesInEmi: Boolean
+    val helpInterventionFlow: HelpInterventionFlow
 }
