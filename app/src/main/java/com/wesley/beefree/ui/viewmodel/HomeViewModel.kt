@@ -46,14 +46,14 @@ sealed class HomeNavigationDestination {
 
     object FeelingDetails : HomeNavigationDestination()
 
-    object HelpModal : HomeNavigationDestination()
+    object HelpIntervention : HomeNavigationDestination()
 
     object TriggerMap : HomeNavigationDestination()
 }
 
 data class HomeUiState(
     val user: UserProfile = UserProfile(profileName = "", createdAt = 0L, updatedAt = 0L),
-    val psychoeducationMessage: String = "",
+    val psychoeducationMessage: String? = null,
     val relapseHistory: List<RelapseRecord> = emptyList(),
     val relapseSuccessRate: Float = 1f,
     val emotionRecords: List<EmotionRecord> = emptyList(),
@@ -98,8 +98,8 @@ class HomeViewModel(
         _navigationEvents.tryEmit(HomeNavigationDestination.FeelingDetails)
     }
 
-    fun navigateToHelpModal() {
-        _navigationEvents.tryEmit(HomeNavigationDestination.HelpModal)
+    fun navigateToHelpIntervention() {
+        _navigationEvents.tryEmit(HomeNavigationDestination.HelpIntervention)
     }
 
     fun navigateToTriggerMap() {
@@ -156,7 +156,7 @@ class HomeViewModel(
                 val weeklyCheckIns = weeklyCheckInsDeferred.await()
                 val dailyCheckIns = dailyCheckInsDeferred.await()
 
-                val psychoeducationMessage = allPsychoeducationMessages.random().contentText
+                val psychoeducationMessage = allPsychoeducationMessages.randomOrNull()?.contentText ?: ""
                 val thirtyDaysAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)
                 val relapses =
                     allRelapses
@@ -270,7 +270,8 @@ class HomeViewModel(
             val weekEnd = now - weeksAgo * weekMs
             val weekStart = weekEnd - weekMs
             val checkIn = weeklyCheckIns.firstOrNull { it.weekStartDate in weekStart..weekEnd }
-            val energy = checkIn?.realConnectionEnergy ?: return@map 0f
+            val realConnectionEnergy = 0
+            val energy = realConnectionEnergy
             (energy / maxRealConnectionLevel) * 100f
         }
     }

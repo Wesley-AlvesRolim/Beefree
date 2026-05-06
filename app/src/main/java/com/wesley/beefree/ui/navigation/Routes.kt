@@ -22,7 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.wesley.beefree.R
 import com.wesley.beefree.ui.screens.ActivityTrajectoryScreen
-import com.wesley.beefree.ui.screens.HelpModalScreen
+import com.wesley.beefree.ui.screens.HelpInterventionScreen
 import com.wesley.beefree.ui.screens.HomeScreen
 import com.wesley.beefree.ui.screens.RecoveryTrajectoryScreen
 import com.wesley.beefree.ui.screens.SettingsScreen
@@ -55,7 +55,8 @@ sealed class Screen(
 
     object TriggerMap : Screen("trigger_map", R.string.trigger_map_title, Icons.Default.TagFaces)
 
-    object HelpModal : Screen("help_modal", R.string.help_title, Icons.AutoMirrored.Filled.Help)
+    object HelpIntervention : Screen("help_intervention", R.string.help_title, Icons.AutoMirrored.Filled.Help)
+
 
     object Settings : Screen("settings", R.string.settings_title, Icons.Default.Settings)
 }
@@ -86,8 +87,8 @@ fun Routes(
                             navController.navigate(Screen.ActivityTrajectory.route)
                         HomeNavigationDestination.FeelingDetails ->
                             navController.navigate(Screen.RecoveryTrajectory.route)
-                        HomeNavigationDestination.HelpModal ->
-                            navController.navigate(Screen.HelpModal.route)
+                        HomeNavigationDestination.HelpIntervention ->
+                            navController.navigate(Screen.HelpIntervention.route)
                         HomeNavigationDestination.TriggerMap ->
                             navController.navigate(Screen.TriggerMap.route)
                     }
@@ -119,14 +120,8 @@ fun Routes(
                 onBack = { navController.popBackStack() },
             )
         }
-        composable(Screen.HelpModal.route) {
-            HelpModalScreen(
-                onDismiss = { navController.popBackStack() },
-                onRideUrge = {},
-                onChallengeThought = { navController.popBackStack() },
-                onSeeValues = {},
-                onReachAnchor = { navController.popBackStack() },
-            )
+        composable(Screen.HelpIntervention.route) {
+            HelpInterventionScreen( )
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
