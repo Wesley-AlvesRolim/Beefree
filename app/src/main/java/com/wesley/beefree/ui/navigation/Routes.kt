@@ -29,6 +29,7 @@ import com.wesley.beefree.ui.screens.SettingsScreen
 import com.wesley.beefree.ui.screens.TriggerMapScreen
 import com.wesley.beefree.ui.screens.checkin.CheckInScreen
 import com.wesley.beefree.ui.viewmodel.CheckInViewModel
+import com.wesley.beefree.ui.viewmodel.HelpInterventionViewModel
 import com.wesley.beefree.ui.viewmodel.HomeNavigationDestination
 import com.wesley.beefree.ui.viewmodel.HomeViewModel
 import com.wesley.beefree.ui.viewmodel.RecoveryTrajectoryViewModel
@@ -121,7 +122,10 @@ fun Routes(
             )
         }
         composable(Screen.HelpIntervention.route) {
-            HelpInterventionScreen( )
+            HelpInterventionScreen(
+                viewModel = viewModel(factory = HelpInterventionViewModel.factory(context)),
+                onDismiss = { navController.popBackStack() },
+            )
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
