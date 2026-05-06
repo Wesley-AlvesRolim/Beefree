@@ -389,4 +389,6 @@
     <string name="feeling_type_loneliness">Solidão</string>
     <string name="feeling_type_boredom">Tédio</string>
 
+    <!-- SOS Widget -->
+    <string name="sos_widget_description">Botão SOS para abrir o suporte imediato do BeeFree</string>
 </resources>
