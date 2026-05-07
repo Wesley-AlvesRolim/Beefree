@@ -30,6 +30,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+enum class HelpInterventionSource {
+    FAB,
+    WIDGET,
+}
+
 data class HelpInterventionUiState(
     val allSteps: List<HelpInterventionStep> = emptyList(),
     val currentStepIndex: Int = 0,
@@ -255,7 +260,10 @@ class HelpInterventionViewModel(
         }
 
     companion object {
-        fun factory(context: Context): ViewModelProvider.Factory =
+        fun factory(
+            context: Context,
+            source: HelpInterventionSource = HelpInterventionSource.FAB,
+        ): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
                     val db = AppDatabase.getDatabase(context)
@@ -283,6 +291,7 @@ class HelpInterventionViewModel(
                                     ),
                             ),
                         ticker = RealTicker(),
+                        source = source,
                     )
                 }
             }

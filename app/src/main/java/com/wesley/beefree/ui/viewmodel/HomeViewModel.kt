@@ -24,6 +24,7 @@ import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
 import com.wesley.beefree.infrastructure.storage.ports.LessonRepository
 import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
 import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
+import com.wesley.beefree.ui.viewmodel.HelpInterventionSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -46,7 +47,9 @@ sealed class HomeNavigationDestination {
 
     object FeelingDetails : HomeNavigationDestination()
 
-    object HelpIntervention : HomeNavigationDestination()
+    data class HelpIntervention(
+        val source: HelpInterventionSource = HelpInterventionSource.FAB,
+    ) : HomeNavigationDestination()
 
     object TriggerMap : HomeNavigationDestination()
 }
@@ -98,8 +101,8 @@ class HomeViewModel(
         _navigationEvents.tryEmit(HomeNavigationDestination.FeelingDetails)
     }
 
-    fun navigateToHelpIntervention() {
-        _navigationEvents.tryEmit(HomeNavigationDestination.HelpIntervention)
+    fun navigateToHelpIntervention(source: HelpInterventionSource = HelpInterventionSource.FAB) {
+        _navigationEvents.tryEmit(HomeNavigationDestination.HelpIntervention(source))
     }
 
     fun navigateToTriggerMap() {

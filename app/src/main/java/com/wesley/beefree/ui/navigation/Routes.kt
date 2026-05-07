@@ -29,6 +29,7 @@ import com.wesley.beefree.ui.screens.SettingsScreen
 import com.wesley.beefree.ui.screens.TriggerMapScreen
 import com.wesley.beefree.ui.screens.checkin.CheckInScreen
 import com.wesley.beefree.ui.viewmodel.CheckInViewModel
+import com.wesley.beefree.ui.viewmodel.HelpInterventionSource
 import com.wesley.beefree.ui.viewmodel.HelpInterventionViewModel
 import com.wesley.beefree.ui.viewmodel.HomeNavigationDestination
 import com.wesley.beefree.ui.viewmodel.HomeViewModel
@@ -88,8 +89,8 @@ fun Routes(
                             navController.navigate(Screen.ActivityTrajectory.route)
                         HomeNavigationDestination.FeelingDetails ->
                             navController.navigate(Screen.RecoveryTrajectory.route)
-                        HomeNavigationDestination.HelpIntervention ->
-                            navController.navigate(Screen.HelpIntervention.route)
+                        is HomeNavigationDestination.HelpIntervention ->
+                            navController.navigate("${Screen.HelpIntervention.route}?source=${destination.source.name}")
                         HomeNavigationDestination.TriggerMap ->
                             navController.navigate(Screen.TriggerMap.route)
                     }
@@ -121,9 +122,25 @@ fun Routes(
                 onBack = { navController.popBackStack() },
             )
         }
-        composable(Screen.HelpIntervention.route) {
+        composable(
+            route = "${Screen.HelpIntervention.route}?source={source}",
+            arguments =
+                listOf(
+                    navArgument("source") {
+                        type = NavType.StringType
+                        defaultValue = HelpInterventionSource.FAB.name
+                    },
+                ),
+        ) { backStackEntry ->
+            val sourceString = backStackEntry.arguments?.getString("source") ?: HelpInterventionSource.FAB.name
+            val source =
+                try {
+                    HelpInterventionSource.valueOf(sourceString)
+                } catch (e: Exception) {
+                    HelpInterventionSource.FAB
+                }
             HelpInterventionScreen(
-                viewModel = viewModel(factory = HelpInterventionViewModel.factory(context)),
+                viewModel = viewModel(factory = HelpInterventionViewModel.factory(context, source)),
                 onDismiss = { navController.popBackStack() },
             )
         }

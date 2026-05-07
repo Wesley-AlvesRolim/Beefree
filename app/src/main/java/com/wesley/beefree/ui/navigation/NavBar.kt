@@ -48,7 +48,7 @@ fun NavBar(
 
     LaunchedEffect(openSos) {
         if (openSos) {
-            navController.navigate(Screen.HelpIntervention.route)
+            navController.navigate("${Screen.HelpIntervention.route}?source=widget")
         }
     }
 
