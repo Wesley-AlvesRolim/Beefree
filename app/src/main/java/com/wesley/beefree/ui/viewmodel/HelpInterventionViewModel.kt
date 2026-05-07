@@ -10,7 +10,8 @@ import com.wesley.beefree.domain.entities.BreathingPhaseEnum
 import com.wesley.beefree.domain.entities.BreathingPhaseEnum.EXHALE
 import com.wesley.beefree.domain.entities.BreathingPhaseEnum.HOLD
 import com.wesley.beefree.domain.entities.BreathingPhaseEnum.INHALE
-import com.wesley.beefree.domain.entities.HelpInterventionSession
+import com.wesley.beefree.domain.entities.CognitiveThoughtRecord
+import com.wesley.beefree.domain.entities.InterventionRecord
 import com.wesley.beefree.domain.intervention.ClinicalProfileStrategyFactory
 import com.wesley.beefree.domain.intervention.HelpInterventionStep
 import com.wesley.beefree.domain.intervention.RealTicker
@@ -35,6 +36,30 @@ enum class HelpInterventionSource {
     WIDGET,
 }
 
+enum class AnswerKey(
+    val value: String,
+) {
+    INITIAL_INTENSITY("initial_intensity"),
+    BODY_LOCATIONS("body_locations"),
+    URGE_SURFING("urge_surfing"),
+    POST_SURF_INTENSITY("post_surf_intensity"),
+    ACT_VALUE("act_value"),
+    ACT_VALUE_CUSTOM("act_value_custom"),
+    ACT_DIRECTION("act_direction"),
+    ACT_ACTION("act_action"),
+    ACT_ACTION_CUSTOM("act_action_custom"),
+    TCC_AUTO_THOUGHT("tcc_auto_thought"),
+    TCC_EVIDENCE_FOR("tcc_evidence_for"),
+    TCC_EVIDENCE_AGAINST("tcc_evidence_against"),
+    TCC_ALTERNATIVE_THOUGHT("tcc_alternative_thought"),
+    TCC_ACTION("tcc_action"),
+    TCC_ACTION_CUSTOM("tcc_action_custom"),
+    TIMER("timer"),
+    TIMER_SECONDS("timer_seconds"),
+    TIMER_STARTED("timer_started"),
+    REFLECTION("reflection"),
+}
+
 data class HelpInterventionUiState(
     val allSteps: List<HelpInterventionStep> = emptyList(),
     val currentStepIndex: Int = 0,
@@ -49,6 +74,7 @@ data class HelpInterventionUiState(
     val userId: Int? = null,
     val userProfileId: Int? = null,
     val clinicalBranch: TreatmentProfile? = null,
+    val openedFrom: HelpInterventionSource = HelpInterventionSource.FAB,
 )
 
 class HelpInterventionViewModel(
@@ -56,15 +82,17 @@ class HelpInterventionViewModel(
     private val userProfileRepository: UserProfileRepository,
     private val saveInterventionSessionUseCase: SaveInterventionSessionUseCase,
     private val ticker: Ticker,
+    private val source: HelpInterventionSource = HelpInterventionSource.FAB,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(HelpInterventionUiState())
+    private val _uiState = MutableStateFlow(HelpInterventionUiState(openedFrom = source))
     val uiState: StateFlow<HelpInterventionUiState> = _uiState.asStateFlow()
+    private var breathingTimerStarted = false
 
     init {
-        loadWizard()
+        loadData()
     }
 
-    private fun loadWizard() {
+    private fun loadData() {
         viewModelScope.launch {
             val user = userProfileRepository.getAllProfiles().first().firstOrNull()
             val userId = user?.id
@@ -95,8 +123,6 @@ class HelpInterventionViewModel(
                     isLoading = false,
                 )
             }
-
-            startBreathingTimer()
         }
     }
 
@@ -105,25 +131,29 @@ class HelpInterventionViewModel(
         val currentStep = currentState.allSteps.getOrNull(currentState.currentStepIndex) ?: return
 
         val newAnswers = currentState.answers.toMutableMap()
-        val stepId = getStepId(currentStep)
-        newAnswers[stepId] = answer
-
-        val nextIndex = currentState.currentStepIndex + 1
+        val stepId = stepAnswerKey(currentStep)
 
         if (currentStep is HelpInterventionStep.PostSurfIntensityStep && answer is Int) {
+            newAnswers[stepId] = answer
             if (answer >= currentStep.loopThreshold) {
-                _uiState.update {
-                    it.copy(
-                        answers = newAnswers,
-                        currentStepIndex = nextIndex,
-                        loopCount = it.loopCount + 1,
-                    )
+                val urgeSurfingIndex = currentState.allSteps.indexOfFirst { it is HelpInterventionStep.UrgeSurfingStep }
+                if (urgeSurfingIndex >= 0) {
+                    _uiState.update {
+                        it.copy(
+                            answers = newAnswers,
+                            currentStepIndex = urgeSurfingIndex,
+                            loopCount = it.loopCount + 1,
+                            meditationTextIndex = 0,
+                        )
+                    }
+                    return
                 }
-                reinsertLoopSteps()
-                return
             }
+        } else if (currentStep !is HelpInterventionStep.IntensityStep && answer !is Boolean) {
+            newAnswers[stepId] = answer
         }
 
+        val nextIndex = currentState.currentStepIndex + 1
         val isComplete = nextIndex >= currentState.allSteps.size
         _uiState.update {
             it.copy(
@@ -145,6 +175,30 @@ class HelpInterventionViewModel(
         }
     }
 
+    fun updateAnswer(
+        key: String,
+        value: Any,
+    ) {
+        _uiState.update { state ->
+            state.copy(
+                answers =
+                    state.answers
+                        .toMutableMap()
+                        .apply {
+                            put(key, value)
+                        }.toMap(),
+            )
+        }
+    }
+
+    fun getAnswer(key: String): Any? = _uiState.value.answers[key]
+
+    fun getAnswerAsInt(key: String): Int = (getAnswer(key) as? Int) ?: 0
+
+    fun getAnswerAsString(key: String): String = (getAnswer(key) as? String) ?: ""
+
+    fun getAnswerAsSet(key: String): Set<String> = (getAnswer(key) as? Set<String>) ?: emptySet()
+
     fun advanceMeditationStep() {
         _uiState.update {
             val currentStep = it.allSteps.getOrNull(it.currentStepIndex)
@@ -157,7 +211,10 @@ class HelpInterventionViewModel(
         }
     }
 
-    private fun startBreathingTimer() {
+    fun startBreathingTimer() {
+        if (breathingTimerStarted) return
+        breathingTimerStarted = true
+
         viewModelScope.launch {
             ticker.ticks().collect {
                 updateBreathingPhase()
@@ -192,72 +249,52 @@ class HelpInterventionViewModel(
         }
     }
 
-    private fun reinsertLoopSteps() {
-        _uiState.update { state ->
-            val currentIndex = state.currentStepIndex
-            val allSteps = state.allSteps.toMutableList()
-
-            val urgeSurfingStep = allSteps.find { it is HelpInterventionStep.UrgeSurfingStep }
-            val postSurfStep = allSteps.find { it is HelpInterventionStep.PostSurfIntensityStep }
-
-            if (urgeSurfingStep != null && postSurfStep != null) {
-                allSteps.add(currentIndex, postSurfStep)
-                allSteps.add(currentIndex, urgeSurfingStep)
-
-                state.copy(
-                    allSteps = allSteps,
-                    meditationTextIndex = 0,
-                )
-            } else {
-                state
-            }
-        }
-    }
-
     private fun saveSession() {
         val state = _uiState.value
         if (state.userProfileId == null || state.clinicalBranch == null) return
 
         viewModelScope.launch {
             val answers = state.answers
-            val session =
-                HelpInterventionSession(
+            val createdAt = System.currentTimeMillis()
+            val intensityBefore = answers[AnswerKey.INITIAL_INTENSITY.value] as? Int ?: 0
+            val intensityAfter = answers[AnswerKey.POST_SURF_INTENSITY.value] as? Int ?: 0
+            val bodyLocations =
+                (answers[AnswerKey.BODY_LOCATIONS.value] as? Set<*>)
+                    ?.filterIsInstance<String>() ?: emptyList()
+            val committedAction = (answers[AnswerKey.ACT_ACTION.value] as? String) ?: (answers[AnswerKey.TCC_ACTION.value] as? String)
+            val automaticThought = answers[AnswerKey.TCC_AUTO_THOUGHT.value] as? String
+            val alternativeThought = answers[AnswerKey.TCC_ALTERNATIVE_THOUGHT.value] as? String
+
+            val interventionRecord =
+                InterventionRecord(
                     userProfileId = state.userProfileId,
-                    intensityBefore = answers["initial_intensity"] as? Int ?: 0,
-                    intensityAfter = answers["post_surf_intensity"] as? Int ?: 0,
-                    bodyLocations = answers["body_locations"] as? List<String> ?: emptyList(),
-                    clinicalBranch = state.clinicalBranch,
-                    selectedValue = answers["act_value"] as? String,
-                    directionAnswer = answers["act_direction"] as? String,
-                    committedAction = answers["act_action"] as? String,
-                    automaticThought = answers["tcc_auto_thought"] as? String,
-                    alternativeThought = answers["tcc_alternative_thought"] as? String,
-                    wasImpulseStillStrong = answers["reflection"] as? Boolean ?: false,
-                    surgeSurfLoopCount = state.loopCount,
-                    createdAt = System.currentTimeMillis(),
+                    interventionType = "EMI_${state.clinicalBranch.name}",
+                    triggerType = "SOS",
+                    wasCompleted = (answers[AnswerKey.REFLECTION.value] as? Boolean ?: false).not(),
+                    createdAt = createdAt,
                 )
 
-            saveInterventionSessionUseCase.execute(session)
+            val thoughtRecord =
+                if (automaticThought.isNullOrEmpty().not() || alternativeThought.isNullOrEmpty().not()) {
+                    CognitiveThoughtRecord(
+                        userProfileId = state.userProfileId,
+                        situation =
+                            "Impulse intensity: $intensityBefore → $intensityAfter. " +
+                                "Locations: ${bodyLocations.joinToString()}",
+                        automaticThought = automaticThought ?: "",
+                        feeling = bodyLocations.joinToString("|"),
+                        consequence = committedAction ?: "N/A",
+                        alternativeThought = alternativeThought ?: "",
+                        cognitiveDistortions = emptyList(),
+                        createdAt = createdAt,
+                    )
+                } else {
+                    null
+                }
+
+            saveInterventionSessionUseCase.execute(interventionRecord, thoughtRecord)
         }
     }
-
-    private fun getStepId(step: HelpInterventionStep): String =
-        when (step) {
-            is HelpInterventionStep.IntensityStep -> step.id
-            is HelpInterventionStep.BodyLocationStep -> "body_locations"
-            is HelpInterventionStep.UrgeSurfingStep -> "urge_surfing"
-            is HelpInterventionStep.PostSurfIntensityStep -> "post_surf_intensity"
-            is HelpInterventionStep.ActValuesStep -> "act_value"
-            is HelpInterventionStep.ActDirectionStep -> "act_direction"
-            is HelpInterventionStep.ActCommittedActionStep -> "act_action"
-            is HelpInterventionStep.TccAutomaticThoughtStep -> "tcc_auto_thought"
-            is HelpInterventionStep.TccEvidenceForStep -> "tcc_evidence_for"
-            is HelpInterventionStep.TccEvidenceAgainstStep -> "tcc_evidence_against"
-            is HelpInterventionStep.TccAlternativeThoughtStep -> "tcc_alternative_thought"
-            is HelpInterventionStep.TccActionStep -> "tcc_action"
-            is HelpInterventionStep.TimerStep -> "timer"
-            is HelpInterventionStep.ReflectionStep -> "reflection"
-        }
 
     companion object {
         fun factory(
@@ -297,3 +334,21 @@ class HelpInterventionViewModel(
             }
     }
 }
+
+internal fun stepAnswerKey(step: HelpInterventionStep): String =
+    when (step) {
+        is HelpInterventionStep.IntensityStep -> step.id
+        is HelpInterventionStep.BodyLocationStep -> AnswerKey.BODY_LOCATIONS.value
+        is HelpInterventionStep.UrgeSurfingStep -> AnswerKey.URGE_SURFING.value
+        is HelpInterventionStep.PostSurfIntensityStep -> AnswerKey.POST_SURF_INTENSITY.value
+        is HelpInterventionStep.ActValuesStep -> AnswerKey.ACT_VALUE.value
+        is HelpInterventionStep.ActDirectionStep -> AnswerKey.ACT_DIRECTION.value
+        is HelpInterventionStep.ActCommittedActionStep -> AnswerKey.ACT_ACTION.value
+        is HelpInterventionStep.TccAutomaticThoughtStep -> AnswerKey.TCC_AUTO_THOUGHT.value
+        is HelpInterventionStep.TccEvidenceForStep -> AnswerKey.TCC_EVIDENCE_FOR.value
+        is HelpInterventionStep.TccEvidenceAgainstStep -> AnswerKey.TCC_EVIDENCE_AGAINST.value
+        is HelpInterventionStep.TccAlternativeThoughtStep -> AnswerKey.TCC_ALTERNATIVE_THOUGHT.value
+        is HelpInterventionStep.TccActionStep -> AnswerKey.TCC_ACTION.value
+        is HelpInterventionStep.TimerStep -> AnswerKey.TIMER.value
+        is HelpInterventionStep.ReflectionStep -> AnswerKey.REFLECTION.value
+    }
