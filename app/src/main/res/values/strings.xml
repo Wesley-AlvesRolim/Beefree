@@ -391,4 +391,151 @@
 
     <!-- SOS Widget -->
     <string name="sos_widget_description">Botão SOS para abrir o suporte imediato do BeeFree</string>
+
+    <!-- Help Intervention Wizard -->
+    <string name="help_intervention_title">Suporte para o Impulso</string>
+
+    <!-- Meditation steps (Pareek et al. 2023) -->
+    <string name="help_intervention.meditation.observe">Apenas observe, seja um observador.</string>
+    <string name="help_intervention.meditation.breathing">Apenas veja: a respiração entrando, saindo, entrando, saindo…</string>
+    <string name="help_intervention.meditation.mind_wander">Se a mente divagar, deixe que divague…</string>
+    <string name="help_intervention.meditation.return_attention">Não se agite, apenas traga sua atenção de volta para a respiração.</string>
+    <string name="help_intervention.meditation.stay_still">Fique imóvel, não se mova…</string>
+    <string name="help_intervention.meditation.observe_breath">Apenas observe e observe… a respiração entrando… saindo.</string>
+    <string name="help_intervention.meditation.observer">Você é simplesmente um observador…</string>
+    <string name="help_intervention.meditation.no_judgment">Não julgue suas sensações ou pensamentos como bons ou ruins, certos ou errados.</string>
+    <string name="help_intervention.meditation.clouds">Eles são como nuvens no céu, vindo e indo… apenas observe.</string>
+    <string name="help_intervention.meditation.accept">Apenas aceite como é.</string>
+    <string name="help_intervention.meditation.no_resist">Não lute, não resista a nenhuma de suas sensações, pensamentos ou emoções.</string>
+    <string name="help_intervention.meditation.present_moment">Apenas esteja consciente do momento presente.</string>
+
+    <!-- Help Urge Surfing -->
+    <string name="urge_surfing_headline">A onda vai passar.</string>
+    <string name="urge_surfing_body">Respire com a onda. Observe ela subir. Observe ela cair. Você não precisa fazer mais nada.</string>
+    <string name="urge_surfing_cycle_label">CICLO %d</string>
+    <string name="urge_surfing_continue">Continuar ciclo</string>
+    <string name="urge_surfing_phase_inhale">INSPIRA</string>
+    <string name="urge_surfing_phase_hold">SEGURA</string>
+    <string name="urge_surfing_phase_exhale">EXPIRA</string>
+    <string name="urge_surfing_seconds">segundos</string>
+
+    <!-- Common intensity steps -->
+    <string name="help_intervention.initial_intensity.title">Qual a intensidade do impulso agora?</string>
+    <string name="help_intervention.initial_intensity.subtitle">Escala de 0 (nenhum) a 10 (irresistível)</string>
+    <string name="help_intervention.post_surf_intensity.title">E agora, qual é a intensidade?</string>
+    <string name="help_intervention.intensity_subtitle">Escala de 0 a 10</string>
+
+    <!-- Body location step -->
+    <string name="help_intervention.body_location.title">Onde você sente isso no corpo?</string>
+    <string name="help_intervention.body_location.chest">Peito</string>
+    <string name="help_intervention.body_location.throat">Garganta</string>
+    <string name="help_intervention.body_location.belly">Barriga</string>
+    <string name="help_intervention.body_location.hands">Mãos</string>
+    <string name="help_intervention.body_location.head">Cabeça</string>
+    <string name="help_intervention.body_location.other">Outro lugar</string>
+
+    <!-- ACT values step -->
+    <string name="help_intervention.act_values.title">Quem você quer ser nesse momento?</string>
+    <string name="help_intervention.act_values.disciplined">Disciplinado</string>
+    <string name="help_intervention.act_values.present">Presente</string>
+    <string name="help_intervention.act_values.honest">Honesto</string>
+    <string name="help_intervention.act_values.healthy">Saudável</string>
+    <string name="help_intervention.act_values.responsible">Responsável</string>
+    <string name="help_intervention.act_values.calm">Calmo</string>
+    <string name="help_intervention.act_values.focused">Focado</string>
+    <string name="help_intervention.act_values.resilient">Resiliente</string>
+    <string name="help_intervention.act_values.selfcontrolled">Autocontrolado</string>
+    <string name="help_intervention.act_values.kind_to_self">Gentil comigo mesmo</string>
+
+    <!-- ACT direction step -->
+    <string name="help_intervention.act_direction.title">Seguir o impulso te aproxima ou afasta dessa pessoa?</string>
+    <string name="help_intervention.act_direction.approximates">Aproxima</string>
+    <string name="help_intervention.act_direction.distances">Afasta</string>
+    <string name="help_intervention.act_direction.uncertain">Não tenho certeza</string>
+
+    <!-- ACT committed action step -->
+    <string name="help_intervention.act_committed_action.title">Qual pequena ação alinhada você pode fazer agora?</string>
+
+    <!-- ACT actions -->
+    <string name="help_intervention.act_actions.breathe_2min">Respirar por 2 minutos</string>
+    <string name="help_intervention.act_actions.drink_water">Beber água</string>
+    <string name="help_intervention.act_actions.leave_environment">Sair do ambiente</string>
+    <string name="help_intervention.act_actions.block_app">Bloquear app gatilho</string>
+    <string name="help_intervention.act_actions.go_another_room">Ir para outro cômodo</string>
+    <string name="help_intervention.act_actions.take_walk">Dar uma caminhada</string>
+    <string name="help_intervention.act_actions.message_someone">Mandar mensagem para alguém</string>
+    <string name="help_intervention.act_actions.work_10min">Trabalhar por 10 minutos</string>
+    <string name="help_intervention.act_actions.do_productive">Fazer algo produtivo</string>
+
+    <!-- TCC automatic thought step -->
+    <string name="help_intervention.tcc_auto_thought.title">O que passou pela sua mente?</string>
+    <string name="help_intervention.tcc_auto_thought.just_once">Só dessa vez</string>
+    <string name="help_intervention.tcc_auto_thought.wont_resist">Eu não vou aguentar</string>
+    <string name="help_intervention.tcc_auto_thought.no_difference">Não faz diferença</string>
+    <string name="help_intervention.tcc_auto_thought.already_ruined">Já estraguei tudo</string>
+    <string name="help_intervention.tcc_auto_thought.deserve_it">Eu mereço isso</string>
+
+    <!-- TCC evidence steps -->
+    <string name="help_intervention.tcc_evidence_for.title">O que prova que isso é verdade?</string>
+    <string name="help_intervention.tcc_evidence_against.title">O que pode indicar que isso não é totalmente verdade?</string>
+    <string name="help_intervention.tcc_evidence_against.resisted_before">Já resisti antes</string>
+    <string name="help_intervention.tcc_evidence_against.it_passes">Isso passa</string>
+    <string name="help_intervention.tcc_evidence_against.no_need_act">Não preciso agir agora</string>
+    <string name="help_intervention.tcc_evidence_against.will_worsen">Vai piorar depois</string>
+
+    <!-- TCC alternative thought step -->
+    <string name="help_intervention.tcc_alternative_thought.title">Qual seria uma visão mais equilibrada?</string>
+    <string name="help_intervention.tcc_alternative.just_impulse">Isso é só um impulso, vai passar</string>
+    <string name="help_intervention.tcc_alternative.dont_need_act">Eu não preciso agir agora</string>
+    <string name="help_intervention.tcc_alternative.can_choose">Posso escolher outra coisa</string>
+    <string name="help_intervention.tcc_alternative.not_who_i_am">Isso não define quem eu sou</string>
+
+    <!-- TCC action step (reuses act_actions) -->
+    <string name="help_intervention.tcc_action.title">O que você pode fazer agora baseado nisso?</string>
+
+    <!-- HYBRID restructuring step -->
+    <string name="help_intervention.tcc_restructuring.title">Existe outra forma de ver isso?</string>
+
+    <!-- Final steps -->
+    <string name="help_intervention.timer_remaining">Tempo decorrido</string>
+    <string name="help_intervention.timer_title">Timer</string>
+    <string name="help_intervention.reflection.was_impulse_strong">O impulso era tão forte quanto parecia?</string>
+    <string name="help_intervention.reflection_yes">Sim, era forte</string>
+    <string name="help_intervention.reflection_no">Não, passou rápido</string>
+
+    <!-- Mascot speech and encouragement -->
+    <string name="help_intervention.intensity_greeting">Tô com você</string>
+    <string name="help_intervention.mascot_speech_intensity"> Perceber o impulso já é um passo importante. Você não precisa fugir da onda — só atravessar ela um momento de cada vez. </string>
+    <string name="help_intervention.mascot_speech_body_location"> Seu corpo dá sinais antes da ação. Observe onde esse impulso aparece agora — peito, barriga, mãos, respiração... só perceba. </string>
+    <string name="help_intervention.mascot_speech_urge_surfing"> Não lute contra o impulso. Respire e observe como uma onda: ela cresce, muda e depois diminui. </string>
+    <string name="help_intervention.mascot_speech_post_intensity"> Boa. Você desacelerou em vez de agir no automático. Como o impulso está agora? </string>
+    <string name="help_intervention.mascot_speech_act_values"> Nos momentos difíceis, seus valores podem te guiar melhor que o impulso. Que tipo de pessoa você quer ser agora? </string>
+    <string name="help_intervention.mascot_speech_act_direction"> Cada pequena escolha aponta uma direção. O que te aproxima da vida que você quer construir? </string>
+    <string name="help_intervention.mascot_speech_act_action"> Você não precisa resolver tudo agora. Só escolha uma ação pequena alinhada com quem você quer ser. </string>
+    <string name="help_intervention.mascot_speech_tcc_thought"> O impulso costuma vir acompanhado de pensamentos automáticos. Vamos identificar qual apareceu agora. </string>
+    <string name="help_intervention.mascot_speech_tcc_evidence_for"> Entendo por que esse pensamento parece convincente. O que faz sua mente acreditar nisso? </string>
+    <string name="help_intervention.mascot_speech_tcc_evidence_against"> Agora vamos olhar o outro lado. Existe alguma evidência de que esse pensamento não seja totalmente verdadeiro? </string>
+    <string name="help_intervention.mascot_speech_tcc_alternative"> Talvez exista uma forma mais equilibrada e realista de enxergar essa situação. Como ela seria? </string>
+    <string name="help_intervention.mascot_speech_hybrid_thought"> Primeiro, vamos entender o que sua mente está dizendo nesse momento. </string>
+    <string name="help_intervention.mascot_speech_hybrid_restructuring"> Você pode reconhecer esse pensamento sem precisar obedecer a ele. Existe uma visão mais justa e útil agora? </string>
+    <string name="help_intervention.mascot_speech_timer"> Continue só por mais um momento. Cada minuto que passa enfraquece o automático e fortalece sua escolha. </string>
+    <string name="help_intervention.mascot_speech_reflection"> Você conseguiu atravessar essa onda. Olhando agora, o impulso era tão permanente quanto parecia no começo? </string>
+
+    <!-- Session summary -->
+    <string name="help_intervention.session_summary_header">SESSÃO · RESUMO</string>
+    <string name="help_intervention.session_initial_intensity">Intensidade inicial</string>
+    <string name="help_intervention.session_post_surf">Após o surf</string>
+    <string name="help_intervention.session_final">Ao final</string>
+    <string name="help_intervention.session_total_time">Tempo total</string>
+    <string name="help_intervention.session_action_taken">Ação executada</string>
+    <string name="help_intervention.session_saved_message">Sessão salva. Janelas de risco serão recalculadas — o app vai te conhecer melhor a partir daqui.</string>
+
+    <string name="help_intervention.custom_value_other">Outro:</string>
+    <string name="help_intervention.custom_action_other">Outra ação:</string>
+
+    <!-- Navigation buttons -->
+    <string name="back">Voltar</string>
+    <string name="next">Continuar</string>
+    <string name="done">Concluído</string>
+
 </resources>
