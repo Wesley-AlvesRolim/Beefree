@@ -1,6 +1,5 @@
 package com.wesley.beefree.ui.screens.helpinterventionscreens
 
-import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,8 +22,8 @@ import com.wesley.beefree.domain.intervention.HelpInterventionStep
 import com.wesley.beefree.ui.components.designsystem.BeeBodyMedium
 import com.wesley.beefree.ui.components.designsystem.BeeCardElevated
 import com.wesley.beefree.ui.components.designsystem.BeeHeadlineLarge
-import com.wesley.beefree.ui.components.designsystem.BeeMascotSpeech
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
+import com.wesley.beefree.utils.getResIdOrFallback
 
 @Composable
 fun UrgeSurfingStepContent(
@@ -34,8 +33,13 @@ fun UrgeSurfingStepContent(
     secondsLeft: Int,
     cycleCount: Int,
     onAdvanceMeditation: () -> Unit,
+    onStartBreathing: () -> Unit,
     onAnswerChange: (Any) -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        onStartBreathing()
+    }
+
     val context = LocalContext.current
 
     LaunchedEffect(phase) {
@@ -54,12 +58,6 @@ fun UrgeSurfingStepContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(BeeSpacing.M),
     ) {
-        BeeMascotSpeech(
-            speechText = stringResource(R.string.help_intervention_mascot_speech_urge_surfing),
-        )
-
-        Spacer(Modifier.height(BeeSpacing.S))
-
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             BeeHeadlineLarge(
                 stringResource(R.string.urge_surfing_headline),
@@ -109,12 +107,4 @@ fun UrgeSurfingStepContent(
             cycleCount = cycleCount,
         )
     }
-}
-
-private fun getResIdOrFallback(
-    context: Context,
-    key: String,
-): Int {
-    val resId = context.resources.getIdentifier(key, "string", context.packageName)
-    return if (resId != 0) resId else R.string.app_name
 }

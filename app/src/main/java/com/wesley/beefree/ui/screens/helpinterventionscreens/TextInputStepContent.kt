@@ -1,6 +1,5 @@
 package com.wesley.beefree.ui.screens.helpinterventionscreens
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,13 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.wesley.beefree.R
-import com.wesley.beefree.ui.components.designsystem.BeeCardElevated
-import com.wesley.beefree.ui.components.designsystem.BeeLabelMedium
+import com.wesley.beefree.ui.components.designsystem.BeeCardSection
+import com.wesley.beefree.ui.components.designsystem.BeeHeadlineLarge
 import com.wesley.beefree.ui.components.designsystem.BeeMascotSpeech
 import com.wesley.beefree.ui.components.designsystem.BeeMascotSpeechTone
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
 import com.wesley.beefree.ui.components.designsystem.BeeTextArea
+import com.wesley.beefree.utils.getResIdOrFallback
 
 @Composable
 fun TextInputStepContent(
@@ -34,6 +33,10 @@ fun TextInputStepContent(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(BeeSpacing.M),
     ) {
+        BeeHeadlineLarge(stringResource(getResIdOrFallback(context, titleKey)))
+
+        Spacer(Modifier.height(BeeSpacing.M))
+
         speechKey?.let {
             BeeMascotSpeech(
                 speechText = stringResource(getResIdOrFallback(context, it)),
@@ -41,11 +44,8 @@ fun TextInputStepContent(
             )
         }
 
-        BeeCardElevated(modifier = Modifier.fillMaxWidth()) {
+        BeeCardSection(modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(BeeSpacing.M)) {
-                BeeLabelMedium(stringResource(getResIdOrFallback(context, titleKey)))
-                Spacer(Modifier.height(BeeSpacing.M))
-
                 BeeTextArea(
                     value = value,
                     onValueChange = {
@@ -53,16 +53,9 @@ fun TextInputStepContent(
                         onAnswerChange(it)
                     },
                     minLines = 4,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
     }
-}
-
-private fun getResIdOrFallback(
-    context: Context,
-    key: String,
-): Int {
-    val resId = context.resources.getIdentifier(key, "string", context.packageName)
-    return if (resId != 0) resId else com.wesley.beefree.R.string.app_name
 }

@@ -21,10 +21,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,9 +30,9 @@ import com.wesley.beefree.domain.entities.BreathingPhaseEnum
 import com.wesley.beefree.domain.intervention.ClinicalProfileStrategyFactory
 import com.wesley.beefree.domain.intervention.HelpInterventionStep
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
-import com.wesley.beefree.ui.components.designsystem.BeeBodyMedium
 import com.wesley.beefree.ui.components.designsystem.BeeButtonPrimary
 import com.wesley.beefree.ui.components.designsystem.BeeHeadlineSmall
+import com.wesley.beefree.ui.components.designsystem.BeeLabelMedium
 import com.wesley.beefree.ui.components.designsystem.BeeMascotSpeechTone
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
 import com.wesley.beefree.ui.components.designsystem.BeeStepper
@@ -50,7 +46,9 @@ import com.wesley.beefree.ui.screens.helpinterventionscreens.TextInputStepConten
 import com.wesley.beefree.ui.screens.helpinterventionscreens.TimerStepContent
 import com.wesley.beefree.ui.screens.helpinterventionscreens.UrgeSurfingStepContent
 import com.wesley.beefree.ui.theme.BeeFreeTheme
+import com.wesley.beefree.ui.viewmodel.AnswerKey
 import com.wesley.beefree.ui.viewmodel.HelpInterventionViewModel
+import com.wesley.beefree.ui.viewmodel.stepAnswerKey
 
 @Composable
 fun HelpInterventionScreen(
@@ -63,6 +61,29 @@ fun HelpInterventionScreen(
         return
     }
 
+    val priorityKeys =
+        listOf(
+            AnswerKey.ACT_ACTION_CUSTOM,
+            AnswerKey.ACT_ACTION,
+            AnswerKey.TCC_ACTION_CUSTOM,
+            AnswerKey.TCC_ACTION,
+        )
+
+    val lastCommittedAction =
+        priorityKeys
+            .mapNotNull { state.answers[it.value] as? String }
+            .firstOrNull { it.isNotEmpty() }
+
+    val currentStep = state.allSteps.getOrNull(state.currentStepIndex)
+    val stepId = currentStep?.let { stepAnswerKey(it) } ?: ""
+    val currentAnswer = viewModel.getAnswer(stepId)
+
+    val canContinue =
+        when (currentStep) {
+            is HelpInterventionStep.UrgeSurfingStep -> state.breathingCycleCount >= currentStep.minimumCycles
+            else -> currentAnswer != null
+        }
+
     HelpInterventionContent(
         currentStepIndex = state.currentStepIndex,
         allSteps = state.allSteps,
@@ -71,9 +92,14 @@ fun HelpInterventionScreen(
         breathingSecondsLeft = state.breathingSecondsLeft,
         breathingCycleCount = state.breathingCycleCount,
         isComplete = state.isComplete,
+        lastCommittedAction = lastCommittedAction,
+        canContinue = canContinue,
+        answers = state.answers,
         onNext = { answer -> viewModel.onNext(answer) },
         onBack = viewModel::onBack,
+        onAnswerChange = viewModel::updateAnswer,
         onAdvanceMeditation = viewModel::advanceMeditationStep,
+        onStartBreathing = viewModel::startBreathingTimer,
         onDismiss = onDismiss,
     )
 }
@@ -88,15 +114,17 @@ private fun HelpInterventionContent(
     breathingSecondsLeft: Int,
     breathingCycleCount: Int,
     isComplete: Boolean,
+    lastCommittedAction: String?,
+    canContinue: Boolean,
+    answers: Map<String, Any>,
     onNext: (Any) -> Unit,
     onBack: () -> Unit,
+    onAnswerChange: (String, Any) -> Unit,
     onAdvanceMeditation: () -> Unit,
+    onStartBreathing: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var currentAnswer: Any? by remember { mutableStateOf(null) }
-
     val currentStep = allSteps.getOrNull(currentStepIndex)
-    val isLastStep = currentStepIndex >= allSteps.size - 1
 
     Scaffold(
         topBar = {
@@ -119,9 +147,9 @@ private fun HelpInterventionContent(
         },
         bottomBar = {
             HelpInterventionBottomBar(
-                onNext = { if (currentAnswer != null) onNext(currentAnswer!!) },
+                onNext = { if (canContinue) onNext(true) },
                 onDismiss = onDismiss,
-                canGoNext = currentAnswer != null && !isLastStep,
+                canGoNext = canContinue,
                 isCompleted = isComplete,
             )
         },
@@ -150,8 +178,11 @@ private fun HelpInterventionContent(
                         breathingPhaseEnum = breathingPhaseEnum,
                         breathingSecondsLeft = breathingSecondsLeft,
                         breathingCycleCount = breathingCycleCount,
-                        onAnswerChange = { currentAnswer = it },
+                        lastCommittedAction = lastCommittedAction,
+                        answers = answers,
+                        onAnswerChange = onAnswerChange,
                         onAdvanceMeditation = onAdvanceMeditation,
+                        onStartBreathing = onStartBreathing,
                     )
                 }
             }
@@ -168,30 +199,32 @@ private fun StepContent(
     breathingPhaseEnum: BreathingPhaseEnum,
     breathingSecondsLeft: Int,
     breathingCycleCount: Int,
-    onAnswerChange: (Any) -> Unit,
+    lastCommittedAction: String?,
+    answers: Map<String, Any>,
+    onAnswerChange: (String, Any) -> Unit,
     onAdvanceMeditation: () -> Unit,
+    onStartBreathing: () -> Unit,
 ) {
-    var actValueSelected by remember { mutableStateOf("") }
-    var actValueCustom by remember { mutableStateOf("") }
-    var actDirectionSelected by remember { mutableStateOf("") }
-    var committedActionSelected by remember { mutableStateOf("") }
-    var committedActionCustom by remember { mutableStateOf("") }
-    var textInputValue by remember { mutableStateOf("") }
-    var timerSeconds by remember { mutableIntStateOf(0) }
-    var timerStarted by remember { mutableStateOf(false) }
-    var reflectionSelected by remember { mutableStateOf("") }
-    var bodyLocationSelected by remember { mutableStateOf(setOf<String>()) }
+    val getAnswer = { key: String, default: Any -> answers[key] ?: default }
+    val getIntAnswer = { key: String -> answers[key] as? Int ?: 0 }
+    val getStringAnswer = { key: String -> answers[key] as? String ?: "" }
+    val getSetAnswer = { key: String -> answers[key] as? Set<String> ?: emptySet() }
 
     when (step) {
         is HelpInterventionStep.IntensityStep ->
-            IntensityStepContent(step = step, onAnswerChange = onAnswerChange)
+            IntensityStepContent(
+                step = step,
+                value = getIntAnswer(AnswerKey.INITIAL_INTENSITY.value),
+                onValueChange = { onAnswerChange(AnswerKey.INITIAL_INTENSITY.value, it) },
+                onAnswerChange = { },
+            )
 
         is HelpInterventionStep.BodyLocationStep -> {
             BodyLocationStepContent(
                 step = step,
-                selected = bodyLocationSelected,
-                onSelectedChange = { bodyLocationSelected = it },
-                onAnswerChange = onAnswerChange,
+                selected = getSetAnswer(AnswerKey.BODY_LOCATIONS.value),
+                onSelectedChange = { onAnswerChange(AnswerKey.BODY_LOCATIONS.value, it) },
+                onAnswerChange = { },
             )
         }
 
@@ -203,78 +236,84 @@ private fun StepContent(
                 secondsLeft = breathingSecondsLeft,
                 cycleCount = breathingCycleCount,
                 onAdvanceMeditation = onAdvanceMeditation,
-                onAnswerChange = onAnswerChange,
+                onStartBreathing = onStartBreathing,
+                onAnswerChange = { },
             )
 
         is HelpInterventionStep.PostSurfIntensityStep ->
-            IntensityStepContent(step = step, onAnswerChange = onAnswerChange)
+            IntensityStepContent(
+                step = step,
+                value = getIntAnswer(AnswerKey.POST_SURF_INTENSITY.value),
+                onValueChange = { onAnswerChange(AnswerKey.POST_SURF_INTENSITY.value, it) },
+                onAnswerChange = { },
+            )
 
         is HelpInterventionStep.ActValuesStep ->
             ActValuesStepContent(
                 step = step,
-                selectedValue = actValueSelected,
-                customValue = actValueCustom,
-                onSelectedChange = { actValueSelected = it },
-                onCustomValueChange = { actValueCustom = it },
-                onAnswerChange = onAnswerChange,
+                selectedValue = getStringAnswer(AnswerKey.ACT_VALUE.value),
+                customValue = getStringAnswer(AnswerKey.ACT_VALUE_CUSTOM.value),
+                onSelectedChange = { onAnswerChange(AnswerKey.ACT_VALUE.value, it) },
+                onCustomValueChange = { onAnswerChange(AnswerKey.ACT_VALUE_CUSTOM.value, it) },
+                onAnswerChange = { },
             )
 
         is HelpInterventionStep.ActDirectionStep ->
             ActDirectionStepContent(
                 step = step,
-                selectedValue = actDirectionSelected,
-                onSelectedChange = { actDirectionSelected = it },
-                onAnswerChange = onAnswerChange,
+                selectedValue = getStringAnswer(AnswerKey.ACT_DIRECTION.value),
+                onSelectedChange = { onAnswerChange(AnswerKey.ACT_DIRECTION.value, it) },
+                onAnswerChange = { },
             )
 
         is HelpInterventionStep.ActCommittedActionStep ->
             CommittedActionStepContent(
                 titleKey = step.titleKey,
                 suggestions = step.suggestions,
-                selectedValue = committedActionSelected,
-                customValue = committedActionCustom,
+                selectedValue = getStringAnswer(AnswerKey.ACT_ACTION.value),
+                customValue = getStringAnswer(AnswerKey.ACT_ACTION_CUSTOM.value),
                 speechTone = BeeMascotSpeechTone.Tertiary,
                 speechKey = "help_intervention.mascot_speech_act_action",
-                onSelectedChange = { committedActionSelected = it },
-                onCustomValueChange = { committedActionCustom = it },
-                onAnswerChange = onAnswerChange,
+                onSelectedChange = { onAnswerChange(AnswerKey.ACT_ACTION.value, it) },
+                onCustomValueChange = { onAnswerChange(AnswerKey.ACT_ACTION_CUSTOM.value, it) },
+                onAnswerChange = { },
             )
 
         is HelpInterventionStep.TccAutomaticThoughtStep ->
             TextInputStepContent(
                 titleKey = step.titleKey,
-                value = textInputValue,
-                onValueChange = { textInputValue = it },
+                value = getStringAnswer(AnswerKey.TCC_AUTO_THOUGHT.value),
+                onValueChange = { onAnswerChange(AnswerKey.TCC_AUTO_THOUGHT.value, it) },
                 speechKey = "help_intervention.mascot_speech_tcc_thought",
                 speechTone = BeeMascotSpeechTone.Secondary,
-                onAnswerChange = onAnswerChange,
+                onAnswerChange = { },
             )
 
         is HelpInterventionStep.TccEvidenceForStep ->
             TextInputStepContent(
                 titleKey = step.titleKey,
-                value = textInputValue,
-                onValueChange = { textInputValue = it },
+                value = getStringAnswer(AnswerKey.TCC_EVIDENCE_FOR.value),
+                onValueChange = { onAnswerChange(AnswerKey.TCC_EVIDENCE_FOR.value, it) },
                 speechKey = "help_intervention.mascot_speech_tcc_evidence_for",
                 speechTone = BeeMascotSpeechTone.Secondary,
-                onAnswerChange = onAnswerChange,
+                onAnswerChange = { },
             )
 
         is HelpInterventionStep.TccEvidenceAgainstStep ->
             TextInputStepContent(
                 titleKey = step.titleKey,
-                value = textInputValue,
-                onValueChange = { textInputValue = it },
+                value = getStringAnswer(AnswerKey.TCC_EVIDENCE_AGAINST.value),
+                onValueChange = { onAnswerChange(AnswerKey.TCC_EVIDENCE_AGAINST.value, it) },
                 speechKey = "help_intervention.mascot_speech_tcc_evidence_against",
                 speechTone = BeeMascotSpeechTone.Secondary,
-                onAnswerChange = onAnswerChange,
+                onAnswerChange = { },
             )
 
         is HelpInterventionStep.TccAlternativeThoughtStep ->
             TextInputStepContent(
                 titleKey = step.titleKey,
-                value = textInputValue,
-                onValueChange = { textInputValue = it },
+                value = getStringAnswer(AnswerKey.TCC_ALTERNATIVE_THOUGHT.value),
+                onValueChange = { onAnswerChange(AnswerKey.TCC_ALTERNATIVE_THOUGHT.value, it) },
                 speechKey =
                     if (step.titleKey == "help_intervention.tcc_restructuring.title") {
                         "help_intervention.mascot_speech_hybrid_restructuring"
@@ -282,39 +321,44 @@ private fun StepContent(
                         "help_intervention.mascot_speech_tcc_alternative"
                     },
                 speechTone = BeeMascotSpeechTone.Secondary,
-                onAnswerChange = onAnswerChange,
+                onAnswerChange = { },
             )
 
         is HelpInterventionStep.TccActionStep ->
             CommittedActionStepContent(
                 titleKey = step.titleKey,
                 suggestions = step.suggestions,
-                selectedValue = committedActionSelected,
-                customValue = committedActionCustom,
+                selectedValue = getStringAnswer(AnswerKey.TCC_ACTION.value),
+                customValue = getStringAnswer(AnswerKey.TCC_ACTION_CUSTOM.value),
                 speechTone = BeeMascotSpeechTone.Secondary,
                 speechKey = "help_intervention.mascot_speech_tcc_action",
-                onSelectedChange = { committedActionSelected = it },
-                onCustomValueChange = { committedActionCustom = it },
-                onAnswerChange = onAnswerChange,
+                onSelectedChange = { onAnswerChange(AnswerKey.TCC_ACTION.value, it) },
+                onCustomValueChange = { onAnswerChange(AnswerKey.TCC_ACTION_CUSTOM.value, it) },
+                onAnswerChange = { },
             )
 
         is HelpInterventionStep.TimerStep ->
             TimerStepContent(
                 step = step,
-                secondsLeft = timerSeconds,
-                timerStarted = timerStarted,
-                onTimerTick = { timerSeconds = it },
-                onTimerStart = { timerStarted = true },
-                onAnswerChange = onAnswerChange,
+                selectedAction = lastCommittedAction,
+                secondsLeft = getIntAnswer(AnswerKey.TIMER_SECONDS.value),
+                timerStarted = answers.containsKey(AnswerKey.TIMER_STARTED.value),
+                onTimerTick = { onAnswerChange(AnswerKey.TIMER_SECONDS.value, it) },
+                onTimerStart = { onAnswerChange(AnswerKey.TIMER_STARTED.value, true) },
+                onAnswerChange = { onAnswerChange(AnswerKey.TIMER.value, it) },
             )
 
-        is HelpInterventionStep.ReflectionStep ->
+        is HelpInterventionStep.ReflectionStep -> {
             ReflectionStepContent(
                 step = step,
-                selectedValue = reflectionSelected,
-                onSelectedChange = { reflectionSelected = it },
-                onAnswerChange = onAnswerChange,
+                selectedValue = getStringAnswer(AnswerKey.REFLECTION.value),
+                onSelectedChange = { onAnswerChange(AnswerKey.REFLECTION.value, it) },
+                initialIntensity = getIntAnswer(AnswerKey.INITIAL_INTENSITY.value),
+                postSurfIntensity = getIntAnswer(AnswerKey.POST_SURF_INTENSITY.value),
+                timerSeconds = getIntAnswer(AnswerKey.TIMER_SECONDS.value),
+                committedAction = lastCommittedAction,
             )
+        }
     }
 }
 
@@ -338,14 +382,14 @@ private fun HelpInterventionBottomBar(
                 enabled = canGoNext,
                 modifier = Modifier.weight(1f),
             ) {
-                BeeBodyMedium(stringResource(R.string.next))
+                BeeLabelMedium(text = stringResource(R.string.next), color = MaterialTheme.colorScheme.onPrimary)
             }
         } else {
             BeeButtonPrimary(
                 onClick = onDismiss,
                 modifier = Modifier.weight(1f),
             ) {
-                BeeBodyMedium(stringResource(R.string.done))
+                BeeLabelMedium(text = stringResource(R.string.done), color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }
@@ -401,7 +445,7 @@ fun PreviewStep11() = HelpInterventionStepPreview(11)
 
 @Composable
 private fun HelpInterventionStepPreview(index: Int) {
-    val strategy = ClinicalProfileStrategyFactory.from(TreatmentProfile.HYBRID)
+    val strategy = ClinicalProfileStrategyFactory.from(TreatmentProfile.TCC)
     val allSteps = strategy.helpInterventionFlow.allSteps
 
     BeeFreeTheme {
@@ -413,9 +457,14 @@ private fun HelpInterventionStepPreview(index: Int) {
             breathingSecondsLeft = 60,
             breathingCycleCount = 0,
             isComplete = false,
+            lastCommittedAction = "help_intervention.act_actions.drink_water",
+            canContinue = true,
+            answers = emptyMap(),
             onNext = {},
             onBack = {},
+            onAnswerChange = { _, _ -> },
             onAdvanceMeditation = {},
+            onStartBreathing = {},
             onDismiss = {},
         )
     }
