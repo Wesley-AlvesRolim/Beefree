@@ -159,7 +159,7 @@ private fun HelpInterventionContent(
                 },
                 actions = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = null)
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.emi_close_description))
                     }
                 },
             )
