@@ -1,23 +1,18 @@
 package com.wesley.beefree.domain.intervention.strategies
 
 import com.wesley.beefree.domain.checkin.OptionSpec
+import com.wesley.beefree.domain.entities.CoreValueType
 import com.wesley.beefree.domain.intervention.ActionSuggestion
 import com.wesley.beefree.domain.intervention.HelpInterventionStep
 
 object ActHelpInterventionFlow {
-    val valuesOptions =
-        listOf(
-            OptionSpec("disciplined", "help_intervention.act_values.disciplined"),
-            OptionSpec("present", "help_intervention.act_values.present"),
-            OptionSpec("honest", "help_intervention.act_values.honest"),
-            OptionSpec("healthy", "help_intervention.act_values.healthy"),
-            OptionSpec("responsible", "help_intervention.act_values.responsible"),
-            OptionSpec("calm", "help_intervention.act_values.calm"),
-            OptionSpec("focused", "help_intervention.act_values.focused"),
-            OptionSpec("resilient", "help_intervention.act_values.resilient"),
-            OptionSpec("selfcontrolled", "help_intervention.act_values.selfcontrolled"),
-            OptionSpec("kind_to_self", "help_intervention.act_values.kind_to_self"),
-        )
+    val valuesOptions: List<OptionSpec> =
+        CoreValueType.entries.map { type ->
+            OptionSpec(
+                id = type.name,
+                labelKey = "onboarding_core_value_${type.name.lowercase()}",
+            )
+        }
 
     val directionOptions =
         listOf(
