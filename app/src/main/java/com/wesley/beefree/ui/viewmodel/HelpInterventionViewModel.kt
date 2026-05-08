@@ -153,6 +153,18 @@ class HelpInterventionViewModel(
         val newAnswers = currentState.answers.toMutableMap()
         val stepId = stepAnswerKey(currentStep)
 
+        if (currentState.currentStepIndex == currentState.allSteps.lastIndex) {
+            newAnswers[stepId] = answer
+            _uiState.update {
+                it.copy(
+                    answers = newAnswers,
+                    isComplete = true,
+                )
+            }
+            saveSession()
+            return
+        }
+
         if (currentStep is HelpInterventionStep.PostSurfIntensityStep && answer is Int) {
             newAnswers[stepId] = answer
             if (answer >= currentStep.loopThreshold) {
@@ -175,17 +187,12 @@ class HelpInterventionViewModel(
         }
 
         val nextIndex = currentState.currentStepIndex + 1
-        val isComplete = nextIndex >= currentState.allSteps.size - 1
         _uiState.update {
             it.copy(
                 answers = newAnswers,
                 currentStepIndex = nextIndex,
-                isComplete = isComplete,
+                isComplete = false,
             )
-        }
-
-        if (isComplete) {
-            saveSession()
         }
     }
 
@@ -222,9 +229,8 @@ class HelpInterventionViewModel(
 
     fun advanceMeditationStep() {
         _uiState.update {
-            val currentStep = it.allSteps.getOrNull(it.currentStepIndex)
             val maxIndex =
-                when (currentStep) {
+                when (val currentStep = it.allSteps.getOrNull(it.currentStepIndex)) {
                     is HelpInterventionStep.UrgeSurfingStep -> currentStep.meditationStepKeys.size - 1
                     else -> 0
                 }
@@ -293,7 +299,7 @@ class HelpInterventionViewModel(
                     userProfileId = state.userProfileId,
                     interventionType = "EMI_${state.clinicalBranch.name}",
                     triggerType = source.name,
-                    wasCompleted = (answers[AnswerKey.REFLECTION.value] as? Boolean ?: false).not(),
+                    wasCompleted = (answers[AnswerKey.REFLECTION.value] as? String) == "no",
                     createdAt = createdAt,
                 )
 
