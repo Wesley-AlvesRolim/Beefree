@@ -1,6 +1,7 @@
 package com.wesley.beefree.domain.onboarding.usecases
 
 import com.wesley.beefree.domain.entities.AddictionCategory
+import com.wesley.beefree.domain.entities.CoreValueType
 import com.wesley.beefree.domain.onboarding.AddictionProfile
 import com.wesley.beefree.domain.onboarding.ClinicalProfile
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
@@ -113,7 +114,7 @@ class SaveOnboardingDataUseCaseTest {
                     hobbies = listOf("Leitura", "Academia"),
                     symptoms = listOf("ANXIETY", "ISOLATION"),
                     goals = listOf("Ser mais presente"),
-                    coreValues = listOf("Família", "Fé"),
+                    coreValues = listOf(CoreValueType.FAMILY.name, CoreValueType.FAITH.name),
                 )
 
             val result = useCase.execute(answers)
