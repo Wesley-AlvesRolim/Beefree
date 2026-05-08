@@ -27,6 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.BreathingPhaseEnum
+import com.wesley.beefree.domain.entities.CoreValueType
+import com.wesley.beefree.domain.entities.UserCoreValue
 import com.wesley.beefree.domain.intervention.ClinicalProfileStrategyFactory
 import com.wesley.beefree.domain.intervention.HelpInterventionStep
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
@@ -49,6 +51,7 @@ import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.AnswerKey
 import com.wesley.beefree.ui.viewmodel.HelpInterventionViewModel
 import com.wesley.beefree.ui.viewmodel.stepAnswerKey
+import kotlin.Int
 
 private object HelpInterventionSpeechKeys {
     const val ACT_ACTION = "help_intervention.mascot_speech_act_action"
@@ -106,6 +109,7 @@ fun HelpInterventionScreen(
         breathingSecondsLeft = state.breathingSecondsLeft,
         breathingCycleCount = state.breathingCycleCount,
         isComplete = state.isComplete,
+        userCoreValues = state.userCoreValues,
         lastCommittedAction = lastCommittedAction,
         canContinue = canContinue,
         answers = state.answers,
@@ -128,6 +132,7 @@ private fun HelpInterventionContent(
     breathingSecondsLeft: Int,
     breathingCycleCount: Int,
     isComplete: Boolean,
+    userCoreValues: List<UserCoreValue>,
     lastCommittedAction: String?,
     canContinue: Boolean,
     answers: Map<String, Any>,
@@ -179,7 +184,7 @@ private fun HelpInterventionContent(
         ) {
             item {
                 BeeStepper(
-                    step = currentStepIndex,
+                    step = currentStepIndex + 1,
                     total = allSteps.size,
                 )
             }
@@ -192,6 +197,7 @@ private fun HelpInterventionContent(
                         breathingPhaseEnum = breathingPhaseEnum,
                         breathingSecondsLeft = breathingSecondsLeft,
                         breathingCycleCount = breathingCycleCount,
+                        userCoreValues = userCoreValues,
                         lastCommittedAction = lastCommittedAction,
                         answers = answers,
                         onAnswerChange = onAnswerChange,
@@ -213,13 +219,13 @@ private fun StepContent(
     breathingPhaseEnum: BreathingPhaseEnum,
     breathingSecondsLeft: Int,
     breathingCycleCount: Int,
+    userCoreValues: List<UserCoreValue>,
     lastCommittedAction: String?,
     answers: Map<String, Any>,
     onAnswerChange: (String, Any) -> Unit,
     onAdvanceMeditation: () -> Unit,
     onStartBreathing: () -> Unit,
 ) {
-    val getAnswer = { key: String, default: Any -> answers[key] ?: default }
     val getIntAnswer = { key: String -> answers[key] as? Int ?: 0 }
     val getStringAnswer = { key: String -> answers[key] as? String ?: "" }
     val getSetAnswer = { key: String -> answers[key] as? Set<String> ?: emptySet() }
@@ -262,7 +268,8 @@ private fun StepContent(
                 onAnswerChange = { },
             )
 
-        is HelpInterventionStep.ActValuesStep ->
+        is HelpInterventionStep.ActValuesStep -> {
+            val userValueNames = userCoreValues.map { it.value.name }.toSet()
             ActValuesStepContent(
                 step = step,
                 selectedValue = getStringAnswer(AnswerKey.ACT_VALUE.value),
@@ -270,7 +277,9 @@ private fun StepContent(
                 onSelectedChange = { onAnswerChange(AnswerKey.ACT_VALUE.value, it) },
                 onCustomValueChange = { onAnswerChange(AnswerKey.ACT_VALUE_CUSTOM.value, it) },
                 onAnswerChange = { },
+                userCoreValueNames = userValueNames,
             )
+        }
 
         is HelpInterventionStep.ActDirectionStep ->
             ActDirectionStepContent(
@@ -396,14 +405,20 @@ private fun HelpInterventionBottomBar(
                 enabled = canGoNext,
                 modifier = Modifier.weight(1f),
             ) {
-                BeeLabelMedium(text = stringResource(R.string.next), color = MaterialTheme.colorScheme.onPrimary)
+                BeeLabelMedium(
+                    text = stringResource(R.string.next),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
             }
         } else {
             BeeButtonPrimary(
                 onClick = onDismiss,
                 modifier = Modifier.weight(1f),
             ) {
-                BeeLabelMedium(text = stringResource(R.string.done), color = MaterialTheme.colorScheme.onPrimary)
+                BeeLabelMedium(
+                    text = stringResource(R.string.done),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
             }
         }
     }
@@ -459,7 +474,7 @@ fun PreviewStep11() = HelpInterventionStepPreview(11)
 
 @Composable
 private fun HelpInterventionStepPreview(index: Int) {
-    val strategy = ClinicalProfileStrategyFactory.from(TreatmentProfile.TCC)
+    val strategy = ClinicalProfileStrategyFactory.from(TreatmentProfile.ACT)
     val allSteps = strategy.helpInterventionFlow.allSteps
 
     BeeFreeTheme {
@@ -471,6 +486,14 @@ private fun HelpInterventionStepPreview(index: Int) {
             breathingSecondsLeft = 60,
             breathingCycleCount = 0,
             isComplete = false,
+            userCoreValues =
+                listOf(
+                    UserCoreValue(
+                        userProfileId = 1,
+                        value = CoreValueType.FAITH,
+                        createdAt = System.currentTimeMillis(),
+                    ),
+                ),
             lastCommittedAction = HelpInterventionPreviewKeys.DRINK_WATER,
             canContinue = true,
             answers = emptyMap(),
