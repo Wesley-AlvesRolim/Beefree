@@ -3,6 +3,8 @@ package com.wesley.beefree.infrastructure.storage.adapters.db
 import com.wesley.beefree.domain.entities.*
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.infrastructure.storage.adapters.db.entities.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 fun AddictionCategoryEntity.toDomain() =
     AddictionCategory(
@@ -271,7 +273,7 @@ fun CognitiveThoughtRecordEntity.toDomain() =
         alternativeThought = alternativeThought,
         cognitiveDistortions =
             runCatching {
-                Json.decodeFromString(distortionsSerializer, cognitiveDistortions)
+                Json.decodeFromString(Serializers.list, cognitiveDistortions)
             }.getOrDefault(emptyList()),
         createdAt = createdAt,
     )
@@ -285,7 +287,7 @@ fun CognitiveThoughtRecord.toEntity() =
         feeling = feeling,
         consequence = consequence,
         alternativeThought = alternativeThought,
-        cognitiveDistortions = Json.encodeToString(distortionsSerializer, cognitiveDistortions),
+        cognitiveDistortions = Json.encodeToString(Serializers.list, cognitiveDistortions),
         createdAt = createdAt,
     )
 
