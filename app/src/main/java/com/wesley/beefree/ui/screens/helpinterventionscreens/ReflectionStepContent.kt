@@ -64,7 +64,7 @@ fun ReflectionStepContent(
         ) {
             BeeSelectableOption(
                 text = stringResource(R.string.help_intervention_reflection_yes),
-                subtitle = "Foi tão forte assim",
+                subtitle = stringResource(R.string.help_intervention_reflection_subtitle_yes),
                 isSelected = selectedValue == "yes",
                 onClick = {
                     onSelectedChange("yes")
@@ -73,7 +73,7 @@ fun ReflectionStepContent(
             Spacer(Modifier.height(BeeSpacing.M))
             BeeSelectableOption(
                 text = stringResource(R.string.help_intervention_reflection_no),
-                subtitle = "Surfei a onda",
+                subtitle = stringResource(R.string.help_intervention_reflection_subtitle_no),
                 isSelected = selectedValue == "no",
                 onClick = {
                     onSelectedChange("no")
@@ -142,11 +142,14 @@ private fun SessionMetricRow(
     }
 }
 
+@Composable
 private fun formatSeconds(seconds: Int): String {
     val minutes = seconds / 60
     val secs = seconds % 60
+    val minUnit = stringResource(R.string.help_intervention_timer_format_min)
+    val secUnit = stringResource(R.string.help_intervention_timer_format_sec)
     return when {
-        minutes > 0 -> "$minutes min ${secs}s"
-        else -> "${secs}s"
+        minutes > 0 -> "$minutes $minUnit ${secs}$secUnit"
+        else -> "${secs}$secUnit"
     }
 }

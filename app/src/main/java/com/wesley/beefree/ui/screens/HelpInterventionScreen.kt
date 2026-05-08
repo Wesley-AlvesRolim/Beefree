@@ -50,6 +50,20 @@ import com.wesley.beefree.ui.viewmodel.AnswerKey
 import com.wesley.beefree.ui.viewmodel.HelpInterventionViewModel
 import com.wesley.beefree.ui.viewmodel.stepAnswerKey
 
+private object HelpInterventionSpeechKeys {
+    const val ACT_ACTION = "help_intervention.mascot_speech_act_action"
+    const val TCC_THOUGHT = "help_intervention.mascot_speech_tcc_thought"
+    const val TCC_EVIDENCE_FOR = "help_intervention.mascot_speech_tcc_evidence_for"
+    const val TCC_EVIDENCE_AGAINST = "help_intervention.mascot_speech_tcc_evidence_against"
+    const val TCC_ALTERNATIVE = "help_intervention.mascot_speech_tcc_alternative"
+    const val HYBRID_RESTRUCTURING = "help_intervention.mascot_speech_hybrid_restructuring"
+    const val TCC_ACTION = "help_intervention.mascot_speech_tcc_action"
+}
+
+private object HelpInterventionPreviewKeys {
+    const val DRINK_WATER = "help_intervention.act_actions.drink_water"
+}
+
 @Composable
 fun HelpInterventionScreen(
     viewModel: HelpInterventionViewModel,
@@ -273,7 +287,7 @@ private fun StepContent(
                 selectedValue = getStringAnswer(AnswerKey.ACT_ACTION.value),
                 customValue = getStringAnswer(AnswerKey.ACT_ACTION_CUSTOM.value),
                 speechTone = BeeMascotSpeechTone.Tertiary,
-                speechKey = "help_intervention.mascot_speech_act_action",
+                speechKey = HelpInterventionSpeechKeys.ACT_ACTION,
                 onSelectedChange = { onAnswerChange(AnswerKey.ACT_ACTION.value, it) },
                 onCustomValueChange = { onAnswerChange(AnswerKey.ACT_ACTION_CUSTOM.value, it) },
                 onAnswerChange = { },
@@ -284,7 +298,7 @@ private fun StepContent(
                 titleKey = step.titleKey,
                 value = getStringAnswer(AnswerKey.TCC_AUTO_THOUGHT.value),
                 onValueChange = { onAnswerChange(AnswerKey.TCC_AUTO_THOUGHT.value, it) },
-                speechKey = "help_intervention.mascot_speech_tcc_thought",
+                speechKey = HelpInterventionSpeechKeys.TCC_THOUGHT,
                 speechTone = BeeMascotSpeechTone.Secondary,
                 onAnswerChange = { },
             )
@@ -294,7 +308,7 @@ private fun StepContent(
                 titleKey = step.titleKey,
                 value = getStringAnswer(AnswerKey.TCC_EVIDENCE_FOR.value),
                 onValueChange = { onAnswerChange(AnswerKey.TCC_EVIDENCE_FOR.value, it) },
-                speechKey = "help_intervention.mascot_speech_tcc_evidence_for",
+                speechKey = HelpInterventionSpeechKeys.TCC_EVIDENCE_FOR,
                 speechTone = BeeMascotSpeechTone.Secondary,
                 onAnswerChange = { },
             )
@@ -304,7 +318,7 @@ private fun StepContent(
                 titleKey = step.titleKey,
                 value = getStringAnswer(AnswerKey.TCC_EVIDENCE_AGAINST.value),
                 onValueChange = { onAnswerChange(AnswerKey.TCC_EVIDENCE_AGAINST.value, it) },
-                speechKey = "help_intervention.mascot_speech_tcc_evidence_against",
+                speechKey = HelpInterventionSpeechKeys.TCC_EVIDENCE_AGAINST,
                 speechTone = BeeMascotSpeechTone.Secondary,
                 onAnswerChange = { },
             )
@@ -316,9 +330,9 @@ private fun StepContent(
                 onValueChange = { onAnswerChange(AnswerKey.TCC_ALTERNATIVE_THOUGHT.value, it) },
                 speechKey =
                     if (step.titleKey == "help_intervention.tcc_restructuring.title") {
-                        "help_intervention.mascot_speech_hybrid_restructuring"
+                        HelpInterventionSpeechKeys.HYBRID_RESTRUCTURING
                     } else {
-                        "help_intervention.mascot_speech_tcc_alternative"
+                        HelpInterventionSpeechKeys.TCC_ALTERNATIVE
                     },
                 speechTone = BeeMascotSpeechTone.Secondary,
                 onAnswerChange = { },
@@ -331,7 +345,7 @@ private fun StepContent(
                 selectedValue = getStringAnswer(AnswerKey.TCC_ACTION.value),
                 customValue = getStringAnswer(AnswerKey.TCC_ACTION_CUSTOM.value),
                 speechTone = BeeMascotSpeechTone.Secondary,
-                speechKey = "help_intervention.mascot_speech_tcc_action",
+                speechKey = HelpInterventionSpeechKeys.TCC_ACTION,
                 onSelectedChange = { onAnswerChange(AnswerKey.TCC_ACTION.value, it) },
                 onCustomValueChange = { onAnswerChange(AnswerKey.TCC_ACTION_CUSTOM.value, it) },
                 onAnswerChange = { },
@@ -457,7 +471,7 @@ private fun HelpInterventionStepPreview(index: Int) {
             breathingSecondsLeft = 60,
             breathingCycleCount = 0,
             isComplete = false,
-            lastCommittedAction = "help_intervention.act_actions.drink_water",
+            lastCommittedAction = HelpInterventionPreviewKeys.DRINK_WATER,
             canContinue = true,
             answers = emptyMap(),
             onNext = {},

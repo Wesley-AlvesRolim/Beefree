@@ -132,10 +132,11 @@ private fun ActionCategoryCard(
     }
 }
 
+@Composable
 private fun categoryTitle(category: String): String =
     when (category) {
-        "regulation" -> "Regulação imediata"
-        "context" -> "Mudança de contexto"
-        "values" -> "Conexão com valor"
+        "regulation" -> stringResource(R.string.help_intervention_action_category_regulation)
+        "context" -> stringResource(R.string.help_intervention_action_category_context)
+        "values" -> stringResource(R.string.help_intervention_action_category_values)
         else -> category.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
     }
