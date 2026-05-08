@@ -191,7 +191,7 @@ fun WaveVisualizationCanvas(
                     easing = LinearEasing,
                 )
             },
-        label = stringResource(R.string.urge_surfing_title),
+        label = stringResource(R.string.urge_surfing_headline),
     )
 
     Canvas(modifier = modifier) {
