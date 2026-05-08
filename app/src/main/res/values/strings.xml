@@ -502,6 +502,17 @@
     <string name="help_intervention.reflection.was_impulse_strong">O impulso era tão forte quanto parecia?</string>
     <string name="help_intervention.reflection_yes">Sim, era forte</string>
     <string name="help_intervention.reflection_no">Não, passou rápido</string>
+    <string name="help_intervention.reflection_subtitle_yes">Foi tão forte assim</string>
+    <string name="help_intervention.reflection_subtitle_no">Surfei a onda</string>
+
+    <!-- Committed action categories -->
+    <string name="help_intervention.action_category_regulation">Regulação imediata</string>
+    <string name="help_intervention.action_category_context">Mudança de contexto</string>
+    <string name="help_intervention.action_category_values">Conexão com valor</string>
+
+    <!-- Timer format -->
+    <string name="help_intervention.timer_format_min">min</string>
+    <string name="help_intervention.timer_format_sec">s</string>
 
     <!-- Mascot speech and encouragement -->
     <string name="help_intervention.intensity_greeting">Tô com você</string>
@@ -520,6 +531,7 @@
     <string name="help_intervention.mascot_speech_hybrid_restructuring"> Você pode reconhecer esse pensamento sem precisar obedecer a ele. Existe uma visão mais justa e útil agora? </string>
     <string name="help_intervention.mascot_speech_timer"> Continue só por mais um momento. Cada minuto que passa enfraquece o automático e fortalece sua escolha. </string>
     <string name="help_intervention.mascot_speech_reflection"> Você conseguiu atravessar essa onda. Olhando agora, o impulso era tão permanente quanto parecia no começo? </string>
+    <string name="help_intervention.mascot_speech_tcc_action"> Com base nesse pensamento mais equilibrado, qual pequena ação você pode tomar? </string>
 
     <!-- Session summary -->
     <string name="help_intervention.session_summary_header">SESSÃO · RESUMO</string>
