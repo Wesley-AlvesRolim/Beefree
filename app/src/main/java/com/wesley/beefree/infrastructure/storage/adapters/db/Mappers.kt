@@ -142,7 +142,7 @@ fun UserCoreValueEntity.toDomain() =
     UserCoreValue(
         id = id,
         userProfileId = userProfileId,
-        valueName = valueName,
+        value = CoreValueType.valueOf(valueName),
         createdAt = createdAt,
     )
 
@@ -150,7 +150,7 @@ fun UserCoreValue.toEntity() =
     UserCoreValueEntity(
         id = id,
         userProfileId = userProfileId,
-        valueName = valueName,
+        valueName = value.name,
         createdAt = createdAt,
     )
 
