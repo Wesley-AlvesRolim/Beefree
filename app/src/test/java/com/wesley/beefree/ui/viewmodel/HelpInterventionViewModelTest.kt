@@ -1,6 +1,7 @@
 package com.wesley.beefree.ui.viewmodel
 
 import com.wesley.beefree.domain.entities.BreathingPhaseEnum
+import com.wesley.beefree.domain.entities.InterventionRecord
 import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserCoreValue
 import com.wesley.beefree.domain.entities.UserHobby
@@ -25,6 +26,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -34,7 +37,7 @@ import kotlin.OptIn
 class HelpInterventionViewModelTest {
     private lateinit var mockOnboardingRepository: OnboardingRepository
     private lateinit var mockUserProfileRepository: UserProfileRepository
-    private lateinit var mockEMIRepository: EMIRepository
+    private lateinit var fakeEMIRepository: FakeEMIRepository
     private lateinit var saveInterventionSessionUseCase: SaveInterventionSessionUseCase
     private lateinit var fakeTicker: FakeTicker
     private val testDispatcher = StandardTestDispatcher()
@@ -44,10 +47,10 @@ class HelpInterventionViewModelTest {
         Dispatchers.setMain(testDispatcher)
         mockOnboardingRepository = mock(OnboardingRepository::class.java)
         mockUserProfileRepository = mock(UserProfileRepository::class.java)
-        mockEMIRepository = mock(EMIRepository::class.java)
+        fakeEMIRepository = FakeEMIRepository()
         saveInterventionSessionUseCase =
             SaveInterventionSessionUseCase(
-                emiRepository = mockEMIRepository,
+                emiRepository = fakeEMIRepository,
                 onboardingRepository = mockOnboardingRepository,
             )
         fakeTicker = FakeTicker()
@@ -205,6 +208,29 @@ class HelpInterventionViewModelTest {
     }
 
     @Test
+    fun `final reflection only saves after answer is provided`() {
+        val viewModel = createViewModelWithProfile(TreatmentProfile.TCC)
+
+        advanceToTimerStep(viewModel)
+        assertEquals(0, fakeEMIRepository.insertedInterventionRecords.size)
+
+        viewModel.onNext(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.isComplete)
+        assertEquals(viewModel.uiState.value.allSteps.lastIndex, viewModel.uiState.value.currentStepIndex)
+        assertEquals(0, fakeEMIRepository.insertedInterventionRecords.size)
+
+        viewModel.onNext("no")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.isComplete)
+        assertEquals(viewModel.uiState.value.allSteps.lastIndex, viewModel.uiState.value.currentStepIndex)
+        assertEquals(1, fakeEMIRepository.insertedInterventionRecords.size)
+        assertTrue(fakeEMIRepository.insertedInterventionRecords.first().wasCompleted)
+    }
+
+    @Test
     fun `advance meditation step on non urge surfing step stays at zero`() {
         val viewModel = createViewModelWithProfile(TreatmentProfile.TCC)
         viewModel.advanceMeditationStep()
@@ -319,10 +345,59 @@ class HelpInterventionViewModelTest {
         return vm
     }
 
+    private fun advanceToTimerStep(viewModel: HelpInterventionViewModel) {
+        while (viewModel.uiState.value.allSteps
+                .getOrNull(viewModel.uiState.value.currentStepIndex) !is HelpInterventionStep.TimerStep
+        ) {
+            val currentStep = viewModel.uiState.value.allSteps[viewModel.uiState.value.currentStepIndex]
+            viewModel.onNext(answerForStep(currentStep))
+            testDispatcher.scheduler.advanceUntilIdle()
+        }
+    }
+
+    private fun answerForStep(step: HelpInterventionStep): Any =
+        when (step) {
+            is HelpInterventionStep.IntensityStep -> 5
+            is HelpInterventionStep.BodyLocationStep -> setOf("chest")
+            is HelpInterventionStep.UrgeSurfingStep -> true
+            is HelpInterventionStep.PostSurfIntensityStep -> 4
+            is HelpInterventionStep.ActValuesStep -> step.predefinedOptions.firstOrNull()?.id ?: "faith"
+            is HelpInterventionStep.ActDirectionStep -> step.options.firstOrNull()?.id ?: "toward"
+            is HelpInterventionStep.ActCommittedActionStep -> step.suggestions.firstOrNull()?.labelKey ?: "action"
+            is HelpInterventionStep.TccAutomaticThoughtStep -> "thought"
+            is HelpInterventionStep.TccEvidenceForStep -> "for"
+            is HelpInterventionStep.TccEvidenceAgainstStep -> "against"
+            is HelpInterventionStep.TccAlternativeThoughtStep -> "alternative"
+            is HelpInterventionStep.TccActionStep -> step.suggestions.firstOrNull()?.labelKey ?: "action"
+            is HelpInterventionStep.TimerStep -> true
+            is HelpInterventionStep.ReflectionStep -> "yes"
+        }
+
     private class FakeTicker : Ticker {
         val flow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
         override fun ticks() = flow
+    }
+
+    private class FakeEMIRepository : EMIRepository {
+        val insertedInterventionRecords = mutableListOf<InterventionRecord>()
+
+        override suspend fun insertInterventionRecord(record: InterventionRecord): Long {
+            insertedInterventionRecords += record
+            return 1L
+        }
+
+        override suspend fun updateInterventionRecord(record: InterventionRecord) = Unit
+
+        override fun getInterventionRecords(userId: Int) = flowOf(emptyList<InterventionRecord>())
+
+        override suspend fun insertThoughtRecord(record: com.wesley.beefree.domain.entities.CognitiveThoughtRecord): Long = 1L
+
+        override suspend fun updateThoughtRecord(record: com.wesley.beefree.domain.entities.CognitiveThoughtRecord) = Unit
+
+        override fun getThoughtRecords(userId: Int) = flowOf(emptyList<com.wesley.beefree.domain.entities.CognitiveThoughtRecord>())
+
+        override suspend fun insertInterventionValueLink(link: com.wesley.beefree.domain.entities.InterventionValueLink) = Unit
     }
 
     private class FakeOnboardingRepository(
