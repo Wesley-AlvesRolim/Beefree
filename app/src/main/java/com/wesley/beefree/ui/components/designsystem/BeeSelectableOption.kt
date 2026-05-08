@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -148,7 +149,7 @@ private fun BeeSelectableOptionCard(
                 Row(
                     modifier =
                         Modifier
-                            .fillMaxWidth()
+                            .fillMaxSize()
                             .padding(horizontal = BeeSpacing.M, vertical = 14.dp),
                     verticalAlignment = rowAlignment,
                     horizontalArrangement = rowArrangement,
@@ -169,7 +170,7 @@ private fun BeeSelectableOptionCard(
                 Column(
                     modifier =
                         Modifier
-                            .fillMaxWidth()
+                            .fillMaxSize()
                             .padding(horizontal = BeeSpacing.M, vertical = 14.dp),
                     horizontalAlignment = columnAlignment,
                     verticalArrangement = columnArrangement,
