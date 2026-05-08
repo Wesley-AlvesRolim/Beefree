@@ -17,6 +17,7 @@ sealed interface HelpInterventionStep {
     data class UrgeSurfingStep(
         val meditationStepKeys: List<String>,
         val intervalMs: Long = 2000L,
+        val minimumCycles: Int = 2,
     ) : HelpInterventionStep
 
     data class PostSurfIntensityStep(
