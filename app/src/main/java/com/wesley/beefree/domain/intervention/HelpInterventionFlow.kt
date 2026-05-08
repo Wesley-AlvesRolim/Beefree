@@ -1,6 +1,6 @@
 package com.wesley.beefree.domain.intervention
 
-import com.wesley.beefree.domain.checkin.OptionSpec
+import com.wesley.beefree.domain.shared.OptionSpec
 
 sealed interface HelpInterventionStep {
     data class IntensityStep(

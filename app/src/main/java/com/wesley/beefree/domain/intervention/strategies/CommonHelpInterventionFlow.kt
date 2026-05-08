@@ -1,7 +1,7 @@
 package com.wesley.beefree.domain.intervention.strategies
 
-import com.wesley.beefree.domain.checkin.OptionSpec
 import com.wesley.beefree.domain.intervention.HelpInterventionStep
+import com.wesley.beefree.domain.shared.OptionSpec
 
 object CommonHelpInterventionFlow {
     val MEDITATION_STEP_KEYS =

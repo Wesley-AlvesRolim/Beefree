@@ -1,9 +1,9 @@
 package com.wesley.beefree.domain.intervention.strategies
 
-import com.wesley.beefree.domain.checkin.OptionSpec
 import com.wesley.beefree.domain.entities.CoreValueType
 import com.wesley.beefree.domain.intervention.ActionSuggestion
 import com.wesley.beefree.domain.intervention.HelpInterventionStep
+import com.wesley.beefree.domain.shared.OptionSpec
 
 object ActHelpInterventionFlow {
     val valuesOptions: List<OptionSpec> =
