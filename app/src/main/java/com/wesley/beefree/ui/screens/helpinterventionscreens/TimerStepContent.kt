@@ -40,6 +40,7 @@ fun TimerStepContent(
     selectedAction: String?,
     secondsLeft: Int,
     timerStarted: Boolean,
+    timerCompleted: Boolean,
     onTimerTick: (Int) -> Unit,
     onTimerStart: () -> Unit,
     onAnswerChange: (Any) -> Unit,
@@ -59,8 +60,8 @@ fun TimerStepContent(
         }
     }
 
-    LaunchedEffect(secondsLeft) {
-        if (timerStarted && secondsLeft >= 10 && cycledSeconds >= 0) {
+    LaunchedEffect(secondsLeft, timerStarted, timerCompleted) {
+        if (shouldAutoCompleteTimer(secondsLeft, timerStarted, timerCompleted)) {
             onAnswerChange(true)
         }
     }
@@ -137,6 +138,12 @@ fun TimerStepContent(
         }
     }
 }
+
+internal fun shouldAutoCompleteTimer(
+    secondsElapsed: Int,
+    timerStarted: Boolean,
+    timerCompleted: Boolean,
+): Boolean = timerStarted && !timerCompleted && secondsElapsed >= 10
 
 private fun formatElapsed(seconds: Int): String {
     val minutes = seconds / 60
