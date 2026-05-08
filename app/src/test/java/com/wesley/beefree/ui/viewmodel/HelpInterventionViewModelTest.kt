@@ -46,7 +46,10 @@ class HelpInterventionViewModelTest {
         mockUserProfileRepository = mock(UserProfileRepository::class.java)
         mockEMIRepository = mock(EMIRepository::class.java)
         saveInterventionSessionUseCase =
-            SaveInterventionSessionUseCase(emiRepository = mockEMIRepository)
+            SaveInterventionSessionUseCase(
+                emiRepository = mockEMIRepository,
+                onboardingRepository = mockOnboardingRepository,
+            )
         fakeTicker = FakeTicker()
     }
 
