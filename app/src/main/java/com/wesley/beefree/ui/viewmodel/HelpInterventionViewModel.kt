@@ -11,7 +11,9 @@ import com.wesley.beefree.domain.entities.BreathingPhaseEnum.EXHALE
 import com.wesley.beefree.domain.entities.BreathingPhaseEnum.HOLD
 import com.wesley.beefree.domain.entities.BreathingPhaseEnum.INHALE
 import com.wesley.beefree.domain.entities.CognitiveThoughtRecord
+import com.wesley.beefree.domain.entities.CoreValueType
 import com.wesley.beefree.domain.entities.InterventionRecord
+import com.wesley.beefree.domain.entities.UserCoreValue
 import com.wesley.beefree.domain.intervention.ClinicalProfileStrategyFactory
 import com.wesley.beefree.domain.intervention.HelpInterventionStep
 import com.wesley.beefree.domain.intervention.RealTicker
@@ -75,6 +77,7 @@ data class HelpInterventionUiState(
     val userProfileId: Int? = null,
     val clinicalBranch: TreatmentProfile? = null,
     val openedFrom: HelpInterventionSource = HelpInterventionSource.FAB,
+    val userCoreValues: List<UserCoreValue> = emptyList(),
 )
 
 class HelpInterventionViewModel(
@@ -114,13 +117,30 @@ class HelpInterventionViewModel(
                 strategy?.helpInterventionFlow
                     ?: return@launch
 
+            val userCoreValues = onboardingRepository.getCoreValues(userId).first()
+            val userValueNames = userCoreValues.map { it.value.name }.toSet()
+
+            val sortedSteps =
+                flow.allSteps.map { step ->
+                    if (step is HelpInterventionStep.ActValuesStep) {
+                        step.copy(
+                            predefinedOptions =
+                                step.predefinedOptions
+                                    .sortedWith(compareByDescending { it.id in userValueNames }),
+                        )
+                    } else {
+                        step
+                    }
+                }
+
             _uiState.update {
                 HelpInterventionUiState(
-                    allSteps = flow.allSteps,
+                    allSteps = sortedSteps,
                     userId = userId,
                     userProfileId = userId,
                     clinicalBranch = profile,
                     isLoading = false,
+                    userCoreValues = userCoreValues,
                 )
             }
         }
@@ -136,7 +156,8 @@ class HelpInterventionViewModel(
         if (currentStep is HelpInterventionStep.PostSurfIntensityStep && answer is Int) {
             newAnswers[stepId] = answer
             if (answer >= currentStep.loopThreshold) {
-                val urgeSurfingIndex = currentState.allSteps.indexOfFirst { it is HelpInterventionStep.UrgeSurfingStep }
+                val urgeSurfingIndex =
+                    currentState.allSteps.indexOfFirst { it is HelpInterventionStep.UrgeSurfingStep }
                 if (urgeSurfingIndex >= 0) {
                     _uiState.update {
                         it.copy(
@@ -154,7 +175,7 @@ class HelpInterventionViewModel(
         }
 
         val nextIndex = currentState.currentStepIndex + 1
-        val isComplete = nextIndex >= currentState.allSteps.size
+        val isComplete = nextIndex >= currentState.allSteps.size - 1
         _uiState.update {
             it.copy(
                 answers = newAnswers,
@@ -261,7 +282,9 @@ class HelpInterventionViewModel(
             val bodyLocations =
                 (answers[AnswerKey.BODY_LOCATIONS.value] as? Set<*>)
                     ?.filterIsInstance<String>() ?: emptyList()
-            val committedAction = (answers[AnswerKey.ACT_ACTION.value] as? String) ?: (answers[AnswerKey.TCC_ACTION.value] as? String)
+            val committedAction =
+                (answers[AnswerKey.ACT_ACTION.value] as? String)
+                    ?: (answers[AnswerKey.TCC_ACTION.value] as? String)
             val automaticThought = answers[AnswerKey.TCC_AUTO_THOUGHT.value] as? String
             val alternativeThought = answers[AnswerKey.TCC_ALTERNATIVE_THOUGHT.value] as? String
 
@@ -269,18 +292,22 @@ class HelpInterventionViewModel(
                 InterventionRecord(
                     userProfileId = state.userProfileId,
                     interventionType = "EMI_${state.clinicalBranch.name}",
-                    triggerType = "SOS",
+                    triggerType = source.name,
                     wasCompleted = (answers[AnswerKey.REFLECTION.value] as? Boolean ?: false).not(),
                     createdAt = createdAt,
                 )
 
             val thoughtRecord =
-                if (automaticThought.isNullOrEmpty().not() || alternativeThought.isNullOrEmpty().not()) {
+                if (automaticThought.isNullOrEmpty().not() ||
+                    alternativeThought
+                        .isNullOrEmpty()
+                        .not()
+                ) {
                     CognitiveThoughtRecord(
                         userProfileId = state.userProfileId,
                         situation =
-                            "Impulse intensity: $intensityBefore → $intensityAfter. " +
-                                "Locations: ${bodyLocations.joinToString()}",
+                            "$intensityBefore <> $intensityAfter|" +
+                                bodyLocations.joinToString(),
                         automaticThought = automaticThought ?: "",
                         feeling = bodyLocations.joinToString("|"),
                         consequence = committedAction ?: "N/A",
@@ -292,7 +319,17 @@ class HelpInterventionViewModel(
                     null
                 }
 
-            saveInterventionSessionUseCase.execute(interventionRecord, thoughtRecord)
+            val selectedValueName = answers[AnswerKey.ACT_VALUE.value] as? String
+            val selectedCoreValue =
+                selectedValueName
+                    ?.let { runCatching { CoreValueType.valueOf(it) }.getOrNull() }
+
+            saveInterventionSessionUseCase.execute(
+                interventionRecord = interventionRecord,
+                thoughtRecord = thoughtRecord,
+                selectedCoreValue = selectedCoreValue,
+                userProfileId = state.userProfileId,
+            )
         }
     }
 
@@ -325,6 +362,14 @@ class HelpInterventionViewModel(
                                         interventionRecordDao = db.interventionRecordDao(),
                                         thoughtRecordDao = db.cognitiveThoughtRecordDao(),
                                         interventionValueLinkDao = db.interventionValueLinkDao(),
+                                    ),
+                                onboardingRepository =
+                                    RoomOnboardingRepository(
+                                        onboardingSessionDao = db.userOnboardingSessionDao(),
+                                        coreValueDao = db.userCoreValueDao(),
+                                        hobbyDao = db.userHobbyDao(),
+                                        objectiveDao = db.userObjectiveDao(),
+                                        symptomDao = db.userSymptomDao(),
                                     ),
                             ),
                         ticker = RealTicker(),
