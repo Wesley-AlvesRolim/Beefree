@@ -18,8 +18,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.wesley.beefree.R
 import com.wesley.beefree.ui.screens.ActivityTrajectoryScreen
 import com.wesley.beefree.ui.screens.HelpInterventionScreen
@@ -58,7 +60,6 @@ sealed class Screen(
     object TriggerMap : Screen("trigger_map", R.string.trigger_map_title, Icons.Default.TagFaces)
 
     object HelpIntervention : Screen("help_intervention", R.string.help_title, Icons.AutoMirrored.Filled.Help)
-
 
     object Settings : Screen("settings", R.string.settings_title, Icons.Default.Settings)
 }
