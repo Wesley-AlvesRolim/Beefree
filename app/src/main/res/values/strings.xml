@@ -458,15 +458,33 @@
     <string name="help_intervention.act_committed_action.title">Qual pequena ação alinhada você pode fazer agora?</string>
 
     <!-- ACT actions -->
-    <string name="help_intervention.act_actions.breathe_2min">Respirar por 2 minutos</string>
+    <string name="help_intervention.act_actions.call_family">Ligar para alguém da família</string>
+    <string name="help_intervention.act_actions.help_at_home">Ajudar em algo em casa</string>
+    <string name="help_intervention.act_actions.pray">Fazer uma oração</string>
+    <string name="help_intervention.act_actions.read_scripture">Ler um texto espiritual</string>
+    <string name="help_intervention.act_actions.practice_gratitude">Praticar gratidão</string>
+    <string name="help_intervention.act_actions.meditate">Meditar por 5 minutos</string>
+    <string name="help_intervention.act_actions.write_feelings">Escrever o que está sentindo</string>
+    <string name="help_intervention.act_actions.acknowledge_urge">Reconhecer a vontade sem agir</string>
     <string name="help_intervention.act_actions.drink_water">Beber água</string>
-    <string name="help_intervention.act_actions.leave_environment">Sair do ambiente</string>
-    <string name="help_intervention.act_actions.block_app">Bloquear app gatilho</string>
-    <string name="help_intervention.act_actions.go_another_room">Ir para outro cômodo</string>
     <string name="help_intervention.act_actions.take_walk">Dar uma caminhada</string>
+    <string name="help_intervention.act_actions.stretch">Alongar o corpo</string>
+    <string name="help_intervention.act_actions.breathe_2min">Respirar por 2 minutos</string>
     <string name="help_intervention.act_actions.message_someone">Mandar mensagem para alguém</string>
+    <string name="help_intervention.act_actions.listen_someone">Conversar com alguém</string>
+    <string name="help_intervention.act_actions.read_5min">Ler por 5 minutos</string>
+    <string name="help_intervention.act_actions.study_10min">Estudar por 10 minutos</string>
+    <string name="help_intervention.act_actions.journal">Escrever no diário</string>
     <string name="help_intervention.act_actions.work_10min">Trabalhar por 10 minutos</string>
+    <string name="help_intervention.act_actions.plan_tasks">Planejar tarefas</string>
     <string name="help_intervention.act_actions.do_productive">Fazer algo produtivo</string>
+    <string name="help_intervention.act_actions.help_someone">Ajudar alguém</string>
+    <string name="help_intervention.act_actions.send_kind_message">Enviar uma mensagem gentil</string>
+    <string name="help_intervention.act_actions.show_affection">Demonstrar carinho a alguém</string>
+    <string name="help_intervention.act_actions.message_loved_one">Mandar mensagem para alguém importante</string>
+    <string name="help_intervention.act_actions.leave_environment">Sair do ambiente</string>
+    <string name="help_intervention.act_actions.go_another_room">Ir para outro cômodo</string>
+    <string name="help_intervention.act_actions.put_phone_away">Guardar o celular por alguns minutos</string>
 
     <!-- TCC automatic thought step -->
     <string name="help_intervention.tcc_auto_thought.title">O que passou pela sua mente?</string>
