@@ -94,6 +94,7 @@ fun HelpInterventionScreen(
     val currentStep = state.allSteps.getOrNull(state.currentStepIndex)
     val stepId = currentStep?.let { stepAnswerKey(it) } ?: ""
     val currentAnswer = viewModel.getAnswer(stepId)
+    val isTheLastScreen = state.currentStepIndex + 1 == state.allSteps.lastIndex
 
     val canContinue =
         when (currentStep) {
@@ -108,9 +109,10 @@ fun HelpInterventionScreen(
         breathingPhaseEnum = state.breathingPhaseEnum,
         breathingSecondsLeft = state.breathingSecondsLeft,
         breathingCycleCount = state.breathingCycleCount,
-        isComplete = state.isComplete,
+        isTheLastScreen = isTheLastScreen,
         userCoreValues = state.userCoreValues,
         lastCommittedAction = lastCommittedAction,
+        currentAnswer = currentAnswer,
         canContinue = canContinue,
         answers = state.answers,
         onNext = { answer -> viewModel.onNext(answer) },
@@ -131,9 +133,10 @@ private fun HelpInterventionContent(
     breathingPhaseEnum: BreathingPhaseEnum,
     breathingSecondsLeft: Int,
     breathingCycleCount: Int,
-    isComplete: Boolean,
+    isTheLastScreen: Boolean,
     userCoreValues: List<UserCoreValue>,
     lastCommittedAction: String?,
+    currentAnswer: Any?,
     canContinue: Boolean,
     answers: Map<String, Any>,
     onNext: (Any) -> Unit,
@@ -166,10 +169,10 @@ private fun HelpInterventionContent(
         },
         bottomBar = {
             HelpInterventionBottomBar(
-                onNext = { if (canContinue) onNext(true) },
+                onNext = { if (canContinue) onNext(currentAnswer ?: true) },
                 onDismiss = onDismiss,
                 canGoNext = canContinue,
-                isCompleted = isComplete,
+                isTheLastScreen = isTheLastScreen,
             )
         },
     ) { padding ->
@@ -366,6 +369,7 @@ private fun StepContent(
                 selectedAction = lastCommittedAction,
                 secondsLeft = getIntAnswer(AnswerKey.TIMER_SECONDS.value),
                 timerStarted = answers.containsKey(AnswerKey.TIMER_STARTED.value),
+                timerCompleted = answers[AnswerKey.TIMER.value] == true,
                 onTimerTick = { onAnswerChange(AnswerKey.TIMER_SECONDS.value, it) },
                 onTimerStart = { onAnswerChange(AnswerKey.TIMER_STARTED.value, true) },
                 onAnswerChange = { onAnswerChange(AnswerKey.TIMER.value, it) },
@@ -390,7 +394,7 @@ private fun HelpInterventionBottomBar(
     onNext: () -> Unit,
     onDismiss: () -> Unit,
     canGoNext: Boolean,
-    isCompleted: Boolean,
+    isTheLastScreen: Boolean,
 ) {
     Row(
         modifier =
@@ -399,7 +403,7 @@ private fun HelpInterventionBottomBar(
                 .padding(BeeSpacing.M),
         horizontalArrangement = Arrangement.spacedBy(BeeSpacing.M),
     ) {
-        if (!isCompleted) {
+        if (!isTheLastScreen) {
             BeeButtonPrimary(
                 onClick = onNext,
                 enabled = canGoNext,
@@ -485,7 +489,7 @@ private fun HelpInterventionStepPreview(index: Int) {
             breathingPhaseEnum = BreathingPhaseEnum.INHALE,
             breathingSecondsLeft = 60,
             breathingCycleCount = 0,
-            isComplete = false,
+            isTheLastScreen = index == allSteps.lastIndex,
             userCoreValues =
                 listOf(
                     UserCoreValue(
@@ -495,6 +499,7 @@ private fun HelpInterventionStepPreview(index: Int) {
                     ),
                 ),
             lastCommittedAction = HelpInterventionPreviewKeys.DRINK_WATER,
+            currentAnswer = null,
             canContinue = true,
             answers = emptyMap(),
             onNext = {},
