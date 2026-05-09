@@ -8,6 +8,6 @@ enum class BreathingPhaseEnum(
     @StringRes val labelRes: Int,
 ) {
     INHALE(4, R.string.urge_surfing_phase_inhale),
-    HOLD(7, R.string.urge_surfing_phase_hold),
-    EXHALE(8, R.string.urge_surfing_phase_exhale),
+    HOLD(4, R.string.urge_surfing_phase_hold),
+    EXHALE(6, R.string.urge_surfing_phase_exhale),
 }
