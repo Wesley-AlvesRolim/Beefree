@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.wesley.beefree.ui.components.designsystem.BeeBodySmall
 import com.wesley.beefree.ui.components.designsystem.BeeCardSection
 import com.wesley.beefree.ui.components.designsystem.BeeHeadlineLarge
 import com.wesley.beefree.ui.components.designsystem.BeeMascotSpeech
@@ -24,6 +26,7 @@ fun TextInputStepContent(
     value: String,
     onValueChange: (String) -> Unit,
     onAnswerChange: (Any) -> Unit,
+    placeholderKey: String? = null,
     speechKey: String? = null,
     speechTone: BeeMascotSpeechTone = BeeMascotSpeechTone.Secondary,
 ) {
@@ -46,6 +49,8 @@ fun TextInputStepContent(
 
         BeeCardSection(modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(BeeSpacing.M)) {
+                val placeholder = placeholderKey?.let { stringResource(getResIdOrFallback(context, it)) }
+
                 BeeTextArea(
                     value = value,
                     onValueChange = {
@@ -53,6 +58,7 @@ fun TextInputStepContent(
                         onAnswerChange(it)
                     },
                     minLines = 4,
+                    placeholder = placeholder?.let { { BeeBodySmall(text = it, modifier = Modifier.alpha(0.75f)) } },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }

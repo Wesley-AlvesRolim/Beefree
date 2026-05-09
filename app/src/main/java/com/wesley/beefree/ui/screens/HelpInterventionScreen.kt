@@ -63,6 +63,14 @@ private object HelpInterventionSpeechKeys {
     const val TCC_ACTION = "help_intervention.mascot_speech_tcc_action"
 }
 
+private object HelpInterventionTextInputHints {
+    const val TCC_THOUGHT = "help_intervention.tcc_auto_thought.hint"
+    const val TCC_EVIDENCE_FOR = "help_intervention.tcc_evidence_for.hint"
+    const val TCC_EVIDENCE_AGAINST = "help_intervention.tcc_evidence_against.hint"
+    const val TCC_ALTERNATIVE = "help_intervention.tcc_alternative_thought.hint"
+    const val HYBRID_RESTRUCTURING = "help_intervention.tcc_restructuring.hint"
+}
+
 private object HelpInterventionPreviewKeys {
     const val DRINK_WATER = "help_intervention.act_actions.drink_water"
 }
@@ -310,6 +318,7 @@ private fun StepContent(
                 titleKey = step.titleKey,
                 value = getStringAnswer(AnswerKey.TCC_AUTO_THOUGHT.value),
                 onValueChange = { onAnswerChange(AnswerKey.TCC_AUTO_THOUGHT.value, it) },
+                placeholderKey = HelpInterventionTextInputHints.TCC_THOUGHT,
                 speechKey = HelpInterventionSpeechKeys.TCC_THOUGHT,
                 speechTone = BeeMascotSpeechTone.Secondary,
                 onAnswerChange = { },
@@ -320,6 +329,7 @@ private fun StepContent(
                 titleKey = step.titleKey,
                 value = getStringAnswer(AnswerKey.TCC_EVIDENCE_FOR.value),
                 onValueChange = { onAnswerChange(AnswerKey.TCC_EVIDENCE_FOR.value, it) },
+                placeholderKey = HelpInterventionTextInputHints.TCC_EVIDENCE_FOR,
                 speechKey = HelpInterventionSpeechKeys.TCC_EVIDENCE_FOR,
                 speechTone = BeeMascotSpeechTone.Secondary,
                 onAnswerChange = { },
@@ -330,6 +340,7 @@ private fun StepContent(
                 titleKey = step.titleKey,
                 value = getStringAnswer(AnswerKey.TCC_EVIDENCE_AGAINST.value),
                 onValueChange = { onAnswerChange(AnswerKey.TCC_EVIDENCE_AGAINST.value, it) },
+                placeholderKey = HelpInterventionTextInputHints.TCC_EVIDENCE_AGAINST,
                 speechKey = HelpInterventionSpeechKeys.TCC_EVIDENCE_AGAINST,
                 speechTone = BeeMascotSpeechTone.Secondary,
                 onAnswerChange = { },
@@ -340,6 +351,12 @@ private fun StepContent(
                 titleKey = step.titleKey,
                 value = getStringAnswer(AnswerKey.TCC_ALTERNATIVE_THOUGHT.value),
                 onValueChange = { onAnswerChange(AnswerKey.TCC_ALTERNATIVE_THOUGHT.value, it) },
+                placeholderKey =
+                    if (step.titleKey == "help_intervention.tcc_restructuring.title") {
+                        HelpInterventionTextInputHints.HYBRID_RESTRUCTURING
+                    } else {
+                        HelpInterventionTextInputHints.TCC_ALTERNATIVE
+                    },
                 speechKey =
                     if (step.titleKey == "help_intervention.tcc_restructuring.title") {
                         HelpInterventionSpeechKeys.HYBRID_RESTRUCTURING
