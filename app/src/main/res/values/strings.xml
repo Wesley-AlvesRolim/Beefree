@@ -486,8 +486,12 @@
     <string name="help_intervention.act_actions.go_another_room">Ir para outro cômodo</string>
     <string name="help_intervention.act_actions.put_phone_away">Guardar o celular por alguns minutos</string>
 
+    <string name="help_intervention.custom_value_other">Outro:</string>
+    <string name="help_intervention.custom_action_other">Ex.: &quot;Ir para academia&quot; ou &quot;mandar mensagem para alguém&quot;.</string>
+
     <!-- TCC automatic thought step -->
     <string name="help_intervention.tcc_auto_thought.title">O que passou pela sua mente?</string>
+    <string name="help_intervention.tcc_auto_thought.hint">Ex.: &quot;Só dessa vez&quot;, &quot;eu não vou aguentar&quot; ou &quot;já estraguei tudo&quot;.</string>
     <string name="help_intervention.tcc_auto_thought.just_once">Só dessa vez</string>
     <string name="help_intervention.tcc_auto_thought.wont_resist">Eu não vou aguentar</string>
     <string name="help_intervention.tcc_auto_thought.no_difference">Não faz diferença</string>
@@ -496,7 +500,9 @@
 
     <!-- TCC evidence steps -->
     <string name="help_intervention.tcc_evidence_for.title">O que prova que isso é verdade?</string>
+    <string name="help_intervention.tcc_evidence_for.hint">Ex.: &quot;Isso já aconteceu outras vezes&quot; ou &quot;eu senti vontade de ceder agora&quot;.</string>
     <string name="help_intervention.tcc_evidence_against.title">O que pode indicar que isso não é totalmente verdade?</string>
+    <string name="help_intervention.tcc_evidence_against.hint">Ex.: &quot;Já resisti antes&quot;, &quot;isso passa&quot; ou &quot;não preciso agir agora&quot;.</string>
     <string name="help_intervention.tcc_evidence_against.resisted_before">Já resisti antes</string>
     <string name="help_intervention.tcc_evidence_against.it_passes">Isso passa</string>
     <string name="help_intervention.tcc_evidence_against.no_need_act">Não preciso agir agora</string>
@@ -504,6 +510,7 @@
 
     <!-- TCC alternative thought step -->
     <string name="help_intervention.tcc_alternative_thought.title">Qual seria uma visão mais equilibrada?</string>
+    <string name="help_intervention.tcc_alternative_thought.hint">Ex.: &quot;Isso é só um impulso, vai passar&quot; ou &quot;posso escolher outra coisa&quot;.</string>
     <string name="help_intervention.tcc_alternative.just_impulse">Isso é só um impulso, vai passar</string>
     <string name="help_intervention.tcc_alternative.dont_need_act">Eu não preciso agir agora</string>
     <string name="help_intervention.tcc_alternative.can_choose">Posso escolher outra coisa</string>
@@ -514,6 +521,7 @@
 
     <!-- HYBRID restructuring step -->
     <string name="help_intervention.tcc_restructuring.title">Existe outra forma de ver isso?</string>
+    <string name="help_intervention.tcc_restructuring.hint">Ex.: &quot;Isso é só um impulso&quot; ou &quot;posso escolher outra coisa agora&quot;.</string>
 
     <!-- Final steps -->
     <string name="help_intervention.timer_remaining">Tempo decorrido</string>
@@ -535,22 +543,22 @@
 
     <!-- Mascot speech and encouragement -->
     <string name="help_intervention.intensity_greeting">Tô com você</string>
-    <string name="help_intervention.mascot_speech_intensity"> Perceber o impulso já é um passo importante. Você não precisa fugir da onda — só atravessar ela um momento de cada vez. </string>
-    <string name="help_intervention.mascot_speech_body_location"> Seu corpo dá sinais antes da ação. Observe onde esse impulso aparece agora — peito, barriga, mãos, respiração... só perceba. </string>
-    <string name="help_intervention.mascot_speech_urge_surfing"> Não lute contra o impulso. Respire e observe como uma onda: ela cresce, muda e depois diminui. </string>
-    <string name="help_intervention.mascot_speech_post_intensity"> Boa. Você desacelerou em vez de agir no automático. Como o impulso está agora? </string>
-    <string name="help_intervention.mascot_speech_act_values"> Nos momentos difíceis, seus valores podem te guiar melhor que o impulso. Que tipo de pessoa você quer ser agora? </string>
-    <string name="help_intervention.mascot_speech_act_direction"> Cada pequena escolha aponta uma direção. O que te aproxima da vida que você quer construir? </string>
-    <string name="help_intervention.mascot_speech_act_action"> Você não precisa resolver tudo agora. Só escolha uma ação pequena alinhada com quem você quer ser. </string>
-    <string name="help_intervention.mascot_speech_tcc_thought"> O impulso costuma vir acompanhado de pensamentos automáticos. Vamos identificar qual apareceu agora. </string>
-    <string name="help_intervention.mascot_speech_tcc_evidence_for"> Entendo por que esse pensamento parece convincente. O que faz sua mente acreditar nisso? </string>
-    <string name="help_intervention.mascot_speech_tcc_evidence_against"> Agora vamos olhar o outro lado. Existe alguma evidência de que esse pensamento não seja totalmente verdadeiro? </string>
-    <string name="help_intervention.mascot_speech_tcc_alternative"> Talvez exista uma forma mais equilibrada e realista de enxergar essa situação. Como ela seria? </string>
-    <string name="help_intervention.mascot_speech_hybrid_thought"> Primeiro, vamos entender o que sua mente está dizendo nesse momento. </string>
-    <string name="help_intervention.mascot_speech_hybrid_restructuring"> Você pode reconhecer esse pensamento sem precisar obedecer a ele. Existe uma visão mais justa e útil agora? </string>
-    <string name="help_intervention.mascot_speech_timer"> Continue só por mais um momento. Cada minuto que passa enfraquece o automático e fortalece sua escolha. </string>
-    <string name="help_intervention.mascot_speech_reflection"> Você conseguiu atravessar essa onda. Olhando agora, o impulso era tão permanente quanto parecia no começo? </string>
-    <string name="help_intervention.mascot_speech_tcc_action"> Com base nesse pensamento mais equilibrado, qual pequena ação você pode tomar? </string>
+    <string name="help_intervention.mascot_speech_intensity">Perceber o impulso já é um passo importante. Você não precisa fugir da onda. Apenas atravesse este momento de cada vez.</string>
+    <string name="help_intervention.mascot_speech_body_location">Seu corpo dá sinais antes da ação. Observe onde esse impulso aparece agora: peito, barriga, mãos, respiração. Apenas perceba.</string>
+    <string name="help_intervention.mascot_speech_urge_surfing">Não lute contra o impulso. Respire e observe como uma onda. Ela cresce, muda e depois diminui.</string>
+    <string name="help_intervention.mascot_speech_post_intensity">Boa. Você desacelerou em vez de agir no automático. Como o impulso está agora?</string>
+    <string name="help_intervention.mascot_speech_act_values">Nos momentos difíceis, seus valores podem te guiar melhor que o impulso. Que tipo de pessoa você quer ser agora?</string>
+    <string name="help_intervention.mascot_speech_act_direction">Cada pequena escolha aponta uma direção. O que te aproxima da vida que você quer construir?</string>
+    <string name="help_intervention.mascot_speech_act_action">Você não precisa resolver tudo agora. Só escolha uma ação pequena alinhada com quem você quer ser.</string>
+    <string name="help_intervention.mascot_speech_tcc_thought">O impulso costuma vir acompanhado de pensamentos automáticos. Vamos identificar qual apareceu agora.</string>
+    <string name="help_intervention.mascot_speech_tcc_evidence_for">Entendo por que esse pensamento parece convincente. O que faz sua mente acreditar nisso?</string>
+    <string name="help_intervention.mascot_speech_tcc_evidence_against">Agora vamos olhar o outro lado. Existe alguma evidência de que esse pensamento não seja totalmente verdadeiro?</string>
+    <string name="help_intervention.mascot_speech_tcc_alternative">Talvez exista uma forma mais equilibrada e realista de enxergar essa situação. Como ela seria?</string>
+    <string name="help_intervention.mascot_speech_hybrid_thought">Primeiro, vamos entender o que sua mente está dizendo neste momento.</string>
+    <string name="help_intervention.mascot_speech_hybrid_restructuring">Você pode reconhecer esse pensamento sem precisar obedecer a ele. Existe uma visão mais justa e útil agora?</string>
+    <string name="help_intervention.mascot_speech_timer">Continue só por mais um momento. Cada minuto que passa enfraquece o automático e fortalece sua escolha.</string>
+    <string name="help_intervention.mascot_speech_reflection">Você conseguiu atravessar essa onda. Olhando agora, o impulso era tão permanente quanto parecia no começo?</string>
+    <string name="help_intervention.mascot_speech_tcc_action">Com base nesse pensamento mais equilibrado, qual pequena ação você pode tomar?</string>
 
     <!-- Session summary -->
     <string name="help_intervention.session_summary_header">SESSÃO · RESUMO</string>
@@ -559,10 +567,7 @@
     <string name="help_intervention.session_final">Ao final</string>
     <string name="help_intervention.session_total_time">Tempo total</string>
     <string name="help_intervention.session_action_taken">Ação executada</string>
-    <string name="help_intervention.session_saved_message">Sessão salva. Janelas de risco serão recalculadas — o app vai te conhecer melhor a partir daqui.</string>
-
-    <string name="help_intervention.custom_value_other">Outro:</string>
-    <string name="help_intervention.custom_action_other">Outra ação:</string>
+    <string name="help_intervention.session_saved_message">Sessão salva. Janelas de risco serão recalculadas. O app vai te conhecer melhor a partir daqui.</string>
 
     <!-- Navigation buttons -->
     <string name="back">Voltar</string>
