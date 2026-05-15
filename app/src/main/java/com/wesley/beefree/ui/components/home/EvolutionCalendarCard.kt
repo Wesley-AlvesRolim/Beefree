@@ -21,7 +21,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.RelapseRecord
 import com.wesley.beefree.ui.components.designsystem.BeeBodySmall

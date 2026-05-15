@@ -32,7 +32,10 @@ import com.wesley.beefree.ui.components.designsystem.BeeSpacing
 private val bottomBarRoutes = setOf(Screen.Home.route, Screen.Settings.route)
 
 @Composable
-fun NavBar(openCheckIn: Boolean = false) {
+fun NavBar(
+    openCheckIn: Boolean = false,
+    openSos: Boolean = false,
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val showBottomBar = navBackStackEntry?.destination?.route in bottomBarRoutes
@@ -40,6 +43,12 @@ fun NavBar(openCheckIn: Boolean = false) {
     LaunchedEffect(openCheckIn) {
         if (openCheckIn) {
             navController.navigate(Screen.CheckIn.route)
+        }
+    }
+
+    LaunchedEffect(openSos) {
+        if (openSos) {
+            navController.navigate("${Screen.HelpIntervention.route}?source=widget")
         }
     }
 

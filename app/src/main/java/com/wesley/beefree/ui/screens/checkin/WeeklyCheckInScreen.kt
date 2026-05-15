@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.wesley.beefree.domain.entities.CoreValueType
 import com.wesley.beefree.domain.entities.UserCoreValue
 import com.wesley.beefree.ui.components.checkin.WeeklyCheckinAcceptanceStep
 import com.wesley.beefree.ui.components.checkin.WeeklyCheckinCognitiveDefusionAndSelfAsContextStep
@@ -175,8 +176,8 @@ private fun WeeklyCheckInPreview(
             coreValues =
                 if (step == 1) {
                     listOf(
-                        UserCoreValue(userProfileId = 0, valueName = "Família", createdAt = 0),
-                        UserCoreValue(userProfileId = 0, valueName = "Fé", createdAt = 0),
+                        UserCoreValue(userProfileId = 0, value = CoreValueType.FAMILY, createdAt = 0),
+                        UserCoreValue(userProfileId = 0, value = CoreValueType.FAITH, createdAt = 0),
                     )
                 } else {
                     emptyList()

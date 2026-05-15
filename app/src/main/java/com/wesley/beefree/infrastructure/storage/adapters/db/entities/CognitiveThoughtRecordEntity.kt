@@ -21,7 +21,11 @@ import androidx.room.PrimaryKey
 data class CognitiveThoughtRecordEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "user_profile_id") val userProfileId: Int,
+    @ColumnInfo(name = "situation") val situation: String = "",
     @ColumnInfo(name = "automatic_thought") val automaticThought: String,
-    @ColumnInfo(name = "rational_response") val rationalResponse: String? = null,
+    @ColumnInfo(name = "feeling") val feeling: String = "",
+    @ColumnInfo(name = "consequence") val consequence: String = "",
+    @ColumnInfo(name = "alternative_thought") val alternativeThought: String = "",
+    @ColumnInfo(name = "cognitive_distortions") val cognitiveDistortions: String = "[]",
     @ColumnInfo(name = "created_at") val createdAt: Long,
 )

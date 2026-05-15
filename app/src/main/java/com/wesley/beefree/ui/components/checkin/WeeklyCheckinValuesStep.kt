@@ -49,7 +49,7 @@ fun WeeklyCheckinValuesStep(
         )
     } else {
         coreValues.forEach { value ->
-            val level = valueConnectionLevels[value.valueName] ?: 0.5f
+            val level = valueConnectionLevels[value.value.name] ?: 0.5f
             BeeCardSection(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(BeeSpacing.M)) {
                     Row(
@@ -62,7 +62,7 @@ fun WeeklyCheckinValuesStep(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                         BeeLabelLarge(
-                            text = value.valueName,
+                            text = value.value.name,
                             modifier = Modifier.weight(1f),
                         )
                         BeeLabelSmall(
@@ -72,7 +72,7 @@ fun WeeklyCheckinValuesStep(
                     }
                     Slider(
                         value = level,
-                        onValueChange = { onUpdateLevel(value.valueName, it) },
+                        onValueChange = { onUpdateLevel(value.value.name, it) },
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }

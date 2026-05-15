@@ -24,6 +24,7 @@ import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
 import com.wesley.beefree.infrastructure.storage.ports.LessonRepository
 import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
 import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
+import com.wesley.beefree.ui.viewmodel.HelpInterventionSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -46,14 +47,16 @@ sealed class HomeNavigationDestination {
 
     object FeelingDetails : HomeNavigationDestination()
 
-    object HelpModal : HomeNavigationDestination()
+    data class HelpIntervention(
+        val source: HelpInterventionSource = HelpInterventionSource.FAB,
+    ) : HomeNavigationDestination()
 
     object TriggerMap : HomeNavigationDestination()
 }
 
 data class HomeUiState(
     val user: UserProfile = UserProfile(profileName = "", createdAt = 0L, updatedAt = 0L),
-    val psychoeducationMessage: String = "",
+    val psychoeducationMessage: String? = null,
     val relapseHistory: List<RelapseRecord> = emptyList(),
     val relapseSuccessRate: Float = 1f,
     val emotionRecords: List<EmotionRecord> = emptyList(),
@@ -98,8 +101,8 @@ class HomeViewModel(
         _navigationEvents.tryEmit(HomeNavigationDestination.FeelingDetails)
     }
 
-    fun navigateToHelpModal() {
-        _navigationEvents.tryEmit(HomeNavigationDestination.HelpModal)
+    fun navigateToHelpIntervention(source: HelpInterventionSource = HelpInterventionSource.FAB) {
+        _navigationEvents.tryEmit(HomeNavigationDestination.HelpIntervention(source))
     }
 
     fun navigateToTriggerMap() {
@@ -128,9 +131,11 @@ class HomeViewModel(
                 val userId = user.id ?: throw IllegalStateException("User ID not found")
                 val userAddictionsList = userProfileRepository.getAddictionsByUserId(userId).first()
                 val userAddiction = userAddictionsList.firstOrNull()
-                if (userAddictionsList.isEmpty() || userAddiction == null) throw IllegalStateException(
-                    "User don't have a addiction profile"
-                )
+                if (userAddictionsList.isEmpty() || userAddiction == null) {
+                    throw IllegalStateException(
+                        "User don't have a addiction profile",
+                    )
+                }
 
                 val allPsychoeducationMessagesDeferred =
                     async(Dispatchers.IO) {
@@ -154,7 +159,7 @@ class HomeViewModel(
                 val weeklyCheckIns = weeklyCheckInsDeferred.await()
                 val dailyCheckIns = dailyCheckInsDeferred.await()
 
-                val psychoeducationMessage = allPsychoeducationMessages.random().contentText
+                val psychoeducationMessage = allPsychoeducationMessages.randomOrNull()?.contentText ?: ""
                 val thirtyDaysAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)
                 val relapses =
                     allRelapses
@@ -219,11 +224,11 @@ class HomeViewModel(
                 0f
             } else {
                 (
-                        records
-                            .map { it.intensity }
-                            .average()
-                            .toFloat() / maxIntensityLevel
-                        ) * 100f
+                    records
+                        .map { it.intensity }
+                        .average()
+                        .toFloat() / maxIntensityLevel
+                ) * 100f
             }
         }
     }
@@ -268,7 +273,8 @@ class HomeViewModel(
             val weekEnd = now - weeksAgo * weekMs
             val weekStart = weekEnd - weekMs
             val checkIn = weeklyCheckIns.firstOrNull { it.weekStartDate in weekStart..weekEnd }
-            val energy = checkIn?.realConnectionEnergy ?: return@map 0f
+            val realConnectionEnergy = 0
+            val energy = realConnectionEnergy
             (energy / maxRealConnectionLevel) * 100f
         }
     }
@@ -286,10 +292,11 @@ class HomeViewModel(
                     @Suppress("UNCHECKED_CAST")
                     return HomeViewModel(
                         computeRelapseSuccessRateUseCase = ComputeRelapseSuccessRateUseCase(),
-                        hasCompletedTodaysCheckInUseCase = HasCompletedTodaysCheckInUseCase(
-                            checkInRepository,
-                            DetermineCheckInTypeUseCase(),
-                        ),
+                        hasCompletedTodaysCheckInUseCase =
+                            HasCompletedTodaysCheckInUseCase(
+                                checkInRepository,
+                                DetermineCheckInTypeUseCase(),
+                            ),
                         lessonRepository =
                             RoomLessonRepository(
                                 database.psychoeducationContentDao(),
@@ -310,7 +317,7 @@ class HomeViewModel(
                                 database.userProfileDao(),
                                 database.userAddictionDao(),
                             ),
-                        checkInRepository = checkInRepository
+                        checkInRepository = checkInRepository,
                     ) as T
                 }
             }

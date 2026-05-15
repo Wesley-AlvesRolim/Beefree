@@ -1,9 +1,14 @@
 package com.wesley.beefree.infrastructure.storage.adapters.db
 
 import com.wesley.beefree.domain.entities.DailyCheckInAnswer
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
+
+object Serializers {
+    val list = ListSerializer(String.serializer())
+}
 
 object DailyCheckInCodec {
     private val json = Json { ignoreUnknownKeys = true }

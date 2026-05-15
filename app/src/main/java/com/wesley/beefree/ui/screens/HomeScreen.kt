@@ -88,7 +88,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
         onOpenCheckIn = viewModel::navigateToCheckIn,
         onOpenRecoveryTrajectory = viewModel::navigateToRecoveryTrajectory,
         onOpenTheFeelingDetails = viewModel::navigateToFeelingDetails,
-        onOpenHelpModal = viewModel::navigateToHelpModal,
+        onOpenHelpIntervention = viewModel::navigateToHelpIntervention,
         onOpenTriggerMap = viewModel::navigateToTriggerMap,
     )
 }
@@ -96,7 +96,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
 @Composable
 fun HomeScreenContent(
     user: UserProfile,
-    psychoeducationMessage: String,
+    psychoeducationMessage: String?,
     relapseHistory: List<RelapseRecord>,
     relapseSuccessRate: Float,
     hasCheckedInToday: Boolean = false,
@@ -111,7 +111,7 @@ fun HomeScreenContent(
     onOpenCheckIn: () -> Unit = {},
     onOpenRecoveryTrajectory: () -> Unit = {},
     onOpenTheFeelingDetails: () -> Unit = {},
-    onOpenHelpModal: () -> Unit = {},
+    onOpenHelpIntervention: () -> Unit = {},
     onOpenTriggerMap: () -> Unit = {},
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -122,7 +122,7 @@ fun HomeScreenContent(
         ) {
             item { GreetingSection(name = user.profileName) }
 
-            if (hasCheckedInToday) {
+            if (hasCheckedInToday && psychoeducationMessage != null) {
                 item {
                     PsychoeducationCard(psychoeducationMessage)
                 }
@@ -166,7 +166,7 @@ fun HomeScreenContent(
         }
 
         BeeFAB(
-            onClick = onOpenHelpModal,
+            onClick = onOpenHelpIntervention,
             modifier =
                 Modifier
                     .align(Alignment.BottomEnd)

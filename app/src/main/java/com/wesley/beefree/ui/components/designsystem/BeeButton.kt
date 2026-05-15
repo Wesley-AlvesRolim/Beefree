@@ -113,8 +113,8 @@ fun BeeFAB(
         onClick = onClick,
         modifier = modifier.size(56.dp),
         shape = CircleShape,
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
         content = content,
     )
 }

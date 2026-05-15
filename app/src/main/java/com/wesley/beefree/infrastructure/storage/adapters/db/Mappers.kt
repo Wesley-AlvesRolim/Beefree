@@ -3,6 +3,8 @@ package com.wesley.beefree.infrastructure.storage.adapters.db
 import com.wesley.beefree.domain.entities.*
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.infrastructure.storage.adapters.db.entities.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 fun AddictionCategoryEntity.toDomain() =
     AddictionCategory(
@@ -142,7 +144,7 @@ fun UserCoreValueEntity.toDomain() =
     UserCoreValue(
         id = id,
         userProfileId = userProfileId,
-        valueName = valueName,
+        value = CoreValueType.valueOf(valueName),
         createdAt = createdAt,
     )
 
@@ -150,7 +152,7 @@ fun UserCoreValue.toEntity() =
     UserCoreValueEntity(
         id = id,
         userProfileId = userProfileId,
-        valueName = valueName,
+        valueName = value.name,
         createdAt = createdAt,
     )
 
@@ -264,8 +266,15 @@ fun CognitiveThoughtRecordEntity.toDomain() =
     CognitiveThoughtRecord(
         id = id,
         userProfileId = userProfileId,
+        situation = situation,
         automaticThought = automaticThought,
-        rationalResponse = rationalResponse,
+        feeling = feeling,
+        consequence = consequence,
+        alternativeThought = alternativeThought,
+        cognitiveDistortions =
+            runCatching {
+                Json.decodeFromString(Serializers.list, cognitiveDistortions)
+            }.getOrDefault(emptyList()),
         createdAt = createdAt,
     )
 
@@ -273,9 +282,25 @@ fun CognitiveThoughtRecord.toEntity() =
     CognitiveThoughtRecordEntity(
         id = id,
         userProfileId = userProfileId,
+        situation = situation,
         automaticThought = automaticThought,
-        rationalResponse = rationalResponse,
+        feeling = feeling,
+        consequence = consequence,
+        alternativeThought = alternativeThought,
+        cognitiveDistortions = Json.encodeToString(Serializers.list, cognitiveDistortions),
         createdAt = createdAt,
+    )
+
+fun InterventionValueLinkEntity.toDomain() =
+    InterventionValueLink(
+        interventionId = interventionId,
+        userCoreValueId = userCoreValueId,
+    )
+
+fun InterventionValueLink.toEntity() =
+    InterventionValueLinkEntity(
+        interventionId = interventionId,
+        userCoreValueId = userCoreValueId,
     )
 
 fun PsychoeducationContentEntity.toDomain() =

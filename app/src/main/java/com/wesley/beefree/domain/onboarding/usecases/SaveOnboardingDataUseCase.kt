@@ -2,6 +2,7 @@ package com.wesley.beefree.domain.onboarding.usecases
 
 import com.wesley.beefree.domain.entities.AddictionCategory
 import com.wesley.beefree.domain.entities.AddictionCategoryEnum
+import com.wesley.beefree.domain.entities.CoreValueType
 import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserCoreValue
 import com.wesley.beefree.domain.entities.UserHobby
@@ -156,7 +157,7 @@ class SaveOnboardingDataUseCase(
         }
         answers.coreValues.forEach { value ->
             onboardingRepository.insertCoreValue(
-                UserCoreValue(userProfileId = userProfileId, valueName = value, createdAt = now),
+                UserCoreValue(userProfileId = userProfileId, value = CoreValueType.valueOf(value), createdAt = now),
             )
         }
     }

@@ -17,11 +17,13 @@ import com.wesley.beefree.ui.navigation.NavBar
 import com.wesley.beefree.ui.screens.onboarding.OnboardingScreen
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.OnboardingViewModelImpl
+import com.wesley.beefree.ui.widget.SosWidget
 
 class MainActivity : ComponentActivity() {
     private lateinit var keyValueStorageRepository: KeyValueStorageRepository
     private var onboardingCompleted by mutableStateOf(false)
     private var openCheckIn by mutableStateOf(false)
+    private var openSos by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,13 +32,14 @@ class MainActivity : ComponentActivity() {
         keyValueStorageRepository = KeyValueStorageRepository(SharedPreferencesKeyValueStorage(this))
         onboardingCompleted = keyValueStorageRepository.isOnboardingCompleted()
         openCheckIn = intent.getBooleanExtra(DailyCheckInWorker.EXTRA_OPEN_CHECK_IN, false)
+        openSos = intent.getBooleanExtra(SosWidget.EXTRA_OPEN_SOS, false)
 
         DailyCheckInWorker.scheduleCheckInWorker(this)
 
         setContent {
             BeeFreeTheme {
                 if (onboardingCompleted) {
-                    MainContent(openCheckIn = openCheckIn)
+                    MainContent(openCheckIn = openCheckIn, openSos = openSos)
                 } else {
                     val onboardingViewModel: OnboardingViewModelImpl =
                         viewModel(factory = OnboardingViewModelImpl.factory(application))
@@ -53,10 +56,14 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         openCheckIn = intent.getBooleanExtra(DailyCheckInWorker.EXTRA_OPEN_CHECK_IN, false)
+        openSos = intent.getBooleanExtra(SosWidget.EXTRA_OPEN_SOS, false)
     }
 }
 
 @Composable
-fun MainContent(openCheckIn: Boolean = false) {
-    NavBar(openCheckIn = openCheckIn)
+fun MainContent(
+    openCheckIn: Boolean = false,
+    openSos: Boolean = false,
+) {
+    NavBar(openCheckIn = openCheckIn, openSos = openSos)
 }
