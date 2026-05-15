@@ -102,7 +102,7 @@ fun HelpInterventionScreen(
     val currentStep = state.allSteps.getOrNull(state.currentStepIndex)
     val stepId = currentStep?.let { stepAnswerKey(it) } ?: ""
     val currentAnswer = viewModel.getAnswer(stepId)
-    val isTheLastScreen = state.currentStepIndex + 1 == state.allSteps.lastIndex
+    val isTheLastScreen = state.currentStepIndex == state.allSteps.lastIndex
 
     val canContinue =
         when (currentStep) {
@@ -488,10 +488,6 @@ fun PreviewStep9() = HelpInterventionStepPreview(9)
 @Preview(showBackground = true, name = "Step 10")
 @Composable
 fun PreviewStep10() = HelpInterventionStepPreview(10)
-
-@Preview(showBackground = true, name = "Step 11")
-@Composable
-fun PreviewStep11() = HelpInterventionStepPreview(11)
 
 @Composable
 private fun HelpInterventionStepPreview(index: Int) {
