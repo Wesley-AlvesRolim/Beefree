@@ -30,7 +30,10 @@ import com.wesley.beefree.ui.screens.RecoveryTrajectoryScreen
 import com.wesley.beefree.ui.screens.SettingsScreen
 import com.wesley.beefree.ui.screens.TriggerMapScreen
 import com.wesley.beefree.ui.screens.checkin.CheckInScreen
+import com.wesley.beefree.ui.screens.emotionalrecord.EmotionalRecordScreen
 import com.wesley.beefree.ui.viewmodel.CheckInViewModel
+import com.wesley.beefree.ui.viewmodel.EmotionalRecordNavigationDestination
+import com.wesley.beefree.ui.viewmodel.EmotionalRecordViewModel
 import com.wesley.beefree.ui.viewmodel.HelpInterventionSource
 import com.wesley.beefree.ui.viewmodel.HelpInterventionViewModel
 import com.wesley.beefree.ui.viewmodel.HomeNavigationDestination
@@ -59,7 +62,11 @@ sealed class Screen(
 
     object TriggerMap : Screen("trigger_map", R.string.trigger_map_title, Icons.Default.TagFaces)
 
-    object HelpIntervention : Screen("help_intervention", R.string.help_title, Icons.AutoMirrored.Filled.Help)
+    object HelpIntervention :
+        Screen("help_intervention", R.string.help_title, Icons.AutoMirrored.Filled.Help)
+
+    object EmotionalRecord :
+        Screen("emotional_record", R.string.emotional_record_title, Icons.Default.TagFaces)
 
     object Settings : Screen("settings", R.string.settings_title, Icons.Default.Settings)
 }
@@ -72,6 +79,8 @@ fun Routes(
     val context = LocalContext.current
     val homeViewModel: HomeViewModel =
         viewModel(factory = HomeViewModel.factory(context))
+    val emotionalRecordViewModel: EmotionalRecordViewModel =
+        viewModel(factory = EmotionalRecordViewModel.factory(context))
     val settingsViewModel: SettingsViewModel =
         viewModel(factory = SettingsViewModel.factory(context))
 
@@ -86,12 +95,16 @@ fun Routes(
                     when (destination) {
                         HomeNavigationDestination.CheckIn ->
                             navController.navigate(Screen.CheckIn.route)
+
                         HomeNavigationDestination.RecoveryTrajectory ->
                             navController.navigate(Screen.ActivityTrajectory.route)
+
                         HomeNavigationDestination.FeelingDetails ->
                             navController.navigate(Screen.RecoveryTrajectory.route)
+
                         is HomeNavigationDestination.HelpIntervention ->
                             navController.navigate("${Screen.HelpIntervention.route}?source=${destination.source.name}")
+
                         HomeNavigationDestination.TriggerMap ->
                             navController.navigate(Screen.TriggerMap.route)
                     }
@@ -133,7 +146,8 @@ fun Routes(
                     },
                 ),
         ) { backStackEntry ->
-            val sourceString = backStackEntry.arguments?.getString("source") ?: HelpInterventionSource.FAB.name
+            val sourceString =
+                backStackEntry.arguments?.getString("source") ?: HelpInterventionSource.FAB.name
             val source =
                 try {
                     HelpInterventionSource.valueOf(sourceString)
@@ -143,6 +157,19 @@ fun Routes(
             HelpInterventionScreen(
                 viewModel = viewModel(factory = HelpInterventionViewModel.factory(context, source)),
                 onDismiss = { navController.popBackStack() },
+            )
+        }
+        composable(Screen.EmotionalRecord.route) {
+            LaunchedEffect(emotionalRecordViewModel) {
+                emotionalRecordViewModel.navigationEvents.collect { destination ->
+                    when (destination) {
+                        EmotionalRecordNavigationDestination.Done ->
+                            navController.popBackStack()
+                    }
+                }
+            }
+            EmotionalRecordScreen(
+                viewModel = emotionalRecordViewModel,
             )
         }
         composable(Screen.Settings.route) {
