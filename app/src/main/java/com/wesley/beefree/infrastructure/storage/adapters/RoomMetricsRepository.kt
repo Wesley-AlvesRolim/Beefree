@@ -21,12 +21,15 @@ class RoomMetricsRepository(
     override suspend fun insertEmotionRecord(record: EmotionRecord): Long = emotionRecordDao.insert(record.toEntity())
 
     override fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>> =
-        emotionRecordDao.getAllByUser(userId).map { list -> list.map { it.toDomain() } }
+        emotionRecordDao.getAllByUser(userId).map { list -> list.mapNotNull { it.toDomain() } }
 
     override fun getEmotionRecordsByType(
         userId: Int,
         feelingType: FeelingType,
-    ): Flow<List<EmotionRecord>> = emotionRecordDao.getByUserAndType(userId, feelingType.name).map { list -> list.map { it.toDomain() } }
+    ): Flow<List<EmotionRecord>> =
+        emotionRecordDao.getByUserAndType(userId, feelingType.name).map { list ->
+            list.mapNotNull { it.toDomain() }
+        }
 
     override suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long = riskFeatureSnapshotDao.insert(snapshot.toEntity())
 
