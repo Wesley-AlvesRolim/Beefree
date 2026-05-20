@@ -92,16 +92,16 @@ class SaveOnboardingDataUseCase(
                         ),
                     ).toInt()
 
-            userProfileRepository.associateAddictionToProfile(
-                UserAddiction(
-                    userProfileId = userProfileId,
-                    addictionCategoryId = categoryId,
-                    createdAt = now,
-                ),
-            )
-
             if (isEnabled) selectedCategoryId = categoryId
         }
+
+        userProfileRepository.associateAddictionToProfile(
+            UserAddiction(
+                userProfileId = userProfileId,
+                addictionCategoryId = selectedCategoryId,
+                createdAt = now,
+            ),
+        )
 
         return selectedCategoryId
     }
