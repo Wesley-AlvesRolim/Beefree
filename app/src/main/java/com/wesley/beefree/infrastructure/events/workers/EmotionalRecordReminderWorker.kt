@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.work.WorkerParameters
 import com.wesley.beefree.MainActivity
 import com.wesley.beefree.R
-import com.wesley.beefree.infrastructure.storage.adapters.RoomRiskFeatureSnapshotRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import kotlinx.coroutines.flow.first
@@ -35,13 +35,18 @@ class EmotionalRecordReminderWorker(
                 userProfileDao = database.userProfileDao(),
                 userAddictionDao = database.userAddictionDao(),
             )
+        val metricsRepository =
+            RoomMetricsRepository(
+                emotionRecordDao = database.emotionRecordDao(),
+                riskFeatureSnapshotDao = database.riskFeatureSnapshotDao(),
+                riskAssessmentDao = database.riskAssessmentDao(),
+            )
         val user = userRepository.getAllProfiles().first().firstOrNull() ?: return false
         val userId = user.id ?: return false
 
-        val repository = RoomRiskFeatureSnapshotRepository(database.riskFeatureSnapshotDao())
-        val latest = repository.getLatestByUser(userId)
+        val latestEmotionRecord = metricsRepository.getLatestEmotionRecord(userId)
 
-        val lastEventTimeMs = latest?.createdAt ?: user.createdAt
+        val lastEventTimeMs = latestEmotionRecord?.createdAt ?: user.createdAt
         val notifyAtMs = lastEventTimeMs + NOTIFICATION_INTERVAL_MS
         val nowMs = System.currentTimeMillis()
 
