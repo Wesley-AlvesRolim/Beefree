@@ -16,6 +16,8 @@ interface MetricsRepository {
         feelingType: FeelingType,
     ): Flow<List<EmotionRecord>>
 
+    suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord?
+
     suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long
 
     fun getRiskFeatureSnapshots(userId: Int): Flow<List<RiskFeatureSnapshot>>
