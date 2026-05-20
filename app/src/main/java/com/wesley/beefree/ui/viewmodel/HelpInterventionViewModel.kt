@@ -20,6 +20,8 @@ import com.wesley.beefree.domain.intervention.RealTicker
 import com.wesley.beefree.domain.intervention.ports.Ticker
 import com.wesley.beefree.domain.intervention.usecases.SaveInterventionSessionUseCase
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
+import com.wesley.beefree.infrastructure.logging.AndroidLogger
+import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomEMIRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomOnboardingRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
@@ -86,6 +88,7 @@ class HelpInterventionViewModel(
     private val saveInterventionSessionUseCase: SaveInterventionSessionUseCase,
     private val ticker: Ticker,
     private val source: HelpInterventionSource = HelpInterventionSource.FAB,
+    private val logger: Logger = AndroidLogger,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HelpInterventionUiState(openedFrom = source))
     val uiState: StateFlow<HelpInterventionUiState> = _uiState.asStateFlow()
@@ -100,6 +103,7 @@ class HelpInterventionViewModel(
             val user = userProfileRepository.getAllProfiles().first().firstOrNull()
             val userId = user?.id
             if (userId == null) {
+                logger.e(TAG, "User profile not found, cannot load intervention data")
                 _uiState.update { it.copy(isLoading = false) }
                 return@launch
             }
@@ -109,13 +113,17 @@ class HelpInterventionViewModel(
                 session?.let {
                     runCatching {
                         TreatmentProfile.valueOf(it.clinicalApproach)
+                    }.onFailure { e ->
+                        logger.e(TAG, "Failed to parse treatment profile: ${it.clinicalApproach}", e)
                     }.getOrNull()
                 }
 
             val strategy = profile?.let { ClinicalProfileStrategyFactory.from(it) }
             val flow =
-                strategy?.helpInterventionFlow
-                    ?: return@launch
+                strategy?.helpInterventionFlow ?: run {
+                    logger.e(TAG, "No help intervention flow available for profile: $profile")
+                    return@launch
+                }
 
             val userCoreValues = onboardingRepository.getCoreValues(userId).first()
             val userValueNames = userCoreValues.map { it.value.name }.toSet()
@@ -278,7 +286,10 @@ class HelpInterventionViewModel(
 
     private fun saveSession() {
         val state = _uiState.value
-        if (state.userProfileId == null || state.clinicalBranch == null) return
+        if (state.userProfileId == null || state.clinicalBranch == null) {
+            logger.e(TAG, "Cannot save session: userProfileId=${state.userProfileId}, clinicalBranch=${state.clinicalBranch}")
+            return
+        }
 
         viewModelScope.launch {
             val answers = state.answers
@@ -328,18 +339,28 @@ class HelpInterventionViewModel(
             val selectedValueName = answers[AnswerKey.ACT_VALUE.value] as? String
             val selectedCoreValue =
                 selectedValueName
-                    ?.let { runCatching { CoreValueType.valueOf(it) }.getOrNull() }
+                    ?.let {
+                        runCatching { CoreValueType.valueOf(it) }
+                            .onFailure { e -> logger.e(TAG, "Failed to parse CoreValueType: $it", e) }
+                            .getOrNull()
+                    }
 
-            saveInterventionSessionUseCase.execute(
-                interventionRecord = interventionRecord,
-                thoughtRecord = thoughtRecord,
-                selectedCoreValue = selectedCoreValue,
-                userProfileId = state.userProfileId,
-            )
+            try {
+                saveInterventionSessionUseCase.execute(
+                    interventionRecord = interventionRecord,
+                    thoughtRecord = thoughtRecord,
+                    selectedCoreValue = selectedCoreValue,
+                    userProfileId = state.userProfileId,
+                )
+            } catch (e: Exception) {
+                logger.e(TAG, "Failed to save intervention session", e)
+            }
         }
     }
 
     companion object {
+        private const val TAG = "HelpInterventionViewModel"
+
         fun factory(
             context: Context,
             source: HelpInterventionSource = HelpInterventionSource.FAB,

@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.AddictionCategoryEnum
 import com.wesley.beefree.infrastructure.events.so.AccessibilityServiceActivity
+import com.wesley.beefree.infrastructure.logging.AndroidLogger
+import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
@@ -31,6 +33,7 @@ class SettingsViewModel(
     private val context: Context,
     private val storageRepository: KeyValueStorageRepository,
     private val addictionRepository: AddictionRepository,
+    private val logger: Logger = AndroidLogger,
 ) : ViewModel() {
     private val _isAccessibilityServiceEnabled = MutableStateFlow(false)
     val isAccessibilityServiceEnabled: StateFlow<Boolean> =
@@ -79,6 +82,7 @@ class SettingsViewModel(
                 chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(chooser)
             } catch (error: Exception) {
+                logger.e(TAG, "Failed to export data", error)
                 _errorMessage.value = context.getString(R.string.export_data_error)
             }
         }
@@ -144,6 +148,8 @@ class SettingsViewModel(
     }
 
     companion object {
+        private const val TAG = "SettingsViewModel"
+
         fun factory(context: Context): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {

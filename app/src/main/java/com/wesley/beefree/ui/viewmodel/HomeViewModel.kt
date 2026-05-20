@@ -13,6 +13,8 @@ import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
 import com.wesley.beefree.domain.home.usecases.ComputeRelapseSuccessRateUseCase
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
+import com.wesley.beefree.infrastructure.logging.AndroidLogger
+import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomLessonRepository
@@ -81,6 +83,7 @@ class HomeViewModel(
     private val checkInRepository: CheckInRepository,
     private val computeRelapseSuccessRateUseCase: ComputeRelapseSuccessRateUseCase,
     private val hasCompletedTodaysCheckInUseCase: HasCompletedTodaysCheckInUseCase,
+    private val logger: Logger = AndroidLogger,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -199,6 +202,7 @@ class HomeViewModel(
                     )
                 }
             } catch (e: Exception) {
+                logger.e(TAG, "Failed to load home data", e)
                 _uiState.update { it.copy(isLoading = false, error = e.message ?: "Unknown error") }
             }
         }
@@ -280,6 +284,8 @@ class HomeViewModel(
     }
 
     companion object {
+        private const val TAG = "HomeViewModel"
+
         fun factory(context: Context): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
