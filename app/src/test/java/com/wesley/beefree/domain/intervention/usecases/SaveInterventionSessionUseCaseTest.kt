@@ -1,6 +1,5 @@
 package com.wesley.beefree.domain.intervention.usecases
 
-import androidx.compose.runtime.snapshots.toInt
 import com.wesley.beefree.domain.entities.CognitiveThoughtRecord
 import com.wesley.beefree.domain.entities.CoreValueType
 import com.wesley.beefree.domain.entities.InterventionRecord

@@ -4,7 +4,6 @@ import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.events.BankingAppForegrounded
 import com.wesley.beefree.domain.events.InterventionUIPending
 import com.wesley.beefree.domain.intervention.ports.InterventionUI
-import com.wesley.beefree.infrastructure.bus.subscribers.intervention.EMIInterventionModule
 import org.junit.Test
 import org.mockito.kotlin.*
 
