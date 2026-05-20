@@ -319,14 +319,16 @@ fun PsychoeducationContent.toEntity() =
         isActive = isActive,
     )
 
-fun EmotionRecordEntity.toDomain() =
-    EmotionRecord(
+fun EmotionRecordEntity.toDomain(): EmotionRecord? {
+    val type = FeelingType.entries.find { it.name == feelingType } ?: return null
+    return EmotionRecord(
         id = id,
         userProfileId = userProfileId,
-        feelingType = FeelingType.valueOf(feelingType),
+        feelingType = type,
         intensity = intensity,
         createdAt = createdAt,
     )
+}
 
 fun EmotionRecord.toEntity() =
     EmotionRecordEntity(
