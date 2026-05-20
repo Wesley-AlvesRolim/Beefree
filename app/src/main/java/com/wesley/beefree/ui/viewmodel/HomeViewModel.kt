@@ -219,7 +219,7 @@ class HomeViewModel(
             val weekEnd = now - weeksAgo * weekMs
             val weekStart = weekEnd - weekMs
             val records =
-                emotionRecords.filter { it.feelingType == FeelingType.ANXIETY && it.createdAt in weekStart..weekEnd }
+                emotionRecords.filter { it.feelingType == FeelingType.STRESS && it.createdAt in weekStart..weekEnd }
             if (records.isEmpty()) {
                 0f
             } else {

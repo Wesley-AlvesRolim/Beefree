@@ -211,7 +211,7 @@ fun HomeScreenPreview() {
             satisfactionSeries = listOf(22f, 28f, 35f, 44f, 50f, 58f, 64f, 70f),
             alignedDays = 25,
             relapseDays = 1,
-            topTriggers = listOf(FeelingType.ANXIETY to 3, FeelingType.STRESS to 2, FeelingType.BOREDOM to 1),
+            topTriggers = listOf(FeelingType.CRAVING to 3, FeelingType.STRESS to 2, FeelingType.BOREDOM to 1),
             anxietyDelta = -53,
             satisfactionDelta = 218,
         )

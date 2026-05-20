@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.BatteryAlert
+import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Whatshot
@@ -91,18 +93,22 @@ private fun TriggerEmotionRow(
 ) {
     val icon =
         when (feelingType) {
-            FeelingType.ANXIETY -> Icons.Default.Psychology
-            FeelingType.STRESS -> Icons.Default.Whatshot
-            FeelingType.LONELINESS -> Icons.Default.FavoriteBorder
+            FeelingType.SLEEP -> Icons.Default.Bedtime
+            FeelingType.CRAVING -> Icons.Default.Whatshot
             FeelingType.BOREDOM -> Icons.Default.AccessTime
+            FeelingType.STRESS -> Icons.Default.Psychology
+            FeelingType.LONELINESS -> Icons.Default.FavoriteBorder
+            FeelingType.FATIGUE -> Icons.Default.BatteryAlert
         }
 
     val text =
         when (feelingType) {
-            FeelingType.ANXIETY -> stringResource(R.string.feeling_type_anxiety)
+            FeelingType.SLEEP -> stringResource(R.string.feeling_type_sleep)
+            FeelingType.CRAVING -> stringResource(R.string.feeling_type_craving)
+            FeelingType.BOREDOM -> stringResource(R.string.feeling_type_boredom)
             FeelingType.STRESS -> stringResource(R.string.feeling_type_stress)
             FeelingType.LONELINESS -> stringResource(R.string.feeling_type_loneliness)
-            FeelingType.BOREDOM -> stringResource(R.string.feeling_type_boredom)
+            FeelingType.FATIGUE -> stringResource(R.string.feeling_type_fatigue)
         }
 
     Row(
