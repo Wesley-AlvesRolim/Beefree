@@ -205,6 +205,8 @@ class EmotionalRecordViewModelTest {
             feelingType: FeelingType,
         ): Flow<List<EmotionRecord>> = emptyFlow()
 
+        override suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord? = null
+
         override suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long = 0
 
         override fun getRiskFeatureSnapshots(userId: Int): Flow<List<RiskFeatureSnapshot>> = emptyFlow()
