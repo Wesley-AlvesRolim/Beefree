@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wesley.beefree.infrastructure.events.workers.DailyCheckInWorker
+import com.wesley.beefree.infrastructure.events.workers.EmotionalRecordReminderWorker
 import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.navigation.NavBar
@@ -24,6 +25,7 @@ class MainActivity : ComponentActivity() {
     private var onboardingCompleted by mutableStateOf(false)
     private var openCheckIn by mutableStateOf(false)
     private var openSos by mutableStateOf(false)
+    private var openEmotionalRecord by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,13 +35,14 @@ class MainActivity : ComponentActivity() {
         onboardingCompleted = keyValueStorageRepository.isOnboardingCompleted()
         openCheckIn = intent.getBooleanExtra(DailyCheckInWorker.EXTRA_OPEN_CHECK_IN, false)
         openSos = intent.getBooleanExtra(SosWidget.EXTRA_OPEN_SOS, false)
+        openEmotionalRecord = intent.getBooleanExtra(EmotionalRecordReminderWorker.EXTRA_OPEN_EMOTIONAL_RECORD, false)
 
         DailyCheckInWorker.scheduleCheckInWorker(this)
 
         setContent {
             BeeFreeTheme {
                 if (onboardingCompleted) {
-                    MainContent(openCheckIn = openCheckIn, openSos = openSos)
+                    MainContent(openCheckIn = openCheckIn, openSos = openSos, openEmotionalRecord = openEmotionalRecord)
                 } else {
                     val onboardingViewModel: OnboardingViewModelImpl =
                         viewModel(factory = OnboardingViewModelImpl.factory(application))
@@ -57,6 +60,7 @@ class MainActivity : ComponentActivity() {
         setIntent(intent)
         openCheckIn = intent.getBooleanExtra(DailyCheckInWorker.EXTRA_OPEN_CHECK_IN, false)
         openSos = intent.getBooleanExtra(SosWidget.EXTRA_OPEN_SOS, false)
+        openEmotionalRecord = intent.getBooleanExtra(EmotionalRecordReminderWorker.EXTRA_OPEN_EMOTIONAL_RECORD, false)
     }
 }
 
@@ -64,6 +68,7 @@ class MainActivity : ComponentActivity() {
 fun MainContent(
     openCheckIn: Boolean = false,
     openSos: Boolean = false,
+    openEmotionalRecord: Boolean = false,
 ) {
-    NavBar(openCheckIn = openCheckIn, openSos = openSos)
+    NavBar(openCheckIn = openCheckIn, openSos = openSos, openEmotionalRecord = openEmotionalRecord)
 }
