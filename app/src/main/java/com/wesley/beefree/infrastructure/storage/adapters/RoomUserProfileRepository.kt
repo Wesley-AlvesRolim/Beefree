@@ -2,11 +2,11 @@ package com.wesley.beefree.infrastructure.storage.adapters
 
 import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserProfile
+import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserAddictionDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserProfileDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.toDomain
 import com.wesley.beefree.infrastructure.storage.adapters.db.toEntity
-import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

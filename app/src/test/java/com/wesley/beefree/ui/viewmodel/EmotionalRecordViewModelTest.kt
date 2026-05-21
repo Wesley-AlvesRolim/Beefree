@@ -7,9 +7,9 @@ import com.wesley.beefree.domain.entities.RiskAssessment
 import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
 import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserProfile
+import com.wesley.beefree.domain.repository.ports.MetricsRepository
+import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.infrastructure.logging.TestLogger
-import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
-import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async

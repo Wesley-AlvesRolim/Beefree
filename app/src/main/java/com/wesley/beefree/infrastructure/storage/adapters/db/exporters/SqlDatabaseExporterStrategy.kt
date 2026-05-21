@@ -2,8 +2,8 @@ package com.wesley.beefree.infrastructure.storage.adapters.db.exporters
 
 import android.database.Cursor
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.wesley.beefree.domain.repository.ports.DatabaseExporterStrategy
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
-import com.wesley.beefree.infrastructure.storage.ports.DatabaseExporterStrategy
 import java.io.OutputStreamWriter
 
 class SqlDatabaseExporterStrategy(

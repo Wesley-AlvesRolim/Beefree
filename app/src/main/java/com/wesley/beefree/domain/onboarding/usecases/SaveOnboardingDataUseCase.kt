@@ -15,9 +15,9 @@ import com.wesley.beefree.domain.onboarding.ClinicalProfile
 import com.wesley.beefree.domain.onboarding.NeurodivergenceAnswer
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.domain.onboarding.ScaleResult
-import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
-import com.wesley.beefree.infrastructure.storage.ports.OnboardingRepository
-import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
+import com.wesley.beefree.domain.repository.ports.AddictionRepository
+import com.wesley.beefree.domain.repository.ports.OnboardingRepository
+import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 
 class SaveOnboardingDataUseCase(

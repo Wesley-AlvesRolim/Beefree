@@ -1,7 +1,7 @@
 package com.wesley.beefree.domain.checkin.usecases
 
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
-import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
+import com.wesley.beefree.domain.repository.ports.CheckInRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test

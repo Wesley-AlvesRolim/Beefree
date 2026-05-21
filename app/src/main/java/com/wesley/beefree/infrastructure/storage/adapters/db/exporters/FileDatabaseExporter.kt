@@ -1,8 +1,8 @@
 package com.wesley.beefree.infrastructure.storage.adapters.db.exporters
 
 import android.content.Context
-import com.wesley.beefree.infrastructure.storage.ports.DatabaseExporter
-import com.wesley.beefree.infrastructure.storage.ports.DatabaseExporterStrategy
+import com.wesley.beefree.domain.repository.ports.DatabaseExporter
+import com.wesley.beefree.domain.repository.ports.DatabaseExporterStrategy
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter

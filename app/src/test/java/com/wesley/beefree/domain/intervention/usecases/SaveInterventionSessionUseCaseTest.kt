@@ -5,8 +5,8 @@ import com.wesley.beefree.domain.entities.CoreValueType
 import com.wesley.beefree.domain.entities.InterventionRecord
 import com.wesley.beefree.domain.entities.InterventionValueLink
 import com.wesley.beefree.domain.entities.UserCoreValue
-import com.wesley.beefree.infrastructure.storage.ports.EMIRepository
-import com.wesley.beefree.infrastructure.storage.ports.OnboardingRepository
+import com.wesley.beefree.domain.repository.ports.EMIRepository
+import com.wesley.beefree.domain.repository.ports.OnboardingRepository
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertTrue

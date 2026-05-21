@@ -1,10 +1,10 @@
 package com.wesley.beefree.infrastructure.storage.adapters
 
 import com.wesley.beefree.domain.entities.PsychoeducationContent
+import com.wesley.beefree.domain.repository.ports.LessonRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.PsychoeducationContentDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.toDomain
 import com.wesley.beefree.infrastructure.storage.adapters.db.toEntity
-import com.wesley.beefree.infrastructure.storage.ports.LessonRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

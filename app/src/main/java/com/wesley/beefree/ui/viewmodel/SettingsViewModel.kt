@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.AddictionCategoryEnum
+import com.wesley.beefree.domain.repository.ports.AddictionRepository
 import com.wesley.beefree.infrastructure.events.so.AccessibilityServiceActivity
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.logging.Logger
@@ -17,7 +18,6 @@ import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyVa
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import com.wesley.beefree.infrastructure.storage.adapters.db.exporters.FileDatabaseExporter
 import com.wesley.beefree.infrastructure.storage.adapters.db.exporters.SqlDatabaseExporterStrategy
-import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.utils.AccessibilityUtils
 import kotlinx.coroutines.Dispatchers

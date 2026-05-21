@@ -4,12 +4,12 @@ import com.wesley.beefree.domain.entities.EmotionRecord
 import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.entities.RiskAssessment
 import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
+import com.wesley.beefree.domain.repository.ports.MetricsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.EmotionRecordDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.RiskAssessmentDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.RiskFeatureSnapshotDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.toDomain
 import com.wesley.beefree.infrastructure.storage.adapters.db.toEntity
-import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

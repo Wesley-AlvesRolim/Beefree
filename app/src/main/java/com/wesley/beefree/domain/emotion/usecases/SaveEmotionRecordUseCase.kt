@@ -2,7 +2,7 @@ package com.wesley.beefree.domain.emotion.usecases
 
 import com.wesley.beefree.domain.entities.EmotionRecord
 import com.wesley.beefree.domain.entities.FeelingType
-import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
+import com.wesley.beefree.domain.repository.ports.MetricsRepository
 
 class SaveEmotionRecordUseCase(
     private val metricsRepository: MetricsRepository,

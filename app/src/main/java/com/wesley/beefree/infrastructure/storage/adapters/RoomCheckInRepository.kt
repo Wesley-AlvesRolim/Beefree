@@ -2,11 +2,11 @@ package com.wesley.beefree.infrastructure.storage.adapters
 
 import com.wesley.beefree.domain.entities.DailyCheckIn
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
+import com.wesley.beefree.domain.repository.ports.CheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.DailyCheckInDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.WeeklyCheckInDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.toDomain
 import com.wesley.beefree.infrastructure.storage.adapters.db.toEntity
-import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

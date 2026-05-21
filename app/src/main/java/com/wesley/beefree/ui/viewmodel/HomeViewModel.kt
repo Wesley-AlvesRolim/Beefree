@@ -13,6 +13,11 @@ import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
 import com.wesley.beefree.domain.home.usecases.ComputeRelapseSuccessRateUseCase
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
+import com.wesley.beefree.domain.repository.ports.AddictionRepository
+import com.wesley.beefree.domain.repository.ports.CheckInRepository
+import com.wesley.beefree.domain.repository.ports.LessonRepository
+import com.wesley.beefree.domain.repository.ports.MetricsRepository
+import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
@@ -21,12 +26,6 @@ import com.wesley.beefree.infrastructure.storage.adapters.RoomLessonRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
-import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
-import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
-import com.wesley.beefree.infrastructure.storage.ports.LessonRepository
-import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
-import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
-import com.wesley.beefree.ui.viewmodel.HelpInterventionSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
