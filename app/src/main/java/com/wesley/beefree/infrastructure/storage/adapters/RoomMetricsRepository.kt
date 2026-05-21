@@ -31,8 +31,7 @@ class RoomMetricsRepository(
             list.mapNotNull { it.toDomain() }
         }
 
-    override suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord? =
-        emotionRecordDao.getLatestByUser(userId)?.toDomain()
+    override suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord? = emotionRecordDao.getLatestByUser(userId)?.toDomain()
 
     override suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long = riskFeatureSnapshotDao.insert(snapshot.toEntity())
 
