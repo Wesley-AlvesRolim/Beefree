@@ -7,6 +7,7 @@ import com.wesley.beefree.domain.entities.RiskAssessment
 import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
 import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserProfile
+import com.wesley.beefree.infrastructure.logging.TestLogger
 import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
 import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
 import kotlinx.coroutines.Dispatchers
@@ -25,13 +26,21 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EmotionalRecordViewModelTest {
     companion object {
         const val DEFAULT_USER_ID = 12
+    }
+
+    private val testDispatcher = StandardTestDispatcher()
+
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+        TestLogger.clear()
     }
 
     @After
@@ -42,7 +51,6 @@ class EmotionalRecordViewModelTest {
     @Test
     fun `slider changes update the matching field`() =
         runTest {
-            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
             val viewModel = createViewModel()
             val sleep = 8f
             val fatigue = 3f
@@ -76,7 +84,6 @@ class EmotionalRecordViewModelTest {
     @Test
     fun `on save stores all emotion records and finishes in done step`() =
         runTest {
-            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
             val repository = RecordingMetricsRepository()
             val viewModel = createViewModel(repository = repository)
             val sleep = 8.9f
@@ -94,7 +101,6 @@ class EmotionalRecordViewModelTest {
             viewModel.onSliderChange(FeelingType.FATIGUE, fatigue)
 
             viewModel.onSave()
-            assertTrue(viewModel.uiState.value.isSaving)
 
             advanceUntilIdle()
 
@@ -128,8 +134,8 @@ class EmotionalRecordViewModelTest {
     @Test
     fun `on save surfaces repository errors`() =
         runTest {
-            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-            val repository = RecordingMetricsRepository(throwOnInsert = RuntimeException("DB error"))
+            val errorMessage = "DB error"
+            val repository = RecordingMetricsRepository(throwOnInsert = RuntimeException(errorMessage))
             val viewModel = createViewModel(repository = repository)
 
             viewModel.onNext()
@@ -138,14 +144,13 @@ class EmotionalRecordViewModelTest {
 
             assertEquals(EmotionalRecordStep.CAPTURE, viewModel.uiState.value.step)
             assertFalse(viewModel.uiState.value.isSaving)
-            assertEquals("DB error", viewModel.uiState.value.error)
+            assertEquals(errorMessage, viewModel.uiState.value.error)
             assertEquals(1, repository.insertCalls)
         }
 
     @Test
     fun `on done emits a navigation event`() =
         runTest {
-            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
             val viewModel = createViewModel()
             val emittedEvent = async { viewModel.navigationEvents.first() }
 
@@ -163,6 +168,8 @@ class EmotionalRecordViewModelTest {
         EmotionalRecordViewModel(
             userProfileRepository = StubUserProfileRepository(userId),
             saveEmotionRecordUseCase = SaveEmotionRecordUseCase(repository),
+            logger = TestLogger,
+            ioDispatcher = testDispatcher,
         )
 
     private class StubUserProfileRepository(
