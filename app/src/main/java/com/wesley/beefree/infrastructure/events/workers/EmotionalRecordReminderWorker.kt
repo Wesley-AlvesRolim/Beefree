@@ -2,9 +2,13 @@ package com.wesley.beefree.infrastructure.events.workers
 
 import android.content.Context
 import android.content.Intent
+import androidx.work.ListenableWorker
+import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.wesley.beefree.MainActivity
 import com.wesley.beefree.R
+import com.wesley.beefree.domain.repository.ports.MetricsRepository
+import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
@@ -14,6 +18,8 @@ import kotlin.collections.firstOrNull
 class EmotionalRecordReminderWorker(
     context: Context,
     workerParams: WorkerParameters,
+    private val userRepository: UserProfileRepository,
+    private val metricsRepository: MetricsRepository,
 ) : BeeNotificationWorker(context, workerParams) {
     override fun buildNotification(): NotificationContent =
         NotificationContent(
@@ -29,18 +35,6 @@ class EmotionalRecordReminderWorker(
         )
 
     override suspend fun onTriggered(): Boolean {
-        val database = AppDatabase.getDatabase(applicationContext)
-        val userRepository =
-            RoomUserProfileRepository(
-                userProfileDao = database.userProfileDao(),
-                userAddictionDao = database.userAddictionDao(),
-            )
-        val metricsRepository =
-            RoomMetricsRepository(
-                emotionRecordDao = database.emotionRecordDao(),
-                riskFeatureSnapshotDao = database.riskFeatureSnapshotDao(),
-                riskAssessmentDao = database.riskAssessmentDao(),
-            )
         val user = userRepository.getAllProfiles().first().firstOrNull() ?: return false
         val userId = user.id ?: return false
 
@@ -72,5 +66,34 @@ class EmotionalRecordReminderWorker(
                 initialDelayMs = NOTIFICATION_INTERVAL_MS,
             )
         }
+
+        fun factory(context: Context): WorkerFactory =
+            object : WorkerFactory() {
+                override fun createWorker(
+                    appContext: Context,
+                    workerClassName: String,
+                    workerParameters: WorkerParameters,
+                ): ListenableWorker? {
+                    if (workerClassName != EmotionalRecordReminderWorker::class.java.name) return null
+                    val db = AppDatabase.getDatabase(appContext)
+                    val userRepository =
+                        RoomUserProfileRepository(
+                            userProfileDao = db.userProfileDao(),
+                            userAddictionDao = db.userAddictionDao(),
+                        )
+                    val metricsRepository =
+                        RoomMetricsRepository(
+                            emotionRecordDao = db.emotionRecordDao(),
+                            riskFeatureSnapshotDao = db.riskFeatureSnapshotDao(),
+                            riskAssessmentDao = db.riskAssessmentDao(),
+                        )
+                    return EmotionalRecordReminderWorker(
+                        context = appContext,
+                        workerParams = workerParameters,
+                        userRepository = userRepository,
+                        metricsRepository = metricsRepository,
+                    )
+                }
+            }
     }
 }
