@@ -2,11 +2,14 @@ package com.wesley.beefree.infrastructure.events.workers
 
 import android.content.Context
 import android.content.Intent
+import androidx.work.ListenableWorker
+import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.wesley.beefree.MainActivity
 import com.wesley.beefree.R
 import com.wesley.beefree.domain.checkin.usecases.DetermineCheckInTypeUseCase
 import com.wesley.beefree.domain.checkin.usecases.HasCompletedTodaysCheckInUseCase
+import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
@@ -16,6 +19,8 @@ import java.util.Calendar
 class DailyCheckInWorker(
     context: Context,
     workerParams: WorkerParameters,
+    private val userRepository: UserProfileRepository,
+    private val hasCompletedTodaysCheckInUseCase: HasCompletedTodaysCheckInUseCase,
 ) : BeeNotificationWorker(context, workerParams) {
     override fun buildNotification() =
         NotificationContent(
@@ -31,20 +36,10 @@ class DailyCheckInWorker(
         )
 
     override suspend fun onTriggered(): Boolean {
-        val database = AppDatabase.getDatabase(applicationContext)
-        val profile =
-            RoomUserProfileRepository(
-                userProfileDao = database.userProfileDao(),
-                userAddictionDao = database.userAddictionDao(),
-            ).getAllProfiles()
-                .first()
-                .firstOrNull() ?: return true
+        val profile = userRepository.getAllProfiles().first().firstOrNull() ?: return true
 
         val hasCompleted =
-            HasCompletedTodaysCheckInUseCase(
-                checkInRepository = RoomCheckInRepository(database.dailyCheckInDao(), database.weeklyCheckInDao()),
-                determineCheckInTypeUseCase = DetermineCheckInTypeUseCase(),
-            ).execute(
+            hasCompletedTodaysCheckInUseCase.execute(
                 userId = profile.id ?: return true,
                 userCreatedAt = profile.createdAt,
             )
@@ -83,5 +78,33 @@ class DailyCheckInWorker(
                 }
             return target.timeInMillis - now.timeInMillis
         }
+
+        fun factory(context: Context): WorkerFactory =
+            object : WorkerFactory() {
+                override fun createWorker(
+                    appContext: Context,
+                    workerClassName: String,
+                    workerParameters: WorkerParameters,
+                ): ListenableWorker? {
+                    if (workerClassName != DailyCheckInWorker::class.java.name) return null
+                    val db = AppDatabase.getDatabase(appContext)
+                    val userRepository =
+                        RoomUserProfileRepository(
+                            userProfileDao = db.userProfileDao(),
+                            userAddictionDao = db.userAddictionDao(),
+                        )
+                    val hasCompletedUseCase =
+                        HasCompletedTodaysCheckInUseCase(
+                            checkInRepository = RoomCheckInRepository(db.dailyCheckInDao(), db.weeklyCheckInDao()),
+                            determineCheckInTypeUseCase = DetermineCheckInTypeUseCase(),
+                        )
+                    return DailyCheckInWorker(
+                        context = appContext,
+                        workerParams = workerParameters,
+                        userRepository = userRepository,
+                        hasCompletedTodaysCheckInUseCase = hasCompletedUseCase,
+                    )
+                }
+            }
     }
 }
