@@ -1,4 +1,4 @@
-package com.wesley.beefree.infrastructure.storage.ports
+package com.wesley.beefree.domain.repository.ports
 
 interface KeyValueStorage {
     fun <T> set(
