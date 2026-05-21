@@ -83,7 +83,6 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.work.testing)
     ksp(libs.androidx.room.compiler)
     implementation(libs.vico.compose)
     implementation(libs.vico.compose.m3)
