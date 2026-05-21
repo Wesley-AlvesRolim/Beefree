@@ -85,6 +85,10 @@ class EmotionalRecordViewModel(
         _uiState.value = _uiState.value.copy(step = EmotionalRecordStep.CAPTURE)
     }
 
+    fun onBack() {
+        _uiState.value = _uiState.value.copy(step = EmotionalRecordStep.INTRO)
+    }
+
     fun onSliderChange(
         emotion: FeelingType,
         value: Float,
