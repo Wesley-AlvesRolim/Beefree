@@ -57,24 +57,6 @@ class EmotionalRecordViewModel(
     private val logger: Logger = AndroidLogger,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
-    private var userId: Int = 0
-
-    init {
-        viewModelScope.launch {
-            try {
-                withContext(ioDispatcher) {
-                    userId = userProfileRepository
-                        .getAllProfiles()
-                        .first()
-                        .firstOrNull()
-                        ?.id ?: 0
-                }
-            } catch (e: Exception) {
-                logger.e(TAG, "Failed to resolve user ID", e)
-            }
-        }
-    }
-
     private val _uiState = MutableStateFlow(EmotionalRecordUiState())
     val uiState: StateFlow<EmotionalRecordUiState> = _uiState
 
@@ -103,6 +85,14 @@ class EmotionalRecordViewModel(
     fun onSave() {
         _uiState.value = _uiState.value.copy(isSaving = true)
         viewModelScope.launch {
+            val userId =
+                withContext(ioDispatcher) {
+                    userProfileRepository
+                        .getAllProfiles()
+                        .first()
+                        .firstOrNull()
+                        ?.id ?: 0
+                }
             val state = _uiState.value
             val result =
                 saveEmotionRecordUseCase.execute(
