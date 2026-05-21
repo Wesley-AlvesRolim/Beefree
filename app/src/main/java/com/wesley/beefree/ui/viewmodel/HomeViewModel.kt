@@ -13,18 +13,19 @@ import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
 import com.wesley.beefree.domain.home.usecases.ComputeRelapseSuccessRateUseCase
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
+import com.wesley.beefree.domain.repository.ports.AddictionRepository
+import com.wesley.beefree.domain.repository.ports.CheckInRepository
+import com.wesley.beefree.domain.repository.ports.LessonRepository
+import com.wesley.beefree.domain.repository.ports.MetricsRepository
+import com.wesley.beefree.domain.repository.ports.UserProfileRepository
+import com.wesley.beefree.infrastructure.logging.AndroidLogger
+import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomLessonRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
-import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
-import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
-import com.wesley.beefree.infrastructure.storage.ports.LessonRepository
-import com.wesley.beefree.infrastructure.storage.ports.MetricsRepository
-import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
-import com.wesley.beefree.ui.viewmodel.HelpInterventionSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -81,6 +82,7 @@ class HomeViewModel(
     private val checkInRepository: CheckInRepository,
     private val computeRelapseSuccessRateUseCase: ComputeRelapseSuccessRateUseCase,
     private val hasCompletedTodaysCheckInUseCase: HasCompletedTodaysCheckInUseCase,
+    private val logger: Logger = AndroidLogger,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -199,6 +201,7 @@ class HomeViewModel(
                     )
                 }
             } catch (e: Exception) {
+                logger.e(TAG, "Failed to load home data", e)
                 _uiState.update { it.copy(isLoading = false, error = e.message ?: "Unknown error") }
             }
         }
@@ -219,7 +222,7 @@ class HomeViewModel(
             val weekEnd = now - weeksAgo * weekMs
             val weekStart = weekEnd - weekMs
             val records =
-                emotionRecords.filter { it.feelingType == FeelingType.ANXIETY && it.createdAt in weekStart..weekEnd }
+                emotionRecords.filter { it.feelingType == FeelingType.STRESS && it.createdAt in weekStart..weekEnd }
             if (records.isEmpty()) {
                 0f
             } else {
@@ -280,6 +283,8 @@ class HomeViewModel(
     }
 
     companion object {
+        private const val TAG = "HomeViewModel"
+
         fun factory(context: Context): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {

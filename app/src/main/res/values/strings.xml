@@ -385,9 +385,79 @@
 
     <!-- Feeling types -->
     <string name="feeling_type_anxiety">Ansiedade</string>
+    <string name="feeling_type_sleep">Sono</string>
+    <string name="feeling_type_craving">Fissura</string>
     <string name="feeling_type_stress">Estresse</string>
     <string name="feeling_type_loneliness">Solidão</string>
     <string name="feeling_type_boredom">Tédio</string>
+    <string name="feeling_type_fatigue">Fadiga</string>
+
+    <!-- Common UI -->
+    <string name="btn_close">Fechar</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_start">Começar registro</string>
+    <string name="error_title">Erro</string>
+
+    <!-- Emotional Record (EMA – RF08) -->
+    <string name="emotional_record_title">Registro emocional</string>
+    <string name="emotional_record_intro_title">Como você está agora?</string>
+    <string name="emotional_record_intro_subtitle">Leva menos de 30 segundos. Quanto mais honesto você for, mais o app consegue te ajudar no momento certo.</string>
+    <string name="emotional_record_intro_disclaimer">Sem certo ou errado. Só a leitura honesta importa.</string>
+    <string name="emotional_record_mascot">Mascote BeeFree</string>
+    <string name="emotional_record_risk_increases_label">↑ Risco</string>
+    <string name="emotional_record_snooze">Adiar 30 min</string>
+    <string name="emotional_record_capture_title">Como você está agora?</string>
+    <string name="emotional_record_save_button">Salvar registro</string>
+    <string name="emotional_record_done_title">Registro emocional salvo.</string>
+    <string name="emotional_record_done_motivational">Você fez a coisa certa. Reconhecer seus sinais é o que permite agir antes que o impulso tome conta.</string>
+    <string name="emotional_record_done_message">Próximo registro em ~3h. Você pode fazer um novo a qualquer momento.</string>
+    <string name="emotional_record_done_section_title">Seus números agora</string>
+    <string name="emotional_record_done_button">Concluir</string>
+    <string name="emotional_record_done_overline">SALVO</string>
+
+    <!-- Emotional Record – Sono (SLEEP) -->
+    <string name="emotional_record_var_sleep">Sono</string>
+    <string name="emotional_record_sleep_hint">Privação de sono aumenta o risco de recaída</string>
+    <string name="emotional_record_sleep_low">Sono péssimo</string>
+    <string name="emotional_record_sleep_high">Sono ótimo</string>
+
+    <!-- Emotional Record – Fissura (CRAVING) -->
+    <string name="emotional_record_var_craving">Fissura</string>
+    <string name="emotional_record_craving_hint">Desejo intenso ou compulsivo de consumir</string>
+    <string name="emotional_record_craving_low">Nenhum desejo</string>
+    <string name="emotional_record_craving_high">Desejo intenso</string>
+
+    <!-- Emotional Record – Tédio (BOREDOM) -->
+    <string name="emotional_record_var_boredom">Tédio</string>
+    <string name="emotional_record_boredom_hint">Tédio é um dos principais gatilhos de recaída</string>
+    <string name="emotional_record_boredom_low">Engajado</string>
+    <string name="emotional_record_boredom_high">Muito entediado</string>
+
+    <!-- Emotional Record – Estresse (STRESS) -->
+    <string name="emotional_record_var_stress">Estresse</string>
+    <string name="emotional_record_stress_hint">Estresse reduz o controle de impulsos</string>
+    <string name="emotional_record_stress_low">Calmo</string>
+    <string name="emotional_record_stress_high">Sobrecarregado</string>
+
+    <!-- Emotional Record – Solidão (LONELINESS) -->
+    <string name="emotional_record_var_loneliness">Solidão</string>
+    <string name="emotional_record_loneliness_hint">Sentimentos de solidão aumentam a busca por alívio</string>
+    <string name="emotional_record_loneliness_low">Conectado</string>
+    <string name="emotional_record_loneliness_high">Muito isolado</string>
+
+    <!-- Emotional Record – Fadiga (FATIGUE) -->
+    <string name="emotional_record_var_fatigue">Fadiga</string>
+    <string name="emotional_record_fatigue_hint">Fadiga esgota a força de vontade</string>
+    <string name="emotional_record_fatigue_low">Descansado</string>
+    <string name="emotional_record_fatigue_high">Esgotado</string>
+
+    <!-- Support Network -->
+    <string name="support_network_title">Rede de Apoio</string>
+
+
+    <!-- Emotional Record notifications -->
+    <string name="emotional_record_notification_title">Como você está agora?</string>
+    <string name="emotional_record_notification_body">Registro rápido — 6 leituras em ~30s.</string>
 
     <!-- SOS Widget -->
     <string name="sos_widget_description">Botão SOS para abrir o suporte imediato do BeeFree</string>

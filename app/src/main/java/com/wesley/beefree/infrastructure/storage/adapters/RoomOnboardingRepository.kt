@@ -5,6 +5,7 @@ import com.wesley.beefree.domain.entities.UserHobby
 import com.wesley.beefree.domain.entities.UserObjective
 import com.wesley.beefree.domain.entities.UserOnboardingSession
 import com.wesley.beefree.domain.entities.UserSymptom
+import com.wesley.beefree.domain.repository.ports.OnboardingRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserCoreValueDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserHobbyDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserObjectiveDAO
@@ -12,7 +13,6 @@ import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserOnboardingS
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.UserSymptomDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.toDomain
 import com.wesley.beefree.infrastructure.storage.adapters.db.toEntity
-import com.wesley.beefree.infrastructure.storage.ports.OnboardingRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

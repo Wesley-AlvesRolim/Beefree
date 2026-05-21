@@ -1,4 +1,4 @@
-package com.wesley.beefree.infrastructure.storage.ports
+package com.wesley.beefree.domain.repository.ports
 
 import com.wesley.beefree.domain.entities.EmotionRecord
 import com.wesley.beefree.domain.entities.FeelingType
@@ -15,6 +15,8 @@ interface MetricsRepository {
         userId: Int,
         feelingType: FeelingType,
     ): Flow<List<EmotionRecord>>
+
+    suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord?
 
     suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long
 

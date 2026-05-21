@@ -29,12 +29,13 @@ import androidx.navigation.compose.rememberNavController
 import com.wesley.beefree.ui.components.designsystem.BeeBodySmall
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
 
-private val bottomBarRoutes = setOf(Screen.Home.route, Screen.Settings.route)
+private val bottomBarRoutes = setOf(Screen.Home.route, Screen.CheckIn.route, Screen.Settings.route)
 
 @Composable
 fun NavBar(
     openCheckIn: Boolean = false,
     openSos: Boolean = false,
+    openEmotionalRecord: Boolean = false,
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -52,6 +53,12 @@ fun NavBar(
         }
     }
 
+    LaunchedEffect(openEmotionalRecord) {
+        if (openEmotionalRecord) {
+            navController.navigate(Screen.EmotionalRecord.route)
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = { if (showBottomBar) NavBarWithItems(navController) },
@@ -62,7 +69,7 @@ fun NavBar(
 
 @Composable
 fun NavBarWithItems(navController: NavHostController) {
-    val items = listOf(Screen.Home, Screen.Settings)
+    val items = listOf(Screen.Home, Screen.CheckIn, Screen.Settings)
 
     fun onClick(screen: Screen) {
         navController.navigate(screen.route) {

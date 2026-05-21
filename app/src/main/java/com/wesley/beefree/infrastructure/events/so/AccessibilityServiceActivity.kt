@@ -9,6 +9,7 @@ import com.wesley.beefree.data.keywords.getPornKeywords
 import com.wesley.beefree.domain.detection.KeywordsDetectionEngine
 import com.wesley.beefree.domain.detection.ports.WindowContentProvider
 import com.wesley.beefree.domain.intervention.ports.DeviceActionProvider
+import com.wesley.beefree.domain.repository.ports.AddictionRepository
 import com.wesley.beefree.infrastructure.bus.adapters.InMemoryEventBus
 import com.wesley.beefree.infrastructure.bus.dispatchers.AccessibilityEventDispatcher
 import com.wesley.beefree.infrastructure.bus.subscribers.history.RelapseRecorderModule
@@ -18,7 +19,6 @@ import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
-import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.adapters.AndroidEMIInterventionUI
 import kotlinx.coroutines.CoroutineScope

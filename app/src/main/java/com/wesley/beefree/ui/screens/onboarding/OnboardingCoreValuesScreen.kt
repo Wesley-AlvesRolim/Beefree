@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.wesley.beefree.R
+import com.wesley.beefree.domain.entities.CoreValueType
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.ui.components.OnboardingLayout
 import com.wesley.beefree.ui.components.OnboardingMascot
@@ -23,16 +24,16 @@ private const val MAX_CORE_VALUES = 3
 
 private val coreValueResources =
     listOf(
-        R.string.onboarding_core_value_family,
-        R.string.onboarding_core_value_faith,
-        R.string.onboarding_core_value_honesty,
-        R.string.onboarding_core_value_health,
-        R.string.onboarding_core_value_relationships,
-        R.string.onboarding_core_value_growth,
-        R.string.onboarding_core_value_work,
-        R.string.onboarding_core_value_community,
-        R.string.onboarding_core_value_love,
-        R.string.onboarding_core_value_freedom,
+        CoreValueType.FAMILY to R.string.onboarding_core_value_family,
+        CoreValueType.FAITH to R.string.onboarding_core_value_faith,
+        CoreValueType.HONESTY to R.string.onboarding_core_value_honesty,
+        CoreValueType.HEALTH to R.string.onboarding_core_value_health,
+        CoreValueType.RELATIONSHIPS to R.string.onboarding_core_value_relationships,
+        CoreValueType.GROWTH to R.string.onboarding_core_value_growth,
+        CoreValueType.WORK to R.string.onboarding_core_value_work,
+        CoreValueType.COMMUNITY to R.string.onboarding_core_value_community,
+        CoreValueType.LOVE to R.string.onboarding_core_value_love,
+        CoreValueType.FREEDOM to R.string.onboarding_core_value_freedom,
     )
 
 @Composable
@@ -42,7 +43,7 @@ fun OnboardingCoreValuesScreen(
     onNext: () -> Unit,
     onBack: () -> Unit,
 ) {
-    val coreValueLabels = coreValueResources.map { stringResource(it) }
+    val coreValueEntries = coreValueResources.map { (type, res) -> type to stringResource(res) }
 
     OnboardingLayout(onBack = onBack) {
         OnboardingMascot()
@@ -58,16 +59,16 @@ fun OnboardingCoreValuesScreen(
         Column(
             verticalArrangement = Arrangement.spacedBy(BeeSpacing.S),
         ) {
-            coreValueLabels.forEach { value ->
-                val isSelected = value in answers.coreValues
+            coreValueEntries.forEach { (type, label) ->
+                val isSelected = type.name in answers.coreValues
                 val atLimit = answers.coreValues.size >= MAX_CORE_VALUES
                 OnboardingMultiSelectOption(
-                    text = value,
+                    text = label,
                     isSelected = isSelected,
                     onClick = {
                         if (isSelected || !atLimit) {
                             onUpdate {
-                                val updated = if (isSelected) coreValues - value else coreValues + value
+                                val updated = if (isSelected) coreValues - type.name else coreValues + type.name
                                 copy(coreValues = updated)
                             }
                         }

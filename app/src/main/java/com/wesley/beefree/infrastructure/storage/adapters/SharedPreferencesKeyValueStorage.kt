@@ -3,7 +3,7 @@ package com.wesley.beefree.infrastructure.storage.adapters
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.wesley.beefree.infrastructure.storage.ports.KeyValueStorage
+import com.wesley.beefree.domain.repository.ports.KeyValueStorage
 
 class SharedPreferencesKeyValueStorage(
     context: Context,

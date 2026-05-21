@@ -19,6 +19,7 @@ import com.wesley.beefree.domain.onboarding.usecases.ComputeScoreUseCase
 import com.wesley.beefree.domain.onboarding.usecases.SaveOnboardingDataUseCase
 import com.wesley.beefree.infrastructure.events.so.AccessibilityServiceActivity
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
+import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomOnboardingRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
@@ -37,6 +38,7 @@ open class OnboardingViewModelImpl(
     private val saveOnboardingDataUseCase: SaveOnboardingDataUseCase,
     private val computeScoreUseCase: ComputeScoreUseCase,
     private val computeClinicalProfileUseCase: ComputeClinicalProfileUseCase,
+    private val logger: Logger = AndroidLogger,
 ) : ViewModel(),
     OnboardingViewModelPort {
     private val _currentStep = MutableStateFlow(engine.currentStep)
@@ -94,14 +96,17 @@ open class OnboardingViewModelImpl(
     ) {
         viewModelScope.launch {
             val profile = _clinicalProfile.value
-            AndroidLogger.d(
-                "OnboardingProfile",
+            logger.d(
+                TAG,
                 "Clinical profile on finish: treatment=${profile?.treatmentProfile}, incongruence=${profile?.incongruenceLevel}",
             )
             saveOnboardingDataUseCase
                 .execute(_answers.value)
                 .onSuccess { onFinish() }
-                .onFailure { onError(it) }
+                .onFailure {
+                    logger.e(TAG, "Failed to save onboarding data: ${it.message}", it)
+                    onError(it)
+                }
         }
     }
 
@@ -114,6 +119,8 @@ open class OnboardingViewModelImpl(
     }
 
     companion object {
+        private const val TAG = "OnboardingViewModelImpl"
+
         fun factory(application: Application): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {

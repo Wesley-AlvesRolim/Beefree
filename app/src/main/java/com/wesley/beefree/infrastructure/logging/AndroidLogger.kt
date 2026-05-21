@@ -9,4 +9,12 @@ object AndroidLogger : Logger {
     ) {
         Log.d(tag, message)
     }
+
+    override fun e(
+        tag: String,
+        message: String,
+        throwable: Throwable?,
+    ) {
+        Log.e(tag, message, throwable)
+    }
 }

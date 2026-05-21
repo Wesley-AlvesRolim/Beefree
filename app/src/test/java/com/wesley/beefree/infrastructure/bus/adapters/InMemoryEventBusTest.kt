@@ -2,7 +2,6 @@ package com.wesley.beefree.infrastructure.bus.adapters
 
 import com.wesley.beefree.domain.events.InterventionTriggered
 import com.wesley.beefree.domain.events.ScreenContentCaptured
-import com.wesley.beefree.infrastructure.bus.adapters.InMemoryEventBus
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

@@ -1,10 +1,10 @@
 package com.wesley.beefree.infrastructure.storage.adapters
 
 import com.wesley.beefree.domain.entities.AppUsageSession
+import com.wesley.beefree.domain.repository.ports.AppUsageRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.AppUsageSessionDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.toDomain
 import com.wesley.beefree.infrastructure.storage.adapters.db.toEntity
-import com.wesley.beefree.infrastructure.storage.ports.AppUsageRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

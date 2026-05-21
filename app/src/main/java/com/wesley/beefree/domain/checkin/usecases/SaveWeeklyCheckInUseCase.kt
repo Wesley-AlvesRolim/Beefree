@@ -2,7 +2,7 @@ package com.wesley.beefree.domain.checkin.usecases
 
 import com.wesley.beefree.domain.checkin.CheckInDateUtils
 import com.wesley.beefree.domain.entities.WeeklyCheckIn
-import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
+import com.wesley.beefree.domain.repository.ports.CheckInRepository
 
 class SaveWeeklyCheckInUseCase(
     private val checkInRepository: CheckInRepository,

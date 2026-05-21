@@ -4,7 +4,6 @@ import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.events.InterventionTriggered
 import com.wesley.beefree.domain.events.InterventionUIPending
 import com.wesley.beefree.domain.intervention.ports.DeviceActionProvider
-import com.wesley.beefree.infrastructure.bus.subscribers.intervention.DeviceGoBackIntervention
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Test

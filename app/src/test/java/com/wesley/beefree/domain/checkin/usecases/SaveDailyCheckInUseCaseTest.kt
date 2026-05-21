@@ -3,8 +3,8 @@ package com.wesley.beefree.domain.checkin.usecases
 import com.wesley.beefree.domain.checkin.ArtificialDopamineSource
 import com.wesley.beefree.domain.checkin.DopamineType
 import com.wesley.beefree.domain.checkin.NaturalDopamineSource
-import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
-import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
+import com.wesley.beefree.domain.repository.ports.AddictionRepository
+import com.wesley.beefree.domain.repository.ports.CheckInRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test

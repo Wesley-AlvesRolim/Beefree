@@ -13,9 +13,9 @@ import com.wesley.beefree.domain.intervention.HelpInterventionStep
 import com.wesley.beefree.domain.intervention.ports.Ticker
 import com.wesley.beefree.domain.intervention.usecases.SaveInterventionSessionUseCase
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
-import com.wesley.beefree.infrastructure.storage.ports.EMIRepository
-import com.wesley.beefree.infrastructure.storage.ports.OnboardingRepository
-import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
+import com.wesley.beefree.domain.repository.ports.EMIRepository
+import com.wesley.beefree.domain.repository.ports.OnboardingRepository
+import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

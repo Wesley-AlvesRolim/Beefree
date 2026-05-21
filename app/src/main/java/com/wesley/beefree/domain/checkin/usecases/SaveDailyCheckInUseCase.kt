@@ -6,8 +6,8 @@ import com.wesley.beefree.domain.checkin.NaturalDopamineSource
 import com.wesley.beefree.domain.entities.DailyCheckIn
 import com.wesley.beefree.domain.entities.RelapseRecord
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
-import com.wesley.beefree.infrastructure.storage.ports.AddictionRepository
-import com.wesley.beefree.infrastructure.storage.ports.CheckInRepository
+import com.wesley.beefree.domain.repository.ports.AddictionRepository
+import com.wesley.beefree.domain.repository.ports.CheckInRepository
 import kotlin.Int
 
 class SaveDailyCheckInUseCase(

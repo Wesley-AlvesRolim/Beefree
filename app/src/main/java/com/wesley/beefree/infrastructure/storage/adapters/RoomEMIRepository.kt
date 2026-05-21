@@ -3,12 +3,12 @@ package com.wesley.beefree.infrastructure.storage.adapters
 import com.wesley.beefree.domain.entities.CognitiveThoughtRecord
 import com.wesley.beefree.domain.entities.InterventionRecord
 import com.wesley.beefree.domain.entities.InterventionValueLink
+import com.wesley.beefree.domain.repository.ports.EMIRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.CognitiveThoughtRecordDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.InterventionRecordDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.dao.InterventionValueLinkDAO
 import com.wesley.beefree.infrastructure.storage.adapters.db.toDomain
 import com.wesley.beefree.infrastructure.storage.adapters.db.toEntity
-import com.wesley.beefree.infrastructure.storage.ports.EMIRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

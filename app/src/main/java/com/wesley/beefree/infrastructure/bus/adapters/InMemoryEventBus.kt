@@ -5,7 +5,13 @@ import com.wesley.beefree.domain.events.DomainEvent
 import com.wesley.beefree.infrastructure.logging.Logger
 
 class InMemoryEventBus(
-    private val logger: Logger = Logger { _, _ -> },
+    private val logger: Logger =
+        object : Logger {
+            override fun d(
+                tag: String,
+                message: String,
+            ) {}
+        },
 ) : EventBus {
     private val subscribers = mutableMapOf<Class<out DomainEvent>, MutableList<(DomainEvent) -> Unit>>()
     private val tag = "EventBus"

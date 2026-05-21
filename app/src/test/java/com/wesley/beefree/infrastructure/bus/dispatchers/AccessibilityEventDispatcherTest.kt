@@ -8,7 +8,6 @@ import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.detection.ports.WindowContentProvider
 import com.wesley.beefree.domain.events.BankingAppForegrounded
 import com.wesley.beefree.domain.events.ScreenContentCaptured
-import com.wesley.beefree.infrastructure.bus.dispatchers.AccessibilityEventDispatcher
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.InterventionActivity
 import org.junit.Assert.assertEquals

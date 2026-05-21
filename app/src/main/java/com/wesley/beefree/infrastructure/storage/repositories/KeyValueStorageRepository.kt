@@ -1,6 +1,6 @@
 package com.wesley.beefree.infrastructure.storage.repositories
 
-import com.wesley.beefree.infrastructure.storage.ports.KeyValueStorage
+import com.wesley.beefree.domain.repository.ports.KeyValueStorage
 
 class KeyValueStorageRepository(
     private val keyValueStorage: KeyValueStorage,

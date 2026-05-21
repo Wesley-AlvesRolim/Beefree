@@ -9,8 +9,10 @@ data class EmotionRecord(
 )
 
 enum class FeelingType {
-    ANXIETY,
+    SLEEP,
+    CRAVING,
+    BOREDOM,
     STRESS,
     LONELINESS,
-    BOREDOM,
+    FATIGUE,
 }
