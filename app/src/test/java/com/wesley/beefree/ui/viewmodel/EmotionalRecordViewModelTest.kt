@@ -149,6 +149,17 @@ class EmotionalRecordViewModelTest {
         }
 
     @Test
+    fun `on back from capture step returns to intro step`() =
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onNext()
+
+            viewModel.onBack()
+
+            assertEquals(EmotionalRecordStep.INTRO, viewModel.uiState.value.step)
+        }
+
+    @Test
     fun `on done emits a navigation event`() =
         runTest {
             val viewModel = createViewModel()
