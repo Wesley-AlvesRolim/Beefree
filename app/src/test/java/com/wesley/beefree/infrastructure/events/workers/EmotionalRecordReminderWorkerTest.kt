@@ -2,7 +2,10 @@ package com.wesley.beefree.infrastructure.events.workers
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import androidx.work.ListenableWorker
 import androidx.work.ListenableWorker.Result
+import androidx.work.WorkerFactory
+import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
 import com.wesley.beefree.domain.entities.EmotionRecord
 import com.wesley.beefree.domain.entities.FeelingType
@@ -11,7 +14,6 @@ import com.wesley.beefree.domain.repository.ports.MetricsRepository
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -25,49 +27,46 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class EmotionalRecordReminderWorkerTest {
     private lateinit var context: Context
-    private lateinit var mockDatabase: AppDatabase
-    private lateinit var mockUserProfileDao: UserProfileDAO
-    private lateinit var mockUserAddictionDao: UserAddictionDAO
-    private lateinit var mockEmotionRecordDao: EmotionRecordDAO
-    private lateinit var mockRiskFeatureSnapshotDao: RiskFeatureSnapshotDAO
-    private lateinit var mockRiskAssessmentDao: RiskAssessmentDAO
+    private lateinit var mockUserRepository: UserProfileRepository
+    private lateinit var mockMetricsRepository: MetricsRepository
     private lateinit var worker: EmotionalRecordReminderWorker
 
     @Before
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
-        mockDatabase = mock()
-        mockUserProfileDao = mock()
-        mockUserAddictionDao = mock()
-        mockEmotionRecordDao = mock()
-        mockRiskFeatureSnapshotDao = mock()
-        mockRiskAssessmentDao = mock()
-        setDatabaseInstance(mockDatabase)
-        whenever(mockDatabase.userProfileDao()).thenReturn(mockUserProfileDao)
-        whenever(mockDatabase.userAddictionDao()).thenReturn(mockUserAddictionDao)
-        whenever(mockDatabase.emotionRecordDao()).thenReturn(mockEmotionRecordDao)
-        whenever(mockDatabase.riskFeatureSnapshotDao()).thenReturn(mockRiskFeatureSnapshotDao)
-        whenever(mockDatabase.riskAssessmentDao()).thenReturn(mockRiskAssessmentDao)
-        worker = TestListenableWorkerBuilder<EmotionalRecordReminderWorker>(context).build()
-    }
-
-    @After
-    fun tearDown() {
-        setDatabaseInstance(null)
+        mockUserRepository = mock()
+        mockMetricsRepository = mock()
+        worker =
+            TestListenableWorkerBuilder<EmotionalRecordReminderWorker>(context)
+                .setWorkerFactory(
+                    object : WorkerFactory() {
+                        override fun createWorker(
+                            appContext: Context,
+                            workerClassName: String,
+                            workerParameters: WorkerParameters,
+                        ): ListenableWorker =
+                            EmotionalRecordReminderWorker(
+                                context = appContext,
+                                workerParams = workerParameters,
+                                userRepository = mockUserRepository,
+                                metricsRepository = mockMetricsRepository,
+                            )
+                    },
+                ).build()
     }
 
     @Test
     fun `onTriggered returns false when no user profiles`() =
         runTest {
-            whenever(mockUserProfileDao.getAll()).thenReturn(flowOf(emptyList()))
+            whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(emptyList()))
             assertFalse(worker.onTriggered())
         }
 
     @Test
     fun `onTriggered returns false when user id is null`() =
         runTest {
-            val user = UserProfileEntity(id = null, profileName = "Test", createdAt = 0L, updatedAt = 0L)
-            whenever(mockUserProfileDao.getAll()).thenReturn(flowOf(listOf(user)))
+            val user = UserProfile(id = null, profileName = "Test", createdAt = 0L, updatedAt = 0L)
+            whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(listOf(user)))
             assertFalse(worker.onTriggered())
         }
 
@@ -75,9 +74,9 @@ class EmotionalRecordReminderWorkerTest {
     fun `onTriggered returns true when no emotion record and user created before interval`() =
         runTest {
             val userId = 1
-            val user = UserProfileEntity(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)
-            whenever(mockUserProfileDao.getAll()).thenReturn(flowOf(listOf(user)))
-            whenever(mockEmotionRecordDao.getLatestByUser(userId)).thenReturn(null)
+            val user = UserProfile(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)
+            whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(listOf(user)))
+            whenever(mockMetricsRepository.getLatestEmotionRecord(userId)).thenReturn(null)
             assertTrue(worker.onTriggered())
         }
 
@@ -86,9 +85,9 @@ class EmotionalRecordReminderWorkerTest {
         runTest {
             val now = System.currentTimeMillis()
             val userId = 1
-            val user = UserProfileEntity(id = userId, profileName = "Test", createdAt = now, updatedAt = now)
-            whenever(mockUserProfileDao.getAll()).thenReturn(flowOf(listOf(user)))
-            whenever(mockEmotionRecordDao.getLatestByUser(userId)).thenReturn(null)
+            val user = UserProfile(id = userId, profileName = "Test", createdAt = now, updatedAt = now)
+            whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(listOf(user)))
+            whenever(mockMetricsRepository.getLatestEmotionRecord(userId)).thenReturn(null)
             assertFalse(worker.onTriggered())
         }
 
@@ -96,10 +95,10 @@ class EmotionalRecordReminderWorkerTest {
     fun `onTriggered returns true when emotion record older than interval`() =
         runTest {
             val userId = 1
-            val user = UserProfileEntity(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)
-            val oldRecord = EmotionRecordEntity(userProfileId = userId, feelingType = "CRAVING", intensity = 5, createdAt = 0L)
-            whenever(mockUserProfileDao.getAll()).thenReturn(flowOf(listOf(user)))
-            whenever(mockEmotionRecordDao.getLatestByUser(userId)).thenReturn(oldRecord)
+            val user = UserProfile(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)
+            val oldRecord = EmotionRecord(userProfileId = userId, feelingType = FeelingType.CRAVING, intensity = 5, createdAt = 0L)
+            whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(listOf(user)))
+            whenever(mockMetricsRepository.getLatestEmotionRecord(userId)).thenReturn(oldRecord)
             assertTrue(worker.onTriggered())
         }
 
@@ -108,10 +107,10 @@ class EmotionalRecordReminderWorkerTest {
         runTest {
             val now = System.currentTimeMillis()
             val userId = 1
-            val user = UserProfileEntity(id = userId, profileName = "Test", createdAt = now, updatedAt = now)
-            val recentRecord = EmotionRecordEntity(userProfileId = userId, feelingType = "CRAVING", intensity = 5, createdAt = now)
-            whenever(mockUserProfileDao.getAll()).thenReturn(flowOf(listOf(user)))
-            whenever(mockEmotionRecordDao.getLatestByUser(userId)).thenReturn(recentRecord)
+            val user = UserProfile(id = userId, profileName = "Test", createdAt = now, updatedAt = now)
+            val recentRecord = EmotionRecord(userProfileId = userId, feelingType = FeelingType.CRAVING, intensity = 5, createdAt = now)
+            whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(listOf(user)))
+            whenever(mockMetricsRepository.getLatestEmotionRecord(userId)).thenReturn(recentRecord)
             assertFalse(worker.onTriggered())
         }
 
@@ -130,23 +129,16 @@ class EmotionalRecordReminderWorkerTest {
     fun `doWork returns success when notification is triggered`() =
         runTest {
             val userId = 1
-            val user = UserProfileEntity(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)
-            whenever(mockUserProfileDao.getAll()).thenReturn(flowOf(listOf(user)))
-            whenever(mockEmotionRecordDao.getLatestByUser(userId)).thenReturn(null)
+            val user = UserProfile(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)
+            whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(listOf(user)))
+            whenever(mockMetricsRepository.getLatestEmotionRecord(userId)).thenReturn(null)
             assertEquals(Result.success(), worker.doWork())
         }
 
     @Test
     fun `doWork returns success when notification is not triggered`() =
         runTest {
-            whenever(mockUserProfileDao.getAll()).thenReturn(flowOf(emptyList()))
+            whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(emptyList()))
             assertEquals(Result.success(), worker.doWork())
         }
-
-    private fun setDatabaseInstance(value: AppDatabase?) {
-        AppDatabase::class.java.getDeclaredField("databaseInstance").apply {
-            isAccessible = true
-            set(null, value)
-        }
-    }
 }
