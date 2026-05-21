@@ -12,6 +12,7 @@ import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import com.wesley.beefree.infrastructure.storage.ports.UserProfileRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,13 +55,14 @@ class EmotionalRecordViewModel(
     private val userProfileRepository: UserProfileRepository,
     private val saveEmotionRecordUseCase: SaveEmotionRecordUseCase,
     private val logger: Logger = AndroidLogger,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
     private var userId: Int = 0
 
     init {
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     userId = userProfileRepository
                         .getAllProfiles()
                         .first()
