@@ -1,6 +1,6 @@
 package com.wesley.beefree.ui.viewmodel
 
-import android.app.Application
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -99,10 +99,10 @@ open class OnboardingViewModelImpl(
     companion object {
         private const val TAG = "OnboardingViewModelImpl"
 
-        fun factory(application: Application): ViewModelProvider.Factory =
+        fun factory(context: Context): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    val database = AppDatabase.getDatabase(application)
+                    val database = AppDatabase.getDatabase(context)
                     val addictionRepository =
                         RoomAddictionRepository(
                             database.addictionCategoryDao(),
@@ -123,7 +123,7 @@ open class OnboardingViewModelImpl(
                         )
                     val lessonRepository = RoomLessonRepository(database.psychoeducationContentDao())
                     val keyValueStorageRepository =
-                        KeyValueStorageRepository(SharedPreferencesKeyValueStorage(application))
+                        KeyValueStorageRepository(SharedPreferencesKeyValueStorage(context))
                     val computeScoreUseCase = ComputeScoreUseCase()
                     val computeClinicalProfileUseCase = ComputeClinicalProfileUseCase()
                     @Suppress("UNCHECKED_CAST")

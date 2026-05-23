@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.Configuration
 import androidx.work.DelegatingWorkerFactory
 import androidx.work.WorkManager
@@ -18,14 +17,11 @@ import com.wesley.beefree.infrastructure.events.workers.EmotionalRecordReminderW
 import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.navigation.NavBar
-import com.wesley.beefree.ui.screens.onboarding.OnboardingScreen
 import com.wesley.beefree.ui.theme.BeeFreeTheme
-import com.wesley.beefree.ui.viewmodel.OnboardingViewModelImpl
 import com.wesley.beefree.ui.widget.SosWidget
 
 class MainActivity : ComponentActivity() {
     private lateinit var keyValueStorageRepository: KeyValueStorageRepository
-    private var onboardingCompleted by mutableStateOf(false)
     private var openCheckIn by mutableStateOf(false)
     private var openSos by mutableStateOf(false)
     private var openEmotionalRecord by mutableStateOf(false)
@@ -35,7 +31,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         keyValueStorageRepository = KeyValueStorageRepository(SharedPreferencesKeyValueStorage(this))
-        onboardingCompleted = keyValueStorageRepository.isOnboardingCompleted()
+        val isOnboardingCompleted = keyValueStorageRepository.isOnboardingCompleted()
         openCheckIn = intent.getBooleanExtra(DailyCheckInWorker.EXTRA_OPEN_CHECK_IN, false)
         openSos = intent.getBooleanExtra(SosWidget.EXTRA_OPEN_SOS, false)
         openEmotionalRecord = intent.getBooleanExtra(EmotionalRecordReminderWorker.EXTRA_OPEN_EMOTIONAL_RECORD, false)
@@ -57,16 +53,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BeeFreeTheme {
-                if (onboardingCompleted) {
-                    MainContent(openCheckIn = openCheckIn, openSos = openSos, openEmotionalRecord = openEmotionalRecord)
-                } else {
-                    val onboardingViewModel: OnboardingViewModelImpl =
-                        viewModel(factory = OnboardingViewModelImpl.factory(application))
-                    OnboardingScreen(
-                        onFinish = { onboardingCompleted = true },
-                        viewModel = onboardingViewModel,
-                    )
-                }
+                MainContent(
+                    isOnboardingCompleted = isOnboardingCompleted,
+                    onOnboardingFinished = { keyValueStorageRepository.saveOnboardingCompleted(true) },
+                    openCheckIn = openCheckIn,
+                    openSos = openSos,
+                    openEmotionalRecord = openEmotionalRecord,
+                )
             }
         }
     }
@@ -82,9 +75,17 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainContent(
+    isOnboardingCompleted: Boolean = true,
+    onOnboardingFinished: () -> Unit = {},
     openCheckIn: Boolean = false,
     openSos: Boolean = false,
     openEmotionalRecord: Boolean = false,
 ) {
-    NavBar(openCheckIn = openCheckIn, openSos = openSos, openEmotionalRecord = openEmotionalRecord)
+    NavBar(
+        isOnboardingCompleted = isOnboardingCompleted,
+        onOnboardingFinished = onOnboardingFinished,
+        openCheckIn = openCheckIn,
+        openSos = openSos,
+        openEmotionalRecord = openEmotionalRecord,
+    )
 }
