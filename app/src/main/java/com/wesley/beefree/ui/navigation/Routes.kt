@@ -128,6 +128,11 @@ fun Routes(
 
                         HomeNavigationDestination.TriggerMap ->
                             navController.navigate(Screen.TriggerMap.route)
+
+                        HomeNavigationDestination.Onboarding ->
+                            navController.navigate(Screen.Onboarding.route) {
+                                popUpTo(Screen.Home.route) { inclusive = true }
+                            }
                     }
                 }
             }
