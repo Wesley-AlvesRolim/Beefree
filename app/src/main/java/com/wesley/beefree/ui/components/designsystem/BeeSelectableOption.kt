@@ -29,13 +29,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 
-private val BeeSelectableOptionShape = RoundedCornerShape(12.dp)
+private val BeeSelectableOptionShape = RoundedCornerShape(BeeSpacing.M)
 
 enum class BeeSelectableOptionDirection {
     Row,
     Column,
+}
+
+enum class BeeSelectableOptionTextVariant {
+    Large,
+    Small,
 }
 
 @Composable
@@ -46,20 +50,22 @@ fun BeeSelectableOption(
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     direction: BeeSelectableOptionDirection = BeeSelectableOptionDirection.Row,
+    textVariant: BeeSelectableOptionTextVariant = BeeSelectableOptionTextVariant.Large,
     textAlign: TextAlign? = null,
     textContent: @Composable ColumnScope.() -> Unit = {
         BeeSelectableOptionDefaultTextContent(
             text = text,
             subtitle = subtitle,
             isSelected = isSelected,
+            textVariant = textVariant,
             textAlign = textAlign,
             contentColor = MaterialTheme.colorScheme.onSurface,
             selectedContentColor = MaterialTheme.colorScheme.onSurface,
         )
     },
-    rowArrangement: Arrangement.Horizontal = Arrangement.spacedBy(14.dp),
+    rowArrangement: Arrangement.Horizontal = Arrangement.spacedBy(BeeSpacing.M),
     rowAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    columnArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp),
+    columnArrangement: Arrangement.Vertical = Arrangement.spacedBy(BeeSpacing.S),
     columnAlignment: Alignment.Horizontal = Alignment.Start,
     indicator: @Composable BoxScope.(Boolean) -> Unit = { selected -> BeeRadioIndicator(selected) },
 ) {
@@ -68,13 +74,14 @@ fun BeeSelectableOption(
         onClick = onClick,
         modifier = modifier,
         direction = direction,
+        textVariant = textVariant,
         textContent = textContent,
         rowArrangement = rowArrangement,
         rowAlignment = rowAlignment,
         columnArrangement = columnArrangement,
         columnAlignment = columnAlignment,
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-        selectedBorder = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+        selectedBorder = BorderStroke(BeeSpacing.XS, MaterialTheme.colorScheme.primary),
         indicator = indicator,
     )
 }
@@ -87,21 +94,23 @@ fun BeeMultiSelectOption(
     modifier: Modifier = Modifier,
     description: String? = null,
     direction: BeeSelectableOptionDirection = BeeSelectableOptionDirection.Row,
+    textVariant: BeeSelectableOptionTextVariant = BeeSelectableOptionTextVariant.Large,
     textAlign: TextAlign? = null,
     textContent: @Composable ColumnScope.() -> Unit = {
         BeeSelectableOptionDefaultTextContent(
             text = text,
             subtitle = description,
             isSelected = isSelected,
+            textVariant = textVariant,
             textAlign = textAlign,
             contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
             selectedContentColor = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
             subtitleColor = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
         )
     },
-    rowArrangement: Arrangement.Horizontal = Arrangement.spacedBy(14.dp),
+    rowArrangement: Arrangement.Horizontal = Arrangement.spacedBy(BeeSpacing.M),
     rowAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    columnArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp),
+    columnArrangement: Arrangement.Vertical = Arrangement.spacedBy(BeeSpacing.S),
     columnAlignment: Alignment.Horizontal = Alignment.Start,
     indicator: @Composable BoxScope.(Boolean) -> Unit = { selected -> BeeCheckboxIndicator(selected) },
 ) {
@@ -110,13 +119,14 @@ fun BeeMultiSelectOption(
         onClick = onClick,
         modifier = modifier,
         direction = direction,
+        textVariant = textVariant,
         textContent = textContent,
         rowArrangement = rowArrangement,
         rowAlignment = rowAlignment,
         columnArrangement = columnArrangement,
         columnAlignment = columnAlignment,
         containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLowest,
-        selectedBorder = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+        selectedBorder = BorderStroke(BeeSpacing.XS, MaterialTheme.colorScheme.primary),
         indicator = indicator,
     )
 }
@@ -127,6 +137,7 @@ private fun BeeSelectableOptionCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     direction: BeeSelectableOptionDirection,
+    textVariant: BeeSelectableOptionTextVariant,
     textContent: @Composable ColumnScope.() -> Unit,
     rowArrangement: Arrangement.Horizontal,
     rowAlignment: Alignment.Vertical,
@@ -141,7 +152,7 @@ private fun BeeSelectableOptionCard(
         modifier = modifier.fillMaxWidth(),
         shape = BeeSelectableOptionShape,
         colors = CardDefaults.cardColors(containerColor = containerColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 0.dp else 1.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) BeeSpacing.NONE else BeeSpacing.XXS),
         border = if (isSelected) selectedBorder else null,
     ) {
         when (direction) {
@@ -150,12 +161,12 @@ private fun BeeSelectableOptionCard(
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .padding(horizontal = BeeSpacing.M, vertical = 14.dp),
+                            .padding(horizontal = BeeSpacing.M, vertical = BeeSpacing.M),
                     verticalAlignment = rowAlignment,
                     horizontalArrangement = rowArrangement,
                 ) {
                     Box(
-                        modifier = Modifier.size(22.dp),
+                        modifier = Modifier.size(BeeSpacing.L),
                         contentAlignment = Alignment.Center,
                     ) {
                         indicator(isSelected)
@@ -171,12 +182,12 @@ private fun BeeSelectableOptionCard(
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .padding(horizontal = BeeSpacing.M, vertical = 14.dp),
+                            .padding(horizontal = BeeSpacing.M, vertical = BeeSpacing.M),
                     horizontalAlignment = columnAlignment,
                     verticalArrangement = columnArrangement,
                 ) {
                     Box(
-                        modifier = Modifier.size(22.dp),
+                        modifier = Modifier.size(BeeSpacing.L),
                         contentAlignment = Alignment.Center,
                     ) {
                         indicator(isSelected)
@@ -195,19 +206,33 @@ private fun BeeSelectableOptionDefaultTextContent(
     text: String,
     subtitle: String?,
     isSelected: Boolean,
+    textVariant: BeeSelectableOptionTextVariant,
     textAlign: TextAlign?,
     contentColor: Color,
     selectedContentColor: Color,
     subtitleColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
-    BeeLabelLarge(
-        text = text,
-        color = if (isSelected) selectedContentColor else contentColor,
-        modifier = if (textAlign != null) Modifier.fillMaxWidth() else Modifier,
-        textAlign = textAlign,
-    )
+    when (textVariant) {
+        BeeSelectableOptionTextVariant.Large -> {
+            BeeLabelLarge(
+                text = text,
+                color = if (isSelected) selectedContentColor else contentColor,
+                modifier = if (textAlign != null) Modifier.fillMaxWidth() else Modifier,
+                textAlign = textAlign,
+            )
+        }
+
+        BeeSelectableOptionTextVariant.Small -> {
+            BeeLabelSmall(
+                text = text,
+                color = if (isSelected) selectedContentColor else contentColor,
+                modifier = if (textAlign != null) Modifier.fillMaxWidth() else Modifier,
+                textAlign = textAlign,
+            )
+        }
+    }
     if (subtitle != null) {
-        Spacer(modifier = Modifier.height(3.dp))
+        Spacer(modifier = Modifier.height(BeeSpacing.XS))
         BeeBodySmall(
             text = subtitle,
             color = if (isSelected) selectedContentColor else subtitleColor,
@@ -223,15 +248,15 @@ private fun BeeRadioIndicator(selected: Boolean) {
     Box(
         modifier =
             Modifier
-                .size(22.dp)
-                .border(2.dp, borderColor, CircleShape),
+                .size(BeeSpacing.L)
+                .border(BeeSpacing.XS, borderColor, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         if (selected) {
             Box(
                 modifier =
                     Modifier
-                        .size(10.dp)
+                        .size(BeeSpacing.S)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primary),
             )
@@ -245,8 +270,8 @@ private fun BeeCheckboxIndicator(selected: Boolean) {
         Box(
             modifier =
                 Modifier
-                    .size(22.dp)
-                    .clip(RoundedCornerShape(6.dp))
+                    .size(BeeSpacing.L)
+                    .clip(RoundedCornerShape(BeeSpacing.XS))
                     .background(MaterialTheme.colorScheme.primary),
             contentAlignment = Alignment.Center,
         ) {
@@ -254,15 +279,15 @@ private fun BeeCheckboxIndicator(selected: Boolean) {
                 imageVector = Icons.Default.Check,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(14.dp),
+                modifier = Modifier.size(BeeSpacing.M),
             )
         }
     } else {
         Box(
             modifier =
                 Modifier
-                    .size(22.dp)
-                    .border(2.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(6.dp)),
+                    .size(BeeSpacing.L)
+                    .border(BeeSpacing.XS, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(BeeSpacing.XS)),
         )
     }
 }

@@ -1,14 +1,21 @@
 package com.wesley.beefree.ui.screens.onboarding
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -19,7 +26,6 @@ import com.wesley.beefree.domain.onboarding.ScaleResult
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.ui.components.OnboardingLayout
 import com.wesley.beefree.ui.components.OnboardingNavigationRow
-import com.wesley.beefree.ui.components.OnboardingTitle
 import com.wesley.beefree.ui.components.designsystem.*
 
 private const val PPCS6_MIN = 6
@@ -35,8 +41,16 @@ fun OnboardingScoreResultScreen(
         showTopBar = false,
         bottomBar = { OnboardingNavigationRow(onNext) },
     ) {
-        OnboardingTitle(stringResource(R.string.onboarding_score_result_title))
-        Spacer(modifier = Modifier.height(BeeSpacing.S))
+        BeeMascot(
+            size = BeeMascotSize.Small,
+            contentDescription = stringResource(R.string.onboarding_mascot_description),
+        )
+        Spacer(modifier = Modifier.height(BeeSpacing.M))
+        BeeHeadlineMedium(
+            text = stringResource(R.string.onboarding_score_result_title),
+            textAlign = TextAlign.Center,
+        )
+        Spacer(modifier = Modifier.height(BeeSpacing.XS))
         BeeBodyMedium(
             text = stringResource(R.string.onboarding_score_result_intro),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -47,9 +61,9 @@ fun OnboardingScoreResultScreen(
         if (scaleResult != null) {
             Ppcs6ScoreCard(scaleResult)
             Spacer(modifier = Modifier.height(BeeSpacing.M))
-            BeeBodyLarge(
+            BeeBodyMedium(
                 text = riskLevelMessage(scaleResult.level),
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
         }
@@ -69,10 +83,24 @@ private fun Ppcs6ScoreCard(scaleResult: ScaleResult) {
 
     BeeCardSection(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(BeeSpacing.M)) {
-            BeeLabelSmall(
-                text = stringResource(R.string.onboarding_score_result_scale_label),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                BeeLabelSmall(
+                    text = stringResource(R.string.onboarding_score_result_scale_label),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                BeeCardPrimary {
+                    Box(modifier = Modifier.padding(horizontal = BeeSpacing.S, vertical = BeeSpacing.XS)) {
+                        BeeLabelSmall(
+                            text = riskLevelBadge(scaleResult.level),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(BeeSpacing.M))
             LinearProgressIndicator(
                 progress = { progress },
@@ -108,10 +136,21 @@ private fun Ppcs6ScoreCard(scaleResult: ScaleResult) {
 private fun TreatmentApproachCard(profile: TreatmentProfile) {
     BeeCardSection(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(BeeSpacing.M)) {
-            BeeLabelSmall(
-                text = stringResource(R.string.onboarding_score_result_approach_label),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(BeeSpacing.S),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.AutoAwesome,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(BeeSpacing.L),
+                )
+                BeeLabelSmall(
+                    text = stringResource(R.string.onboarding_score_result_approach_label),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Spacer(modifier = Modifier.height(BeeSpacing.S))
             BeeHeadlineSmall(
                 text = treatmentProfileLabel(profile),
@@ -125,6 +164,15 @@ private fun TreatmentApproachCard(profile: TreatmentProfile) {
         }
     }
 }
+
+@Composable
+private fun riskLevelBadge(level: RiskLevel): String =
+    when (level) {
+        RiskLevel.LOW -> stringResource(R.string.onboarding_risk_low)
+        RiskLevel.MODERATE -> stringResource(R.string.onboarding_risk_moderate)
+        RiskLevel.HIGH -> stringResource(R.string.onboarding_risk_high)
+        RiskLevel.VERY_HIGH -> stringResource(R.string.onboarding_risk_very_high)
+    }
 
 @Composable
 private fun riskLevelMessage(level: RiskLevel): String =

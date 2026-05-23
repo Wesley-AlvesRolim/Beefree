@@ -16,9 +16,8 @@ import androidx.compose.ui.text.style.TextAlign
 import com.wesley.beefree.R
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.ui.components.OnboardingLayout
-import com.wesley.beefree.ui.components.OnboardingMascot
+import com.wesley.beefree.ui.components.OnboardingLikertOption
 import com.wesley.beefree.ui.components.OnboardingNavigationRow
-import com.wesley.beefree.ui.components.OnboardingSelectableOption
 import com.wesley.beefree.ui.components.OnboardingTitle
 import com.wesley.beefree.ui.components.designsystem.*
 
@@ -56,6 +55,8 @@ fun OnboardingPpcs6Screen(
 
     OnboardingLayout(
         onBack = { if (questionIndex > 0) questionIndex-- else onBack() },
+        sectionTitle = stringResource(R.string.onboarding_section_seu_padrao),
+        chapterNumber = 2,
         bottomBar = {
             OnboardingNavigationRow(
                 onNext = { if (isLastQuestion) onNext() else questionIndex++ },
@@ -63,7 +64,10 @@ fun OnboardingPpcs6Screen(
             )
         },
     ) {
-        OnboardingMascot()
+        BeeMascotSpeech(
+            speechText = stringResource(R.string.onboarding_ppcs6_mascot_speech),
+            tone = BeeMascotSpeechTone.Primary,
+        )
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_ppcs6_title))
         Spacer(modifier = Modifier.height(BeeSpacing.XL))
@@ -73,14 +77,13 @@ fun OnboardingPpcs6Screen(
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        Column(
-            verticalArrangement = Arrangement.spacedBy(BeeSpacing.S),
-        ) {
+        Column(verticalArrangement = Arrangement.spacedBy(BeeSpacing.S)) {
             scaleLabels.forEachIndexed { index, labelRes ->
                 val value = index + 1
-                OnboardingSelectableOption(
+                OnboardingLikertOption(
+                    number = value,
                     text = stringResource(labelRes),
-                    isSelected = currentAnswer == value,
+                    selected = currentAnswer == value,
                     onClick = {
                         val updated = answers.ppcs6Answers.toMutableList()
                         while (updated.size <= questionIndex) updated.add(0)
