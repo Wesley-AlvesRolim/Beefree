@@ -71,10 +71,12 @@ fun BeeCardSection(
 @Composable
 fun BeeCardInteractive(
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Card(
         modifier = modifier,
+        onClick = { onClick?.invoke() },
         shape = BeeCardLargeShape,
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         colors =

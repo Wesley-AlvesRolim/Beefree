@@ -10,16 +10,13 @@ import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.AddictionCategoryEnum
 import com.wesley.beefree.domain.repository.ports.AddictionRepository
-import com.wesley.beefree.infrastructure.events.so.AccessibilityServiceActivity
+import com.wesley.beefree.domain.repository.ports.DatabaseExporterStrategy
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
-import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import com.wesley.beefree.infrastructure.storage.adapters.db.exporters.FileDatabaseExporter
 import com.wesley.beefree.infrastructure.storage.adapters.db.exporters.SqlDatabaseExporterStrategy
-import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
-import com.wesley.beefree.utils.AccessibilityUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,18 +28,11 @@ import kotlinx.coroutines.withContext
 
 class SettingsViewModel(
     private val context: Context,
-    private val storageRepository: KeyValueStorageRepository,
     private val addictionRepository: AddictionRepository,
+    private val exporter: FileDatabaseExporter,
+    private val exporterStrategy: DatabaseExporterStrategy,
     private val logger: Logger = AndroidLogger,
 ) : ViewModel() {
-    private val _isAccessibilityServiceEnabled = MutableStateFlow(false)
-    val isAccessibilityServiceEnabled: StateFlow<Boolean> =
-        _isAccessibilityServiceEnabled.asStateFlow()
-
-    private val _isAccessibilityServiceStarted = MutableStateFlow(false)
-    val isAccessibilityServiceStarted: StateFlow<Boolean> =
-        _isAccessibilityServiceStarted.asStateFlow()
-
     private val _isAdultMonitoringEnabled = MutableStateFlow(true)
     val isAdultMonitoringEnabled: StateFlow<Boolean> = _isAdultMonitoringEnabled.asStateFlow()
 
@@ -53,7 +43,6 @@ class SettingsViewModel(
     val errorMessage = _errorMessage.asSharedFlow()
 
     init {
-        updateStatuses()
         viewModelScope.launch {
             addictionRepository.getAllAddictionCategories().collect { types ->
                 types.find { it.name == AddictionCategoryEnum.ADULT_CONTENT.label }?.let {
@@ -88,37 +77,15 @@ class SettingsViewModel(
         }
     }
 
-    private suspend fun createExportFile(): Pair<String, Uri> {
-        val database = AppDatabase.getDatabase(context)
-        val exporter = FileDatabaseExporter()
-        val strategy = SqlDatabaseExporterStrategy(database)
-        val file = exporter.export(context, strategy)
+    private fun createExportFile(): Pair<String, Uri> {
+        val file = exporter.export(context, exporterStrategy)
         val uri =
             FileProvider.getUriForFile(
                 context,
                 "${context.packageName}.fileprovider",
                 file,
             )
-        return Pair(strategy.getMimeType(), uri)
-    }
-
-    fun updateStatuses() {
-        _isAccessibilityServiceEnabled.value =
-            AccessibilityUtils.isAccessibilityServiceEnabledAlternative(
-                context,
-                AccessibilityServiceActivity::class.java,
-            )
-        _isAccessibilityServiceStarted.value = storageRepository.getTheScreenReaderStatus()
-    }
-
-    fun toggleAccessibilityService() {
-        val newStatus = !_isAccessibilityServiceStarted.value
-        storageRepository.saveTheScreenReaderStatus(newStatus)
-        _isAccessibilityServiceStarted.value = newStatus
-    }
-
-    fun openAccessibilitySettings() {
-        AccessibilityUtils.openAccessibilitySettings(context)
+        return Pair(exporterStrategy.getMimeType(), uri)
     }
 
     fun toggleAdultMonitoring() {
@@ -155,14 +122,18 @@ class SettingsViewModel(
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     val appContext = context.applicationContext
                     val db = AppDatabase.getDatabase(appContext)
+                    val exporter = FileDatabaseExporter()
+                    val exporterStrategy = SqlDatabaseExporterStrategy(db)
                     @Suppress("UNCHECKED_CAST")
                     return SettingsViewModel(
-                        appContext,
-                        KeyValueStorageRepository(SharedPreferencesKeyValueStorage(appContext)),
-                        RoomAddictionRepository(
-                            db.addictionCategoryDao(),
-                            db.relapseRecordDao(),
-                        ),
+                        context = appContext,
+                        addictionRepository =
+                            RoomAddictionRepository(
+                                db.addictionCategoryDao(),
+                                db.relapseRecordDao(),
+                            ),
+                        exporter = exporter,
+                        exporterStrategy = exporterStrategy,
                     ) as T
                 }
             }
