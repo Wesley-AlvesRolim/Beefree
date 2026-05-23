@@ -1,5 +1,6 @@
 package com.wesley.beefree.domain.onboarding.usecases
 
+import com.wesley.beefree.data.getPsychologistEncouragementPhrases
 import com.wesley.beefree.domain.entities.AddictionCategory
 import com.wesley.beefree.domain.entities.CoreValueType
 import com.wesley.beefree.domain.onboarding.AddictionProfile
@@ -7,6 +8,7 @@ import com.wesley.beefree.domain.onboarding.ClinicalProfile
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.domain.repository.ports.AddictionRepository
+import com.wesley.beefree.domain.repository.ports.LessonRepository
 import com.wesley.beefree.domain.repository.ports.OnboardingRepository
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
@@ -25,6 +27,7 @@ class SaveOnboardingDataUseCaseTest {
     private val addictionRepository: AddictionRepository = mock()
     private val userProfileRepository: UserProfileRepository = mock()
     private val onboardingRepository: OnboardingRepository = mock()
+    private val lessonRepository: LessonRepository = mock()
     private val keyValueStorageRepository: KeyValueStorageRepository = mock()
     private val computeScoreUseCase: ComputeScoreUseCase = mock()
     private val computeClinicalProfileUseCase: ComputeClinicalProfileUseCase = mock()
@@ -33,6 +36,7 @@ class SaveOnboardingDataUseCaseTest {
             addictionRepository,
             userProfileRepository,
             onboardingRepository,
+            lessonRepository,
             keyValueStorageRepository,
             computeScoreUseCase,
             computeClinicalProfileUseCase,
@@ -67,6 +71,7 @@ class SaveOnboardingDataUseCaseTest {
             whenever(userProfileRepository.insertProfile(any())).thenReturn(1L)
             whenever(addictionRepository.insertAddictionCategory(any<AddictionCategory>())).thenReturn(1L)
             whenever(onboardingRepository.insertOnboardingSession(any())).thenReturn(1L)
+            whenever(lessonRepository.insertContent(any())).thenReturn(1L)
             val answers =
                 OnboardingAnswers(
                     addictionProfile = AddictionProfile.PPU,
@@ -78,6 +83,7 @@ class SaveOnboardingDataUseCaseTest {
 
             assertTrue(result.isSuccess)
             verify(addictionRepository, times(2)).insertAddictionCategory(any())
+            verify(lessonRepository, times(getPsychologistEncouragementPhrases().size)).insertContent(any())
             verify(keyValueStorageRepository).saveOnboardingCompleted(true)
         }
 
@@ -87,6 +93,7 @@ class SaveOnboardingDataUseCaseTest {
             whenever(userProfileRepository.insertProfile(any())).thenReturn(1L)
             whenever(addictionRepository.insertAddictionCategory(any<AddictionCategory>())).thenReturn(1L)
             whenever(onboardingRepository.insertOnboardingSession(any())).thenReturn(1L)
+            whenever(lessonRepository.insertContent(any())).thenReturn(1L)
             val answers =
                 OnboardingAnswers(
                     addictionProfile = AddictionProfile.GAMBLING,
@@ -97,6 +104,7 @@ class SaveOnboardingDataUseCaseTest {
 
             assertTrue(result.isSuccess)
             verify(addictionRepository, times(2)).insertAddictionCategory(any())
+            verify(lessonRepository, times(getPsychologistEncouragementPhrases().size)).insertContent(any())
             verify(keyValueStorageRepository).saveOnboardingCompleted(true)
         }
 
@@ -106,6 +114,7 @@ class SaveOnboardingDataUseCaseTest {
             whenever(userProfileRepository.insertProfile(any())).thenReturn(1L)
             whenever(addictionRepository.insertAddictionCategory(any<AddictionCategory>())).thenReturn(1L)
             whenever(onboardingRepository.insertOnboardingSession(any())).thenReturn(1L)
+            whenever(lessonRepository.insertContent(any())).thenReturn(1L)
             val answers =
                 OnboardingAnswers(
                     addictionProfile = AddictionProfile.PPU,
@@ -124,6 +133,7 @@ class SaveOnboardingDataUseCaseTest {
             verify(onboardingRepository, times(2)).insertSymptom(any())
             verify(onboardingRepository, times(1)).insertObjective(any())
             verify(onboardingRepository, times(2)).insertCoreValue(any())
+            verify(lessonRepository, times(getPsychologistEncouragementPhrases().size)).insertContent(any())
         }
     }
 
