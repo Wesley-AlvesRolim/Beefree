@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -47,15 +48,16 @@ import com.wesley.beefree.ui.components.designsystem.*
 fun OnboardingLayout(
     onBack: (() -> Unit)? = null,
     showTopBar: Boolean = true,
+    bottomBar: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.surface,
     ) {
-        if (showTopBar) {
-            Scaffold(
-                topBar = {
+        Scaffold(
+            topBar = {
+                if (showTopBar) {
                     TopAppBar(
                         title = {
                             BeeHeadlineSmall(stringResource(R.string.onboarding_top_bar_title))
@@ -76,26 +78,30 @@ fun OnboardingLayout(
                                 containerColor = MaterialTheme.colorScheme.surface,
                             ),
                     )
-                },
-                containerColor = MaterialTheme.colorScheme.surface,
-            ) { innerPadding ->
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                            .padding(BeeSpacing.M)
-                            .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    content = content,
-                )
-            }
-        } else {
+                }
+            },
+            bottomBar = {
+                bottomBar?.let {
+                    Surface(color = MaterialTheme.colorScheme.surface) {
+                        Column(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .navigationBarsPadding()
+                                    .padding(BeeSpacing.M),
+                        ) {
+                            it()
+                        }
+                    }
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+        ) { innerPadding ->
             Column(
                 modifier =
                     Modifier
                         .fillMaxSize()
+                        .padding(innerPadding)
                         .padding(BeeSpacing.M)
                         .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center,

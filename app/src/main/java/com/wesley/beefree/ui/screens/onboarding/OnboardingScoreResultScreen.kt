@@ -31,7 +31,10 @@ fun OnboardingScoreResultScreen(
     clinicalProfile: ClinicalProfile?,
     onNext: () -> Unit,
 ) {
-    OnboardingLayout(showTopBar = false) {
+    OnboardingLayout(
+        showTopBar = false,
+        bottomBar = { OnboardingNavigationRow(onNext) },
+    ) {
         OnboardingTitle(stringResource(R.string.onboarding_score_result_title))
         Spacer(modifier = Modifier.height(BeeSpacing.S))
         BeeBodyMedium(
@@ -55,9 +58,6 @@ fun OnboardingScoreResultScreen(
             Spacer(modifier = Modifier.height(BeeSpacing.XL))
             TreatmentApproachCard(clinicalProfile.treatmentProfile)
         }
-
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(onNext)
     }
 }
 

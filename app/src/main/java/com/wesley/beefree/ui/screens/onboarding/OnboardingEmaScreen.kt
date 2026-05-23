@@ -38,7 +38,15 @@ fun OnboardingEmaScreen(
 ) {
     val currentAnswer = answers.emaAnswers.getOrNull(0)
 
-    OnboardingLayout(onBack = onBack) {
+    OnboardingLayout(
+        onBack = onBack,
+        bottomBar = {
+            OnboardingNavigationRow(
+                onNext = onNext,
+                nextEnabled = currentAnswer != null,
+            )
+        },
+    ) {
         OnboardingMascot()
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_ema_title))
@@ -64,10 +72,5 @@ fun OnboardingEmaScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(
-            onNext = onNext,
-            nextEnabled = currentAnswer != null,
-        )
     }
 }

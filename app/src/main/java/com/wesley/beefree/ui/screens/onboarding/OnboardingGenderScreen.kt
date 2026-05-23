@@ -31,7 +31,15 @@ fun OnboardingGenderScreen(
             stringResource(R.string.onboarding_gender_prefer_not),
         )
 
-    OnboardingLayout(onBack = onBack) {
+    OnboardingLayout(
+        onBack = onBack,
+        bottomBar = {
+            OnboardingNavigationRow(
+                onNext = onNext,
+                nextEnabled = answers.gender.isNotBlank(),
+            )
+        },
+    ) {
         OnboardingMascot()
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_gender_title))
@@ -47,10 +55,5 @@ fun OnboardingGenderScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(
-            onNext = onNext,
-            nextEnabled = answers.gender.isNotBlank(),
-        )
     }
 }

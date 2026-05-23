@@ -54,7 +54,15 @@ fun OnboardingPpcs6Screen(
     val currentAnswer = answers.ppcs6Answers.getOrNull(questionIndex)
     val isLastQuestion = questionIndex == ppcs6Questions.lastIndex
 
-    OnboardingLayout(onBack = { if (questionIndex > 0) questionIndex-- else onBack() }) {
+    OnboardingLayout(
+        onBack = { if (questionIndex > 0) questionIndex-- else onBack() },
+        bottomBar = {
+            OnboardingNavigationRow(
+                onNext = { if (isLastQuestion) onNext() else questionIndex++ },
+                nextEnabled = currentAnswer != null && currentAnswer > 0,
+            )
+        },
+    ) {
         OnboardingMascot()
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_ppcs6_title))
@@ -82,10 +90,5 @@ fun OnboardingPpcs6Screen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(
-            onNext = { if (isLastQuestion) onNext() else questionIndex++ },
-            nextEnabled = currentAnswer != null && currentAnswer > 0,
-        )
     }
 }

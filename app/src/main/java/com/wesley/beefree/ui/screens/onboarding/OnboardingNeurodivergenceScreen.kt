@@ -24,7 +24,15 @@ fun OnboardingNeurodivergenceScreen(
     onNext: () -> Unit,
     onBack: () -> Unit,
 ) {
-    OnboardingLayout(onBack = onBack) {
+    OnboardingLayout(
+        onBack = onBack,
+        bottomBar = {
+            OnboardingNavigationRow(
+                onNext = onNext,
+                nextEnabled = answers.neurodivergenceAnswer != NeurodivergenceAnswer.NOT_ANSWERED,
+            )
+        },
+    ) {
         OnboardingMascot()
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_neurodivergence_title))
@@ -48,10 +56,5 @@ fun OnboardingNeurodivergenceScreen(
                 onClick = { onUpdate { copy(neurodivergenceAnswer = NeurodivergenceAnswer.PREFER_NOT_SAY) } },
             )
         }
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(
-            onNext = onNext,
-            nextEnabled = answers.neurodivergenceAnswer != NeurodivergenceAnswer.NOT_ANSWERED,
-        )
     }
 }

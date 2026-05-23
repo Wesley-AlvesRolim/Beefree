@@ -37,7 +37,12 @@ fun OnboardingSymptomsScreen(
 ) {
     val symptomLabels = symptomResources.map { stringResource(it) }
 
-    OnboardingLayout(onBack = onBack) {
+    OnboardingLayout(
+        onBack = onBack,
+        bottomBar = {
+            OnboardingNavigationRow(onNext = onNext)
+        },
+    ) {
         OnboardingMascot()
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_symptoms_title))
@@ -59,7 +64,5 @@ fun OnboardingSymptomsScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(onNext = onNext)
     }
 }

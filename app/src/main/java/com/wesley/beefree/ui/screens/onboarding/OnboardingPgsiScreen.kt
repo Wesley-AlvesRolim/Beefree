@@ -54,7 +54,15 @@ fun OnboardingPgsiScreen(
     val currentAnswer = answers.pgsiAnswers.getOrNull(questionIndex)
     val isLastQuestion = questionIndex == pgsiQuestions.lastIndex
 
-    OnboardingLayout(onBack = { if (questionIndex > 0) questionIndex-- else onBack() }) {
+    OnboardingLayout(
+        onBack = { if (questionIndex > 0) questionIndex-- else onBack() },
+        bottomBar = {
+            OnboardingNavigationRow(
+                onNext = { if (isLastQuestion) onNext() else questionIndex++ },
+                nextEnabled = currentAnswer != null,
+            )
+        },
+    ) {
         OnboardingMascot()
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_pgsi_title))
@@ -82,10 +90,5 @@ fun OnboardingPgsiScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(
-            onNext = { if (isLastQuestion) onNext() else questionIndex++ },
-            nextEnabled = currentAnswer != null,
-        )
     }
 }

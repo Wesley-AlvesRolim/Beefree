@@ -32,7 +32,15 @@ fun OnboardingFrequencyScreen(
     onNext: () -> Unit,
     onBack: () -> Unit,
 ) {
-    OnboardingLayout(onBack = onBack) {
+    OnboardingLayout(
+        onBack = onBack,
+        bottomBar = {
+            OnboardingNavigationRow(
+                onNext = onNext,
+                nextEnabled = answers.frequencyAnswer != 0,
+            )
+        },
+    ) {
         OnboardingMascot()
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_frequency_form_title))
@@ -49,10 +57,5 @@ fun OnboardingFrequencyScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(
-            onNext = onNext,
-            nextEnabled = answers.frequencyAnswer != 0,
-        )
     }
 }

@@ -45,7 +45,15 @@ fun OnboardingCoreValuesScreen(
 ) {
     val coreValueEntries = coreValueResources.map { (type, res) -> type to stringResource(res) }
 
-    OnboardingLayout(onBack = onBack) {
+    OnboardingLayout(
+        onBack = onBack,
+        bottomBar = {
+            OnboardingNavigationRow(
+                onNext = onNext,
+                nextEnabled = answers.coreValues.size == MAX_CORE_VALUES,
+            )
+        },
+    ) {
         OnboardingMascot()
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_core_values_title))
@@ -76,10 +84,5 @@ fun OnboardingCoreValuesScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(
-            onNext = onNext,
-            nextEnabled = answers.coreValues.size == MAX_CORE_VALUES,
-        )
     }
 }

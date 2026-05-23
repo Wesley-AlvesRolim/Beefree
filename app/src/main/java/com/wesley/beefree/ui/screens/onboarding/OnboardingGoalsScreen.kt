@@ -39,7 +39,12 @@ fun OnboardingGoalsScreen(
 ) {
     val goalLabels = goalResources.map { stringResource(it) }
 
-    OnboardingLayout(onBack = onBack) {
+    OnboardingLayout(
+        onBack = onBack,
+        bottomBar = {
+            OnboardingNavigationRow(onNext = onNext)
+        },
+    ) {
         OnboardingMascot()
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_goals_title))
@@ -61,7 +66,5 @@ fun OnboardingGoalsScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(onNext = onNext)
     }
 }

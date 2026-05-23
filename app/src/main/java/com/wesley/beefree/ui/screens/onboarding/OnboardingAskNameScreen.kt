@@ -23,7 +23,14 @@ fun OnboardingAskNameScreen(
     onUpdate: (OnboardingAnswers.() -> OnboardingAnswers) -> Unit,
     onNext: () -> Unit,
 ) {
-    OnboardingLayout {
+    OnboardingLayout(
+        bottomBar = {
+            OnboardingNavigationRow(
+                onNext,
+                nextEnabled = answers.userName.isNotBlank(),
+            )
+        },
+    ) {
         OnboardingMascot()
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_ask_name_title))
@@ -41,11 +48,6 @@ fun OnboardingAskNameScreen(
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                 ),
             shape = MaterialTheme.shapes.medium,
-        )
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(
-            onNext,
-            nextEnabled = answers.userName.isNotBlank(),
         )
     }
 }

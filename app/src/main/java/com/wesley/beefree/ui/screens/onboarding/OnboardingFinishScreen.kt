@@ -15,7 +15,10 @@ import com.wesley.beefree.ui.components.designsystem.*
 
 @Composable
 fun OnboardingFinishScreen(onFinish: () -> Unit) {
-    OnboardingLayout(showTopBar = false) {
+    OnboardingLayout(
+        showTopBar = false,
+        bottomBar = { OnboardingNavigationRow(text = stringResource(R.string.onboarding_btn_start), onNext = onFinish) },
+    ) {
         OnboardingMascot()
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_finish_title))
@@ -24,7 +27,5 @@ fun OnboardingFinishScreen(onFinish: () -> Unit) {
             text = stringResource(R.string.onboarding_finish_body),
             textAlign = TextAlign.Center,
         )
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(text = stringResource(R.string.onboarding_btn_start), onNext = onFinish)
     }
 }
