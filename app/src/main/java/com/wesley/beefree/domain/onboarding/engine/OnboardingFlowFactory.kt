@@ -15,7 +15,6 @@ object OnboardingFlowFactory {
         OnboardingSequence(
             listOf(
                 OnboardingStep("welcome", StepType.WELCOME),
-                OnboardingStep("presentation", StepType.PRESENTATION),
                 OnboardingStep("ask_name", StepType.ASK_NAME),
                 OnboardingBranch { ppuFlow() },
                 OnboardingStep("score_result", StepType.SCORE_RESULT),
