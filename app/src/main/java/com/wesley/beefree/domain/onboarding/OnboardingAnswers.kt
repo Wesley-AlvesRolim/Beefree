@@ -2,7 +2,7 @@ package com.wesley.beefree.domain.onboarding
 
 data class OnboardingAnswers(
     val userName: String = "",
-    val addictionProfile: AddictionProfile? = null,
+    val addictionProfile: AddictionProfile? = AddictionProfile.PPU,
     val gender: String = "",
     val ppcs6Answers: List<Int> = emptyList(),
     val emaAnswers: List<Int> = emptyList(),

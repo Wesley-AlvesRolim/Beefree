@@ -17,14 +17,7 @@ object OnboardingFlowFactory {
                 OnboardingStep("welcome", StepType.WELCOME),
                 OnboardingStep("presentation", StepType.PRESENTATION),
                 OnboardingStep("ask_name", StepType.ASK_NAME),
-                OnboardingStep("addiction_selector", StepType.ADDICTION_SELECTOR),
-                OnboardingBranch { answers ->
-                    when (answers.addictionProfile) {
-                        AddictionProfile.PPU -> ppuFlow()
-                        AddictionProfile.GAMBLING -> gamblingFlow()
-                        null -> error("No addiction profile selected before branch resolution")
-                    }
-                },
+                OnboardingBranch { ppuFlow() },
                 OnboardingStep("score_result", StepType.SCORE_RESULT),
                 OnboardingBranch { answers ->
                     if (answers.addictionProfile == AddictionProfile.PPU &&
@@ -37,8 +30,6 @@ object OnboardingFlowFactory {
                         OnboardingSequence(emptyList())
                     }
                 },
-                OnboardingStep("request_permissions", StepType.REQUEST_PERMISSIONS),
-                OnboardingStep("request_permission_monitor", StepType.REQUEST_PERMISSION_MONITOR),
                 OnboardingStep("finish", StepType.FINISH),
             ),
         )
@@ -50,18 +41,6 @@ object OnboardingFlowFactory {
                 OnboardingStep("ppcs6_form", StepType.PPCS6_FORM),
                 OnboardingStep("ema_form", StepType.EMA_FORM),
                 OnboardingStep("frequency_form", StepType.FREQUENCY_FORM),
-                OnboardingStep("symptoms", StepType.SYMPTOMS),
-                OnboardingStep("neurodivergence", StepType.NEURODIVERGENCE),
-                OnboardingStep("hobbies", StepType.HOBBIES),
-                OnboardingStep("goals", StepType.GOALS),
-            ),
-        )
-
-    private fun gamblingFlow(): OnboardingNode =
-        OnboardingSequence(
-            listOf(
-                OnboardingStep("gender", StepType.GENDER),
-                OnboardingStep("pgsi_form", StepType.PGSI_FORM),
                 OnboardingStep("symptoms", StepType.SYMPTOMS),
                 OnboardingStep("neurodivergence", StepType.NEURODIVERGENCE),
                 OnboardingStep("hobbies", StepType.HOBBIES),
