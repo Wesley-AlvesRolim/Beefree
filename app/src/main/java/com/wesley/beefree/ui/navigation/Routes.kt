@@ -27,12 +27,12 @@ import com.wesley.beefree.ui.screens.ActivityTrajectoryScreen
 import com.wesley.beefree.ui.screens.HelpInterventionScreen
 import com.wesley.beefree.ui.screens.HomeScreen
 import com.wesley.beefree.ui.screens.RecoveryTrajectoryScreen
-import com.wesley.beefree.ui.screens.SettingsScreen
 import com.wesley.beefree.ui.screens.TriggerMapScreen
 import com.wesley.beefree.ui.screens.checkin.CheckInScreen
 import com.wesley.beefree.ui.screens.emotionalrecord.EmotionalRecordScreen
 import com.wesley.beefree.ui.screens.onboarding.OnboardingScreen
 import com.wesley.beefree.ui.screens.settings.AboutScreen
+import com.wesley.beefree.ui.screens.settings.SettingsScreen
 import com.wesley.beefree.ui.screens.settings.TermsOfServiceScreen
 import com.wesley.beefree.ui.viewmodel.CheckInViewModel
 import com.wesley.beefree.ui.viewmodel.EmotionalRecordNavigationDestination
@@ -209,6 +209,8 @@ fun Routes(
         composable(Screen.Settings.route) {
             SettingsScreen(
                 viewModel = settingsViewModel,
+                onNavigateToAbout = { navController.navigate(Screen.About.route) },
+                onNavigateToTerms = { navController.navigate(Screen.TermsOfService.route) },
             )
         }
         composable(Screen.About.route) {
