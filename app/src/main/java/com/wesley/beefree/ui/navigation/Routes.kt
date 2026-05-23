@@ -32,6 +32,8 @@ import com.wesley.beefree.ui.screens.TriggerMapScreen
 import com.wesley.beefree.ui.screens.checkin.CheckInScreen
 import com.wesley.beefree.ui.screens.emotionalrecord.EmotionalRecordScreen
 import com.wesley.beefree.ui.screens.onboarding.OnboardingScreen
+import com.wesley.beefree.ui.screens.settings.AboutScreen
+import com.wesley.beefree.ui.screens.settings.TermsOfServiceScreen
 import com.wesley.beefree.ui.viewmodel.CheckInViewModel
 import com.wesley.beefree.ui.viewmodel.EmotionalRecordNavigationDestination
 import com.wesley.beefree.ui.viewmodel.EmotionalRecordViewModel
@@ -73,6 +75,11 @@ sealed class Screen(
         Screen("emotional_record", R.string.emotional_record_title, Icons.Default.TagFaces)
 
     object Settings : Screen("settings", R.string.settings_title, Icons.Default.Settings)
+
+    object About : Screen("settings/about", R.string.settings_about_title, Icons.Default.Settings)
+
+    object TermsOfService :
+        Screen("settings/terms", R.string.settings_terms_of_service_title, Icons.Default.Settings)
 }
 
 @Composable
@@ -203,6 +210,12 @@ fun Routes(
             SettingsScreen(
                 viewModel = settingsViewModel,
             )
+        }
+        composable(Screen.About.route) {
+            AboutScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.TermsOfService.route) {
+            TermsOfServiceScreen(onBack = { navController.popBackStack() })
         }
     }
 }
