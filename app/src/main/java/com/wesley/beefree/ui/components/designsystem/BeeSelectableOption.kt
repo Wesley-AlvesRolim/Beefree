@@ -249,7 +249,7 @@ private fun BeeRadioIndicator(selected: Boolean) {
         modifier =
             Modifier
                 .size(BeeSpacing.L)
-                .border(BeeSpacing.XS, borderColor, CircleShape),
+                .border(BeeSpacing.XXS, borderColor, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         if (selected) {
@@ -287,7 +287,7 @@ private fun BeeCheckboxIndicator(selected: Boolean) {
             modifier =
                 Modifier
                     .size(BeeSpacing.L)
-                    .border(BeeSpacing.XS, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(BeeSpacing.XS)),
+                    .border(BeeSpacing.XXS, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(BeeSpacing.XS)),
         )
     }
 }
