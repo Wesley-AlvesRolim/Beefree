@@ -12,35 +12,29 @@
     <string name="onboarding_btn_back">Voltar</string>
     <string name="onboarding_btn_start">Começar</string>
     <string name="onboarding_top_bar_title">Jornada de Recuperação</string>
+    <string name="onboarding_chapter_label">Capítulo %d de 5</string>
+    <string name="onboarding_section_sobre_voce">Sobre você</string>
+    <string name="onboarding_section_seu_padrao">Seu padrão</string>
+    <string name="onboarding_section_sua_perspectiva">Sua perspectiva</string>
+    <string name="onboarding_section_seu_contexto">Seu contexto</string>
+    <string name="onboarding_section_sua_direcao">Sua direção</string>
 
     <!-- Onboarding: Welcome -->
     <string name="onboarding_welcome_title">Reconecte-se com quem você quer ser</string>
-    <string name="onboarding_welcome_body">Sabemos que existe um conflito real entre o que acreditamos e o que às vezes fazemos.\n\nCom base em pesquisas científicas, este aplicativo usa abordagens validadas para reduzir o consumo problemático de pornografia e ajudá-lo a viver de acordo com seus valores mais profundos.</string>
-
-    <!-- Onboarding: How it works -->
-    <string name="onboarding_how_it_works_title">Como funciona</string>
-    <string name="onboarding_how_it_works_detect_title">🧠 Reconhece seus gatilhos</string>
-    <string name="onboarding_how_it_works_detect_body">O app identifica padrões de comportamento e momentos de risco para ajudar você a entender o que antecede o consumo.</string>
-    <string name="onboarding_how_it_works_interrupt_title">💡 Intervém no momento certo</string>
-    <string name="onboarding_how_it_works_interrupt_body">Quando um risco é detectado, ferramentas baseadas em TCC e ACT surgem para ajudar você a atravessar o impulso sem ceder, sem julgamento.</string>
-    <string name="onboarding_how_it_works_progress_title">🌱 Acompanha sua evolução</string>
-    <string name="onboarding_how_it_works_progress_body">Visualize sua jornada de alinhamento com seus valores e acompanhe o progresso ao longo do tempo.</string>
+    <string name="onboarding_welcome_subtitle">Um companheiro baseado em ciência para sua jornada.</string>
+    <string name="onboarding_welcome_cta">Vamos começar</string>
 
     <!-- Onboarding: Ask name -->
     <string name="onboarding_ask_name_title">Como posso te chamar?</string>
     <string name="onboarding_ask_name_hint">Seu nome</string>
-
-    <!-- Onboarding: Addiction selector (gambling kept for future use) -->
-    <string name="onboarding_addiction_selector_title">Bem-vindo ao seu programa de recuperação</string>
-    <string name="onboarding_addiction_ppu">Consumo problemático de pornografia</string>
-    <string name="onboarding_addiction_gambling">Apostas / Cassinos Online</string>
+    <string name="onboarding_ask_name_mascot_speech">Oi! Como você gosta de ser chamado?</string>
 
     <!-- Onboarding: Gender -->
     <string name="onboarding_gender_title">Qual é o seu gênero?</string>
     <string name="onboarding_gender_male">Masculino</string>
     <string name="onboarding_gender_female">Feminino</string>
-    <string name="onboarding_gender_other">Outro</string>
     <string name="onboarding_gender_prefer_not">Prefiro não informar</string>
+    <string name="onboarding_gender_mascot_speech">Isso nos ajuda a personalizar sua experiência.</string>
 
     <!-- Onboarding: PPCS-6 form -->
     <string name="onboarding_ppcs6_title">Algumas perguntas sobre seu consumo</string>
@@ -50,6 +44,16 @@
     <string name="onboarding_ppcs6_q4">Eu senti que precisava consumir mais pornografia para me satisfazer.</string>
     <string name="onboarding_ppcs6_q5">Quando prometi que não consumiria mais pornografia, só consegui parar por poucos dias.</string>
     <string name="onboarding_ppcs6_q6">Me senti estressado quando algo me impediu de consumir pornografia.</string>
+    <string name="onboarding_ppcs6_mascot_speech">Responda com sinceridade. Não há respostas certas ou erradas.</string>
+
+    <!-- Onboarding: Frequency scale (1–7, used in PPCS-6) -->
+    <string name="onboarding_frequency_1">Nunca</string>
+    <string name="onboarding_frequency_2">Raramente</string>
+    <string name="onboarding_frequency_3">Ocasionalmente</string>
+    <string name="onboarding_frequency_4">Às vezes</string>
+    <string name="onboarding_frequency_5">Frequentemente</string>
+    <string name="onboarding_frequency_6">Muito frequentemente</string>
+    <string name="onboarding_frequency_7">Sempre</string>
 
     <!-- Onboarding: EMA form -->
     <string name="onboarding_ema_title">Sua perspectiva pessoal</string>
@@ -61,32 +65,27 @@
     <string name="onboarding_ema_label_4">Fortemente</string>
     <string name="onboarding_ema_label_5">Muito fortemente</string>
     <string name="onboarding_ema_label_6">Extremamente fortemente</string>
+    <string name="onboarding_ema_mascot_speech">Como você tem se sentido? Isso nos ajuda a calibrar seu suporte.</string>
 
-    <!-- Onboarding: PGSI form -->
-    <string name="onboarding_pgsi_title">Escala PGSI</string>
-    <string name="onboarding_pgsi_q1">Você apostou com mais dinheiro do que poderia perder?</string>
-    <string name="onboarding_pgsi_q2">Você precisou apostar quantias maiores para sentir a mesma emoção?</string>
-    <string name="onboarding_pgsi_q3">Você voltou em outro dia para tentar recuperar o dinheiro perdido?</string>
-    <string name="onboarding_pgsi_q4">Você pediu dinheiro emprestado ou vendeu algo para apostar?</string>
-    <string name="onboarding_pgsi_q5">Você sentiu que pode ter um problema com apostas?</string>
-    <string name="onboarding_pgsi_q6">As apostas causaram problemas de saúde, como estresse ou ansiedade?</string>
-    <string name="onboarding_pgsi_q7">Pessoas próximas criticaram seu comportamento com apostas?</string>
-    <string name="onboarding_pgsi_q8">As apostas causaram problemas financeiros para você ou sua família?</string>
-    <string name="onboarding_pgsi_q9">Você se sentiu culpado pela forma como apostou?</string>
+    <!-- Onboarding: PPU frequency form -->
+    <string name="onboarding_frequency_form_title">Com que frequência você consumiu pornografia nos últimos 6 meses?</string>
+    <string name="onboarding_ppu_freq_1">0 vezes</string>
+    <string name="onboarding_ppu_freq_2">1 a 3 vezes</string>
+    <string name="onboarding_ppu_freq_3">4 a 6 vezes</string>
+    <string name="onboarding_ppu_freq_4">7 a 9 vezes</string>
+    <string name="onboarding_ppu_freq_5">10 ou mais vezes</string>
+    <string name="onboarding_ppu_freq_sub_1">Não consumi no período</string>
+    <string name="onboarding_ppu_freq_sub_2">Algumas vezes no total</string>
+    <string name="onboarding_ppu_freq_sub_3">Aprox. uma vez por mês</string>
+    <string name="onboarding_ppu_freq_sub_4">Algumas vezes por mês</string>
+    <string name="onboarding_ppu_freq_sub_5">Quase toda semana</string>
+    <string name="onboarding_frequency_mascot_speech">Sem julgamentos. Queremos entender seus padrões para te ajudar melhor.</string>
 
     <!-- Onboarding: Scale labels (shared) -->
     <string name="onboarding_scale_never">Nunca</string>
     <string name="onboarding_scale_always">Sempre</string>
     <string name="onboarding_scale_almost_always">Quase sempre</string>
-
-    <!-- Onboarding: Frequency scale (1–7, used in PPCS-6) -->
-    <string name="onboarding_frequency_1">Nunca</string>
-    <string name="onboarding_frequency_2">Raramente</string>
-    <string name="onboarding_frequency_3">Ocasionalmente</string>
-    <string name="onboarding_frequency_4">Às vezes</string>
-    <string name="onboarding_frequency_5">Frequentemente</string>
-    <string name="onboarding_frequency_6">Muito frequentemente</string>
-    <string name="onboarding_frequency_7">Sempre</string>
+    <string name="onboarding_option_value_label">%1$d – %2$s</string>
 
     <!-- Onboarding: Symptoms -->
     <string name="onboarding_symptoms_title">O que você costuma sentir por causa do consumo?</string>
@@ -96,14 +95,16 @@
     <string name="onboarding_symptom_low_focus">Dificuldade de concentração</string>
     <string name="onboarding_symptom_low_self_esteem">Baixa autoestima</string>
     <string name="onboarding_symptom_social_isolation">Isolamento e solidão</string>
-    <string name="onboarding_symptom_impulsivity">Culpa e vergonha após o consumo</string>
-    <string name="onboarding_symptom_irritability">Dificuldade nos relacionamentos íntimos</string>
+    <string name="onboarding_symptom_impulsivity">Impulsividade</string>
+    <string name="onboarding_symptom_irritability">Irritabilidade</string>
+    <string name="onboarding_symptoms_mascot_speech">Reconhecer como você se sente é o primeiro passo para a mudança.</string>
 
     <!-- Onboarding: Neurodivergence -->
-    <string name="onboarding_neurodivergence_title">Você possui algum diagnóstico de neurodivergência? (ex: TDAH, autismo)</string>
+    <string name="onboarding_neurodivergence_title">Você tem algum diagnóstico de neurodivergência? (ex: TDAH, autismo)</string>
     <string name="onboarding_neurodivergence_yes">Sim</string>
     <string name="onboarding_neurodivergence_no">Não</string>
     <string name="onboarding_neurodivergence_prefer_not">Prefiro não informar</string>
+    <string name="onboarding_neurodivergence_mascot_speech">Isso nos ajuda a adaptar as intervenções para funcionar melhor com você.</string>
 
     <!-- Onboarding: Hobbies -->
     <string name="onboarding_hobbies_title">O que você gosta de fazer no seu tempo livre?</string>
@@ -117,6 +118,10 @@
     <string name="onboarding_hobby_art">Arte / Desenho</string>
     <string name="onboarding_hobby_team_sports">Esportes coletivos</string>
     <string name="onboarding_hobby_board_games">Jogos de tabuleiro</string>
+    <string name="onboarding_hobby_videogames">Videogames</string>
+    <string name="onboarding_hobby_volunteering">Voluntariado</string>
+    <string name="onboarding_hobby_other">Outro</string>
+    <string name="onboarding_hobbies_mascot_speech">Atividades que você aprecia são poderosas aliadas na sua jornada.</string>
 
     <!-- Onboarding: Goals -->
     <string name="onboarding_goals_title">O que você espera conquistar?</string>
@@ -129,32 +134,31 @@
     <string name="onboarding_goal_spiritual">Crescimento espiritual</string>
     <string name="onboarding_goal_mental_health">Cuidar da minha saúde mental</string>
     <string name="onboarding_goal_social">Reduzir culpa e vergonha</string>
-    <string name="onboarding_goal_career">Viver de acordo com meus valores</string>
-
-    <!-- Onboarding: PPU frequency form -->
-    <string name="onboarding_frequency_form_title">Com que frequência você visualizou pornografia nos últimos 6 meses?</string>
-    <string name="onboarding_ppu_freq_1">0 vezes</string>
-    <string name="onboarding_ppu_freq_2">1 a 3 vezes</string>
-    <string name="onboarding_ppu_freq_3">4 a 6 vezes</string>
-    <string name="onboarding_ppu_freq_4">7 a 9 vezes</string>
-    <string name="onboarding_ppu_freq_5">10 ou mais vezes</string>
+    <string name="onboarding_goal_career">Desenvolver minha carreira</string>
+    <string name="onboarding_goals_mascot_speech">O que você quer ver de diferente na sua vida? Pode escolher mais de um.</string>
 
     <!-- Onboarding: Core values -->
     <string name="onboarding_core_values_title">Seus valores fundamentais</string>
     <string name="onboarding_core_values_subtitle">Selecione 3 valores que são mais importantes para você</string>
     <string name="onboarding_core_value_family">Família</string>
-    <string name="onboarding_core_value_faith">Fé / Espiritualidade</string>
+    <string name="onboarding_core_value_faith">Fé</string>
     <string name="onboarding_core_value_honesty">Honestidade</string>
     <string name="onboarding_core_value_health">Saúde</string>
     <string name="onboarding_core_value_relationships">Relacionamentos</string>
-    <string name="onboarding_core_value_growth">Crescimento pessoal</string>
-    <string name="onboarding_core_value_work">Trabalho / Carreira</string>
+    <string name="onboarding_core_value_growth">Crescimento</string>
+    <string name="onboarding_core_value_work">Trabalho</string>
     <string name="onboarding_core_value_community">Comunidade</string>
     <string name="onboarding_core_value_love">Amor</string>
     <string name="onboarding_core_value_freedom">Liberdade</string>
+    <string name="onboarding_core_value_presence">Presença</string>
+    <string name="onboarding_core_values_mascot_speech">Seus valores são a bússola que vai guiar suas escolhas. Escolha até 3.</string>
 
     <!-- Onboarding: Score result -->
     <string name="onboarding_score_result_title">Seu perfil</string>
+    <string name="onboarding_risk_low">Baixo</string>
+    <string name="onboarding_risk_moderate">Moderado</string>
+    <string name="onboarding_risk_high">Alto</string>
+    <string name="onboarding_risk_very_high">Severo</string>
     <string name="onboarding_score_result_intro">Com base nas suas respostas, preparamos uma abordagem personalizada para você.</string>
     <string name="onboarding_score_result_scale_label">Escala PPCS-6</string>
     <string name="onboarding_score_result_scale_low">Baixo</string>
@@ -171,22 +175,6 @@
     <string name="onboarding_treatment_desc_tcc">Vamos identificar os pensamentos e situações que alimentam o consumo e construir estratégias práticas para lidar com eles.</string>
     <string name="onboarding_treatment_desc_hybrid">Combinaremos aceitação dos impulsos com reestruturação dos pensamentos — uma abordagem completa adaptada ao seu perfil.</string>
     <string name="onboarding_treatment_desc_prevention">Seu padrão não exige intervenção intensiva. Vamos fortalecer seus hábitos e manter o que você já tem de bom.</string>
-
-    <!-- Onboarding: Request permissions -->
-    <string name="onboarding_request_permissions_title">Últimas configurações</string>
-    <string name="onboarding_request_permissions_body">Para que o app possa identificar momentos de risco e intervir quando você precisar, ele necessita de duas permissões do sistema.</string>
-
-    <!-- Onboarding: Monitor permission -->
-    <string name="onboarding_monitor_permission_title">Monitoramento de tela</string>
-    <string name="onboarding_monitor_permission_body">Permite identificar conteúdos de risco exibidos na tela para que o app possa agir antes que o impulso tome conta.</string>
-    <string name="onboarding_monitor_permission_active">Monitoramento ativo</string>
-    <string name="onboarding_monitor_permission_enable">Ativar monitoramento</string>
-
-    <!-- Onboarding: Overlay permission -->
-    <string name="onboarding_overlay_permission_title">Intervenção em tela cheia</string>
-    <string name="onboarding_overlay_permission_body">Permite exibir ferramentas de apoio em tela cheia nos momentos de maior risco, ajudando você a atravessar o impulso.</string>
-    <string name="onboarding_overlay_permission_active">Intervenção ativa</string>
-    <string name="onboarding_overlay_permission_enable">Ativar intervenção</string>
 
     <!-- Home screen -->
     <string name="home_greeting">Olá, %1$s</string>
@@ -242,8 +230,11 @@
     <string name="nav_home">Início</string>
 
     <!-- Onboarding: Finish -->
-    <string name="onboarding_finish_title">Sua jornada começa agora</string>
-    <string name="onboarding_finish_body">Você deu um passo corajoso.\n\nO aplicativo está pronto para te apoiar: identificando riscos, oferecendo ferramentas no momento certo e acompanhando sua evolução rumo a uma vida mais alinhada com o que você realmente valoriza.</string>
+    <string name="onboarding_finish_title">Sua jornada começa agora.</string>
+    <string name="onboarding_finish_body">Você deu um passo corajoso. O BeeFree vai te apoiar identificando riscos, oferecendo ferramentas no momento certo e acompanhando sua evolução.</string>
+    <string name="onboarding_finish_cta">Entrar no BeeFree</string>
+    <string name="onboarding_finish_next_step_label">Próximo passo</string>
+    <string name="onboarding_finish_next_step_value">Seu primeiro check-in de 2 min</string>
 
     <!-- Settings: Banking compatibility -->
     <string name="settings_banking_warning_title">Compatibilidade com apps bancários</string>

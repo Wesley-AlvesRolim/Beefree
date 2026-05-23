@@ -33,6 +33,8 @@ private val bottomBarRoutes = setOf(Screen.Home.route, Screen.CheckIn.route, Scr
 
 @Composable
 fun NavBar(
+    isOnboardingCompleted: Boolean = true,
+    onOnboardingFinished: () -> Unit = {},
     openCheckIn: Boolean = false,
     openSos: Boolean = false,
     openEmotionalRecord: Boolean = false,
@@ -63,7 +65,12 @@ fun NavBar(
         modifier = Modifier.fillMaxSize(),
         bottomBar = { if (showBottomBar) NavBarWithItems(navController) },
     ) { innerPadding ->
-        Routes(navController, innerPadding)
+        Routes(
+            navController = navController,
+            innerPadding = innerPadding,
+            isOnboardingCompleted = isOnboardingCompleted,
+            onOnboardingFinished = onOnboardingFinished,
+        )
     }
 }
 

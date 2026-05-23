@@ -10,11 +10,9 @@ import androidx.compose.ui.res.stringResource
 import com.wesley.beefree.R
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.ui.components.OnboardingLayout
-import com.wesley.beefree.ui.components.OnboardingMascot
-import com.wesley.beefree.ui.components.OnboardingMultiSelectOption
 import com.wesley.beefree.ui.components.OnboardingNavigationRow
 import com.wesley.beefree.ui.components.OnboardingTitle
-import com.wesley.beefree.ui.components.designsystem.BeeSpacing
+import com.wesley.beefree.ui.components.designsystem.*
 
 private val goalResources =
     listOf(
@@ -26,8 +24,6 @@ private val goalResources =
         R.string.onboarding_goal_family,
         R.string.onboarding_goal_spiritual,
         R.string.onboarding_goal_mental_health,
-        R.string.onboarding_goal_social,
-        R.string.onboarding_goal_career,
     )
 
 @Composable
@@ -39,17 +35,23 @@ fun OnboardingGoalsScreen(
 ) {
     val goalLabels = goalResources.map { stringResource(it) }
 
-    OnboardingLayout(onBack = onBack) {
-        OnboardingMascot()
+    OnboardingLayout(
+        onBack = onBack,
+        sectionTitle = stringResource(R.string.onboarding_section_sua_direcao),
+        chapterNumber = 5,
+        bottomBar = { OnboardingNavigationRow(onNext = onNext) },
+    ) {
+        BeeMascotSpeech(
+            speechText = stringResource(R.string.onboarding_goals_mascot_speech),
+            tone = BeeMascotSpeechTone.Primary,
+        )
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_goals_title))
         Spacer(modifier = Modifier.height(BeeSpacing.L))
-        Column(
-            verticalArrangement = Arrangement.spacedBy(BeeSpacing.S),
-        ) {
+        Column(verticalArrangement = Arrangement.spacedBy(BeeSpacing.S)) {
             goalLabels.forEach { goal ->
                 val isSelected = goal in answers.goals
-                OnboardingMultiSelectOption(
+                BeeMultiSelectOption(
                     text = goal,
                     isSelected = isSelected,
                     onClick = {
@@ -61,7 +63,5 @@ fun OnboardingGoalsScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(onNext = onNext)
     }
 }

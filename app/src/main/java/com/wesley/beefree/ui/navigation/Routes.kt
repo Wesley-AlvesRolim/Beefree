@@ -31,6 +31,7 @@ import com.wesley.beefree.ui.screens.SettingsScreen
 import com.wesley.beefree.ui.screens.TriggerMapScreen
 import com.wesley.beefree.ui.screens.checkin.CheckInScreen
 import com.wesley.beefree.ui.screens.emotionalrecord.EmotionalRecordScreen
+import com.wesley.beefree.ui.screens.onboarding.OnboardingScreen
 import com.wesley.beefree.ui.viewmodel.CheckInViewModel
 import com.wesley.beefree.ui.viewmodel.EmotionalRecordNavigationDestination
 import com.wesley.beefree.ui.viewmodel.EmotionalRecordViewModel
@@ -38,6 +39,7 @@ import com.wesley.beefree.ui.viewmodel.HelpInterventionSource
 import com.wesley.beefree.ui.viewmodel.HelpInterventionViewModel
 import com.wesley.beefree.ui.viewmodel.HomeNavigationDestination
 import com.wesley.beefree.ui.viewmodel.HomeViewModel
+import com.wesley.beefree.ui.viewmodel.OnboardingViewModelImpl
 import com.wesley.beefree.ui.viewmodel.RecoveryTrajectoryViewModel
 import com.wesley.beefree.ui.viewmodel.SettingsViewModel
 import com.wesley.beefree.ui.viewmodel.TriggerMapViewModel
@@ -47,6 +49,8 @@ sealed class Screen(
     @StringRes val labelRes: Int,
     val icon: ImageVector,
 ) {
+    object Onboarding : Screen("onboarding", R.string.onboarding_top_bar_title, Icons.Default.Home)
+
     object Home : Screen("home", R.string.nav_home, Icons.Default.Home)
 
     object CheckIn : Screen("check_in", R.string.check_in_title, Icons.Default.CheckCircle)
@@ -75,8 +79,12 @@ sealed class Screen(
 fun Routes(
     navController: NavHostController,
     innerPadding: PaddingValues,
+    isOnboardingCompleted: Boolean = true,
+    onOnboardingFinished: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    val onboardingViewModel: OnboardingViewModelImpl =
+        viewModel(factory = OnboardingViewModelImpl.factory(context))
     val homeViewModel: HomeViewModel =
         viewModel(factory = HomeViewModel.factory(context))
     val emotionalRecordViewModel: EmotionalRecordViewModel =
@@ -84,11 +92,25 @@ fun Routes(
     val settingsViewModel: SettingsViewModel =
         viewModel(factory = SettingsViewModel.factory(context))
 
+    val startDestination = if (isOnboardingCompleted) Screen.Home.route else Screen.Onboarding.route
+
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route,
+        startDestination = startDestination,
         modifier = Modifier.padding(innerPadding),
     ) {
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(
+                viewModel = onboardingViewModel,
+                onFinish = {
+                    onOnboardingFinished()
+                    homeViewModel.refresh()
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                },
+            )
+        }
         composable(Screen.Home.route) {
             LaunchedEffect(homeViewModel) {
                 homeViewModel.navigationEvents.collect { destination ->
@@ -107,6 +129,11 @@ fun Routes(
 
                         HomeNavigationDestination.TriggerMap ->
                             navController.navigate(Screen.TriggerMap.route)
+
+                        HomeNavigationDestination.Onboarding ->
+                            navController.navigate(Screen.Onboarding.route) {
+                                popUpTo(Screen.Home.route) { inclusive = true }
+                            }
                     }
                 }
             }

@@ -53,6 +53,8 @@ sealed class HomeNavigationDestination {
     ) : HomeNavigationDestination()
 
     object TriggerMap : HomeNavigationDestination()
+
+    object Onboarding : HomeNavigationDestination()
 }
 
 data class HomeUiState(
@@ -84,6 +86,9 @@ class HomeViewModel(
     private val hasCompletedTodaysCheckInUseCase: HasCompletedTodaysCheckInUseCase,
     private val logger: Logger = AndroidLogger,
 ) : ViewModel() {
+    private var isHomeVisible = false
+    private var pendingOnboardingRedirect = false
+
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
@@ -111,11 +116,20 @@ class HomeViewModel(
         _navigationEvents.tryEmit(HomeNavigationDestination.TriggerMap)
     }
 
+    fun onHomeVisible() {
+        isHomeVisible = true
+        if (pendingOnboardingRedirect) {
+            pendingOnboardingRedirect = false
+            _navigationEvents.tryEmit(HomeNavigationDestination.Onboarding)
+        }
+    }
+
     init {
         refresh()
     }
 
     fun refresh() {
+        pendingOnboardingRedirect = false
         viewModelScope.launch {
             loadData()
         }
@@ -131,12 +145,15 @@ class HomeViewModel(
             try {
                 val user = resolveUser() ?: throw IllegalStateException("User profile not found")
                 val userId = user.id ?: throw IllegalStateException("User ID not found")
-                val userAddictionsList = userProfileRepository.getAddictionsByUserId(userId).first()
-                val userAddiction = userAddictionsList.firstOrNull()
-                if (userAddictionsList.isEmpty() || userAddiction == null) {
-                    throw IllegalStateException(
-                        "User don't have a addiction profile",
-                    )
+                val userAddiction = userProfileRepository.getAddictionsByUserId(userId).first().firstOrNull()
+                if (userAddiction == null) {
+                    pendingOnboardingRedirect = true
+                    if (isHomeVisible) {
+                        pendingOnboardingRedirect = false
+                        _navigationEvents.emit(HomeNavigationDestination.Onboarding)
+                    }
+                    _uiState.update { it.copy(isLoading = false) }
+                    return@coroutineScope
                 }
 
                 val allPsychoeducationMessagesDeferred =

@@ -12,9 +12,8 @@ import androidx.compose.ui.text.style.TextAlign
 import com.wesley.beefree.R
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.ui.components.OnboardingLayout
-import com.wesley.beefree.ui.components.OnboardingMascot
+import com.wesley.beefree.ui.components.OnboardingLikertOption
 import com.wesley.beefree.ui.components.OnboardingNavigationRow
-import com.wesley.beefree.ui.components.OnboardingSelectableOption
 import com.wesley.beefree.ui.components.OnboardingTitle
 import com.wesley.beefree.ui.components.designsystem.*
 
@@ -38,8 +37,21 @@ fun OnboardingEmaScreen(
 ) {
     val currentAnswer = answers.emaAnswers.getOrNull(0)
 
-    OnboardingLayout(onBack = onBack) {
-        OnboardingMascot()
+    OnboardingLayout(
+        onBack = onBack,
+        sectionTitle = stringResource(R.string.onboarding_section_sua_perspectiva),
+        chapterNumber = 3,
+        bottomBar = {
+            OnboardingNavigationRow(
+                onNext = onNext,
+                nextEnabled = currentAnswer != null,
+            )
+        },
+    ) {
+        BeeMascotSpeech(
+            speechText = stringResource(R.string.onboarding_ema_mascot_speech),
+            tone = BeeMascotSpeechTone.Primary,
+        )
         Spacer(modifier = Modifier.height(BeeSpacing.M))
         OnboardingTitle(stringResource(R.string.onboarding_ema_title))
         Spacer(modifier = Modifier.height(BeeSpacing.XL))
@@ -49,25 +61,15 @@ fun OnboardingEmaScreen(
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        Column(
-            verticalArrangement = Arrangement.spacedBy(BeeSpacing.S),
-        ) {
+        Column(verticalArrangement = Arrangement.spacedBy(BeeSpacing.S)) {
             scaleLabels.forEachIndexed { index, labelRes ->
-                val value = index
-                OnboardingSelectableOption(
+                OnboardingLikertOption(
+                    number = index + 1,
                     text = stringResource(labelRes),
-                    isSelected = currentAnswer == value,
-                    onClick = {
-                        val updated = listOf(value)
-                        onUpdate { copy(emaAnswers = updated) }
-                    },
+                    selected = currentAnswer == index,
+                    onClick = { onUpdate { copy(emaAnswers = listOf(index)) } },
                 )
             }
         }
-        Spacer(modifier = Modifier.height(BeeSpacing.XL))
-        OnboardingNavigationRow(
-            onNext = onNext,
-            nextEnabled = currentAnswer != null,
-        )
     }
 }

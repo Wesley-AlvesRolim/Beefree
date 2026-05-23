@@ -13,8 +13,15 @@ class OnboardingFlowEngineTest {
 
     private fun answersWithProfile(profile: AddictionProfile) = OnboardingAnswers(addictionProfile = profile)
 
-    private fun advanceToAddictionSelector(engine: CompositeOnboardingFlowEngine) {
-        repeat(3) { engine.next(OnboardingAnswers()) }
+    private fun answersRequiringCoreValues() =
+        OnboardingAnswers(
+            addictionProfile = AddictionProfile.PPU,
+            emaAnswers = listOf(3),
+            frequencyAnswer = 3,
+        )
+
+    private fun advanceToGender(engine: CompositeOnboardingFlowEngine) {
+        repeat(2) { engine.next(OnboardingAnswers()) }
     }
 
     @Test
@@ -42,76 +49,56 @@ class OnboardingFlowEngineTest {
         val emptyAnswers = OnboardingAnswers()
 
         engine.next(emptyAnswers)
-        assertEquals(StepType.PRESENTATION, engine.currentStep.type)
-
-        engine.next(emptyAnswers)
         assertEquals(StepType.ASK_NAME, engine.currentStep.type)
 
         engine.next(emptyAnswers)
-        assertEquals(StepType.ADDICTION_SELECTOR, engine.currentStep.type)
-    }
-
-    @Test
-    fun `resolves PPU branch after addiction selector`() {
-        val engine = engine()
-        advanceToAddictionSelector(engine)
-        engine.next(answersWithProfile(AddictionProfile.PPU))
-
         assertEquals(StepType.GENDER, engine.currentStep.type)
     }
 
     @Test
-    fun `resolves GAMBLING branch after addiction selector`() {
+    fun `enters PPU flow after ASK_NAME`() {
         val engine = engine()
-        advanceToAddictionSelector(engine)
-        engine.next(answersWithProfile(AddictionProfile.GAMBLING))
+        advanceToGender(engine)
+        engine.next(answersRequiringCoreValues())
 
-        assertEquals(StepType.GENDER, engine.currentStep.type)
+        assertEquals(StepType.PPCS6_FORM, engine.currentStep.type)
     }
 
     @Test
     fun `PPU path contains PPCS6_FORM and EMA_FORM`() {
         val engine = engine()
-        val answers = answersWithProfile(AddictionProfile.PPU)
-        advanceToAddictionSelector(engine)
-        engine.next(answers) // GENDER
-        engine.next(answers) // PPCS6_FORM
+        val answers = answersRequiringCoreValues()
+        advanceToGender(engine)
+        engine.next(answers)
         assertEquals(StepType.PPCS6_FORM, engine.currentStep.type)
 
-        engine.next(answers) // EMA_FORM
+        engine.next(answers)
         assertEquals(StepType.EMA_FORM, engine.currentStep.type)
-    }
-
-    @Test
-    fun `GAMBLING path contains PGSI_FORM not PPCS6_FORM`() {
-        val engine = engine()
-        val answers = answersWithProfile(AddictionProfile.GAMBLING)
-        advanceToAddictionSelector(engine)
-        engine.next(answers) // GENDER
-        engine.next(answers) // PGSI_FORM
-
-        assertEquals(StepType.PGSI_FORM, engine.currentStep.type)
     }
 
     @Test
     fun `post-branch steps appear after branch flow`() {
         val engine = engine()
-        val answers = answersWithProfile(AddictionProfile.PPU)
-        advanceToAddictionSelector(engine)
+        val answers = answersRequiringCoreValues()
+        advanceToGender(engine)
         engine.next(answers)
-        repeat(8) { engine.next(answers) } // Gender, PPCS6, EMA, FrequencyForm, Symptoms, Neuro, Hobbies, Goals
+        repeat(7) { engine.next(answers) }
 
         assertEquals(StepType.SCORE_RESULT, engine.currentStep.type)
+        engine.next(answers)
+        assertEquals(StepType.CORE_VALUES, engine.currentStep.type)
     }
 
     @Test
     fun `ends at FINISH and isLast is true`() {
         val engine = engine()
-        val answers = answersWithProfile(AddictionProfile.PPU)
-        advanceToAddictionSelector(engine)
+        val answers = answersRequiringCoreValues()
+        advanceToGender(engine)
         engine.next(answers)
-        repeat(12) { engine.next(answers) }
+        repeat(8) { engine.next(answers) }
 
+        assertEquals(StepType.CORE_VALUES, engine.currentStep.type)
+        engine.next(answers)
         assertEquals(StepType.FINISH, engine.currentStep.type)
         assertTrue(engine.isLast)
     }
@@ -120,7 +107,7 @@ class OnboardingFlowEngineTest {
     fun `previous goes back one step`() {
         val engine = engine()
         engine.next(OnboardingAnswers())
-        assertEquals(StepType.PRESENTATION, engine.currentStep.type)
+        assertEquals(StepType.ASK_NAME, engine.currentStep.type)
 
         engine.previous()
         assertEquals(StepType.WELCOME, engine.currentStep.type)
@@ -134,24 +121,14 @@ class OnboardingFlowEngineTest {
     }
 
     @Test
-    fun `re-resolves branch if going back and changing answer`() {
+    fun `previous goes back from PPCS6_FORM to GENDER`() {
         val engine = engine()
-        advanceToAddictionSelector(engine)
+        advanceToGender(engine)
 
-        // Resolve to PPU
         engine.next(answersWithProfile(AddictionProfile.PPU))
-        assertEquals(StepType.GENDER, engine.currentStep.type)
-        engine.next(OnboardingAnswers()) // PPCS6_FORM
         assertEquals(StepType.PPCS6_FORM, engine.currentStep.type)
 
-        // Go back to addiction selector
-        engine.previous() // GENDER
-        engine.previous() // ADDICTION_SELECTOR
-
-        // Resolve to GAMBLING
-        engine.next(answersWithProfile(AddictionProfile.GAMBLING))
+        engine.previous()
         assertEquals(StepType.GENDER, engine.currentStep.type)
-        engine.next(OnboardingAnswers()) // PGSI_FORM
-        assertEquals(StepType.PGSI_FORM, engine.currentStep.type)
     }
 }

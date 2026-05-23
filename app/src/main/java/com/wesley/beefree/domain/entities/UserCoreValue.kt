@@ -18,4 +18,5 @@ enum class CoreValueType {
     COMMUNITY,
     LOVE,
     FREEDOM,
+    PRESENCE,
 }
