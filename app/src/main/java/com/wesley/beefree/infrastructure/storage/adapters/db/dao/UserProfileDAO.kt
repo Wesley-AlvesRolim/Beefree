@@ -15,6 +15,6 @@ interface UserProfileDAO {
     @Query("SELECT * FROM UserProfile WHERE id = :id")
     suspend fun getById(id: Int): UserProfileEntity?
 
-    @Query("SELECT * FROM UserProfile")
+    @Query("SELECT * FROM UserProfile ORDER BY created_at DESC")
     fun getAll(): Flow<List<UserProfileEntity>>
 }
