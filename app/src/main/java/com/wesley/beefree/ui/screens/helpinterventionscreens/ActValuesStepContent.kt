@@ -181,5 +181,6 @@ private fun getValueIcon(id: String): ImageVector {
         CoreValueType.COMMUNITY -> Icons.Default.Groups
         CoreValueType.LOVE -> Icons.Default.VolunteerActivism
         CoreValueType.FREEDOM -> Icons.Default.AirplanemodeActive
+        CoreValueType.PRESENCE -> Icons.Default.Visibility
     }
 }
