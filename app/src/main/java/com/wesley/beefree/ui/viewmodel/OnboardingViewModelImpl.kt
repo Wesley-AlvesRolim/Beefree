@@ -1,8 +1,6 @@
 package com.wesley.beefree.ui.viewmodel
 
 import android.app.Application
-import android.content.Context
-import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -17,7 +15,6 @@ import com.wesley.beefree.domain.onboarding.ports.OnboardingFlowEngine
 import com.wesley.beefree.domain.onboarding.usecases.ComputeClinicalProfileUseCase
 import com.wesley.beefree.domain.onboarding.usecases.ComputeScoreUseCase
 import com.wesley.beefree.domain.onboarding.usecases.SaveOnboardingDataUseCase
-import com.wesley.beefree.infrastructure.events.so.AccessibilityServiceActivity
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
@@ -28,7 +25,6 @@ import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyVa
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.viewmodel.ports.OnboardingViewModelPort
-import com.wesley.beefree.utils.AccessibilityUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,12 +50,6 @@ open class OnboardingViewModelImpl(
     private val _clinicalProfile = MutableStateFlow<ClinicalProfile?>(null)
     override val clinicalProfile: StateFlow<ClinicalProfile?> = _clinicalProfile.asStateFlow()
 
-    protected val openIsAccessibilityEnabled = MutableStateFlow(false)
-    override val isAccessibilityEnabled: StateFlow<Boolean> =
-        openIsAccessibilityEnabled.asStateFlow()
-
-    protected val openIsOverlayEnabled = MutableStateFlow(false)
-
     override fun updateAnswer(update: OnboardingAnswers.() -> OnboardingAnswers) {
         _answers.value = _answers.value.update()
     }
@@ -76,19 +66,6 @@ open class OnboardingViewModelImpl(
     override fun previous() {
         engine.previous()
         _currentStep.value = engine.currentStep
-    }
-
-    override fun updatePermissions(context: Context) {
-        openIsAccessibilityEnabled.value =
-            AccessibilityUtils.isAccessibilityServiceEnabledAlternative(
-                context,
-                AccessibilityServiceActivity::class.java,
-            )
-        openIsOverlayEnabled.value = Settings.canDrawOverlays(context)
-    }
-
-    override fun openAccessibilitySettings(context: Context) {
-        AccessibilityUtils.openAccessibilitySettings(context)
     }
 
     override fun finishOnboarding(

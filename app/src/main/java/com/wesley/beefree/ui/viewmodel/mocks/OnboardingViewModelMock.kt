@@ -1,6 +1,5 @@
 package com.wesley.beefree.ui.viewmodel.mocks
 
-import android.content.Context
 import com.wesley.beefree.domain.onboarding.ClinicalProfile
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.domain.onboarding.ScaleResult
@@ -16,7 +15,6 @@ class OnboardingViewModelMock : OnboardingViewModelPort {
     override val answers = MutableStateFlow(OnboardingAnswers())
     override val scaleResult = MutableStateFlow<ScaleResult?>(null)
     override val clinicalProfile = MutableStateFlow<ClinicalProfile?>(null)
-    override val isAccessibilityEnabled = MutableStateFlow(false)
 
     override fun updateAnswer(update: OnboardingAnswers.() -> OnboardingAnswers) {
         answers.value = answers.value.update()
@@ -31,10 +29,6 @@ class OnboardingViewModelMock : OnboardingViewModelPort {
         engine.previous()
         currentStep.value = engine.currentStep
     }
-
-    override fun updatePermissions(context: Context) {}
-
-    override fun openAccessibilitySettings(context: Context) {}
 
     override fun finishOnboarding(
         onFinish: () -> Unit,
