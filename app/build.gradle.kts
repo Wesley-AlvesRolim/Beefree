@@ -1,5 +1,14 @@
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
+val releaseKeystorePath = providers.environmentVariable("BEEFREE_KEYSTORE_PATH").orNull
+val releaseKeystorePassword = providers.environmentVariable("BEEFREE_KEYSTORE_PASSWORD").orNull
+val releaseKeyAlias = providers.environmentVariable("BEEFREE_KEY_ALIAS").orNull
+val releaseKeyPassword = providers.environmentVariable("BEEFREE_KEY_PASSWORD").orNull
+val releaseKeystoreFile =
+    releaseKeystorePath?.let { path ->
+        file(path).takeIf { it.exists() } ?: rootProject.file(path).takeIf { it.exists() }
+    }
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -13,6 +22,15 @@ android {
     namespace = "com.wesley.beefree"
     compileSdk = 36
 
+    signingConfigs {
+        create("release") {
+            storeFile = releaseKeystoreFile
+            storePassword = releaseKeystorePassword
+            keyAlias = releaseKeyAlias
+            keyPassword = releaseKeyPassword
+        }
+    }
+
     defaultConfig {
         applicationId = "com.wesley.beefree"
         minSdk = 24
@@ -25,7 +43,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
