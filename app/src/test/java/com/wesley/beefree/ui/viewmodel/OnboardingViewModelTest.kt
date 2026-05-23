@@ -9,7 +9,7 @@ import org.junit.Test
 class OnboardingViewModelTest {
     private fun viewModel() = OnboardingViewModelMock()
 
-    private fun OnboardingViewModelMock.advanceToAddictionSelector() {
+    private fun OnboardingViewModelMock.advanceToGender() {
         repeat(3) { next() }
     }
 
@@ -40,58 +40,41 @@ class OnboardingViewModelTest {
     }
 
     @Test
-    fun `after selecting PPU and advancing past selector, enters GENDER`() {
+    fun `after advancing past ask name, enters GENDER`() {
         val vm = viewModel()
-        vm.updateAnswer { copy(addictionProfile = AddictionProfile.PPU) }
-        vm.advanceToAddictionSelector()
-        vm.next()
+        vm.advanceToGender()
 
         assertEquals(StepType.GENDER, vm.currentStep.value.type)
     }
 
     @Test
-    fun `after selecting GAMBLING and advancing past selector, enters GENDER`() {
+    fun `PPU path shows PPCS6_FORM after GENDER`() {
         val vm = viewModel()
-        vm.updateAnswer { copy(addictionProfile = AddictionProfile.GAMBLING) }
-        vm.advanceToAddictionSelector()
-        vm.next()
-
-        assertEquals(StepType.GENDER, vm.currentStep.value.type)
-    }
-
-    @Test
-    fun `PPU path shows PPCS6_FORM as second step after GENDER`() {
-        val vm = viewModel()
-        vm.updateAnswer { copy(addictionProfile = AddictionProfile.PPU) }
-        vm.advanceToAddictionSelector()
-        vm.next()
+        vm.advanceToGender()
         vm.next()
 
         assertEquals(StepType.PPCS6_FORM, vm.currentStep.value.type)
     }
 
     @Test
+    fun `PPU path shows EMA_FORM after PPCS6_FORM`() {
+        val vm = viewModel()
+        vm.advanceToGender()
+        vm.next()
+        vm.next()
+
+        assertEquals(StepType.EMA_FORM, vm.currentStep.value.type)
+    }
+
+    @Test
     fun `PPU path shows FREQUENCY_FORM after EMA_FORM`() {
         val vm = viewModel()
-        vm.updateAnswer { copy(addictionProfile = AddictionProfile.PPU) }
-        vm.advanceToAddictionSelector()
-        vm.next()
+        vm.advanceToGender()
         vm.next()
         vm.next()
         vm.next()
 
         assertEquals(StepType.FREQUENCY_FORM, vm.currentStep.value.type)
-    }
-
-    @Test
-    fun `GAMBLING path shows PGSI_FORM as second step after GENDER`() {
-        val vm = viewModel()
-        vm.updateAnswer { copy(addictionProfile = AddictionProfile.GAMBLING) }
-        vm.advanceToAddictionSelector()
-        vm.next()
-        vm.next()
-
-        assertEquals(StepType.PGSI_FORM, vm.currentStep.value.type)
     }
 
     @Test
