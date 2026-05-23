@@ -194,10 +194,23 @@
     <string name="settings_add_contact">Adicionar</string>
     <string name="settings_remove_contact">Remover</string>
     <string name="settings_privacy_section_title">Privacidade</string>
-    <string name="settings_export_data">Exportar meus dados</string>
+    <string name="settings_export_data">Exportar os meus dados</string>
     <string name="settings_permissions_section_title">Permissões</string>
     <string name="settings_screen_reader_label">Leitura de tela</string>
     <string name="settings_screen_blocker_label">Bloqueio de tela</string>
+    <string name="settings_manage_contacts">Gerenciar contatos</string>
+    <string name="settings_manage_contacts_coming_soon">Em breve</string>
+    <string name="settings_data_management_section_title">Gerenciamento de Dados</string>
+    <string name="settings_export_data_subtitle">Criptografado. Para compartilhamento com terapeuta.</string>
+    <string name="settings_support_section_title">Suporte</string>
+    <string name="settings_about">Sobre</string>
+    <string name="settings_about_body">O BeeFree é um projeto de TCC (Trabalho de Conclusão de Curso) criado para investigar como aplicativos podem ajudar pessoas a superar o uso problemático de pornografia (PPU).\n\nO objetivo é estudar, na prática, como tecnologia, ciência e intervenções digitais podem apoiar escolhas mais saudáveis e fortalecer a autonomia do usuário.</string>
+    <string name="settings_terms_of_service">Termos de Serviço</string>
+    <string name="settings_terms_of_service_body">O BeeFree foi desenvolvido com foco em privacidade. Seus dados ficam armazenados apenas no seu smartphone.\n\nNenhuma informação é compartilhada automaticamente. O compartilhamento de dados só acontece quando você usa o botão de "Exportar os meus dados".</string>
+    <string name="settings_version">Versão %s</string>
+    <string name="settings_footer_tagline">Construindo flexibilidade psicológica um dia de cada vez.</string>
+    <string name="settings_about_title">Sobre</string>
+    <string name="settings_terms_of_service_title">Termos de Serviço</string>
 
     <!-- Accessibility settings component -->
     <string name="accessibility_service_enabled_status">O Serviço de Acessibilidade está ATIVADO</string>
