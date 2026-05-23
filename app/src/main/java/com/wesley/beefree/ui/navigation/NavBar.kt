@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -116,7 +117,7 @@ fun NavBarWithItems(navController: NavHostController) {
                         .padding(horizontal = BeeSpacing.L, vertical = BeeSpacing.S),
             ) {
                 Icon(screen.icon, contentDescription = null, tint = fgColor)
-                BeeBodySmall(stringResource(screen.labelRes), color = fgColor)
+                BeeBodySmall(stringResource(screen.labelRes), color = fgColor, textAlign = TextAlign.Center)
             }
         }
     }
