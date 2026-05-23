@@ -1,8 +1,10 @@
 package com.wesley.beefree.domain.onboarding.usecases
 
+import com.wesley.beefree.data.getPsychologistEncouragementPhrases
 import com.wesley.beefree.domain.entities.AddictionCategory
 import com.wesley.beefree.domain.entities.AddictionCategoryEnum
 import com.wesley.beefree.domain.entities.CoreValueType
+import com.wesley.beefree.domain.entities.PsychoeducationContent
 import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserCoreValue
 import com.wesley.beefree.domain.entities.UserHobby
@@ -16,6 +18,7 @@ import com.wesley.beefree.domain.onboarding.NeurodivergenceAnswer
 import com.wesley.beefree.domain.onboarding.OnboardingAnswers
 import com.wesley.beefree.domain.onboarding.ScaleResult
 import com.wesley.beefree.domain.repository.ports.AddictionRepository
+import com.wesley.beefree.domain.repository.ports.LessonRepository
 import com.wesley.beefree.domain.repository.ports.OnboardingRepository
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
@@ -24,6 +27,7 @@ class SaveOnboardingDataUseCase(
     private val addictionRepository: AddictionRepository,
     private val userProfileRepository: UserProfileRepository,
     private val onboardingRepository: OnboardingRepository,
+    private val lessonRepository: LessonRepository,
     private val keyValueStorageRepository: KeyValueStorageRepository,
     private val computeScoreUseCase: ComputeScoreUseCase,
     private val computeClinicalProfileUseCase: ComputeClinicalProfileUseCase,
@@ -45,6 +49,7 @@ class SaveOnboardingDataUseCase(
 
             insertOnboardingSession(userProfileId, selectedCategoryId, profile, scoreResult, clinicalProfile, answers, now)
             insertUserChoices(userProfileId, answers, now)
+            savePsychologistEncouragementPhrases()
 
             keyValueStorageRepository.saveOnboardingCompleted(true)
             keyValueStorageRepository.saveTheScreenReaderStatus(true)
@@ -159,6 +164,12 @@ class SaveOnboardingDataUseCase(
             onboardingRepository.insertCoreValue(
                 UserCoreValue(userProfileId = userProfileId, value = CoreValueType.valueOf(value), createdAt = now),
             )
+        }
+    }
+
+    private suspend fun savePsychologistEncouragementPhrases() {
+        getPsychologistEncouragementPhrases().forEach { phrase ->
+            lessonRepository.insertContent(PsychoeducationContent(contentText = phrase))
         }
     }
 }

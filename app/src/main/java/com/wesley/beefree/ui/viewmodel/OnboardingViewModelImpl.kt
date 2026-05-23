@@ -21,6 +21,7 @@ import com.wesley.beefree.infrastructure.events.so.AccessibilityServiceActivity
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomLessonRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomOnboardingRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
@@ -143,6 +144,7 @@ open class OnboardingViewModelImpl(
                             database.userObjectiveDao(),
                             database.userSymptomDao(),
                         )
+                    val lessonRepository = RoomLessonRepository(database.psychoeducationContentDao())
                     val keyValueStorageRepository =
                         KeyValueStorageRepository(SharedPreferencesKeyValueStorage(application))
                     val computeScoreUseCase = ComputeScoreUseCase()
@@ -158,6 +160,7 @@ open class OnboardingViewModelImpl(
                                 addictionRepository,
                                 userProfileRepository,
                                 onboardingRepository,
+                                lessonRepository,
                                 keyValueStorageRepository,
                                 computeScoreUseCase = computeScoreUseCase,
                                 computeClinicalProfileUseCase = computeClinicalProfileUseCase,
