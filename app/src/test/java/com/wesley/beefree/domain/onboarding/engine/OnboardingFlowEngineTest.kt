@@ -13,8 +13,15 @@ class OnboardingFlowEngineTest {
 
     private fun answersWithProfile(profile: AddictionProfile) = OnboardingAnswers(addictionProfile = profile)
 
+    private fun answersRequiringCoreValues() =
+        OnboardingAnswers(
+            addictionProfile = AddictionProfile.PPU,
+            emaAnswers = listOf(3),
+            frequencyAnswer = 3,
+        )
+
     private fun advanceToGender(engine: CompositeOnboardingFlowEngine) {
-        repeat(3) { engine.next(OnboardingAnswers()) }
+        repeat(2) { engine.next(OnboardingAnswers()) }
     }
 
     @Test
@@ -42,9 +49,6 @@ class OnboardingFlowEngineTest {
         val emptyAnswers = OnboardingAnswers()
 
         engine.next(emptyAnswers)
-        assertEquals(StepType.PRESENTATION, engine.currentStep.type)
-
-        engine.next(emptyAnswers)
         assertEquals(StepType.ASK_NAME, engine.currentStep.type)
 
         engine.next(emptyAnswers)
@@ -55,7 +59,7 @@ class OnboardingFlowEngineTest {
     fun `enters PPU flow after ASK_NAME`() {
         val engine = engine()
         advanceToGender(engine)
-        engine.next(answersWithProfile(AddictionProfile.PPU))
+        engine.next(answersRequiringCoreValues())
 
         assertEquals(StepType.PPCS6_FORM, engine.currentStep.type)
     }
@@ -63,7 +67,7 @@ class OnboardingFlowEngineTest {
     @Test
     fun `PPU path contains PPCS6_FORM and EMA_FORM`() {
         val engine = engine()
-        val answers = answersWithProfile(AddictionProfile.PPU)
+        val answers = answersRequiringCoreValues()
         advanceToGender(engine)
         engine.next(answers)
         assertEquals(StepType.PPCS6_FORM, engine.currentStep.type)
@@ -75,22 +79,26 @@ class OnboardingFlowEngineTest {
     @Test
     fun `post-branch steps appear after branch flow`() {
         val engine = engine()
-        val answers = answersWithProfile(AddictionProfile.PPU)
+        val answers = answersRequiringCoreValues()
         advanceToGender(engine)
         engine.next(answers)
-        repeat(7) { engine.next(answers) } // PPCS6, EMA, FrequencyForm, Symptoms, Neuro, Hobbies, Goals
+        repeat(7) { engine.next(answers) }
 
         assertEquals(StepType.SCORE_RESULT, engine.currentStep.type)
+        engine.next(answers)
+        assertEquals(StepType.CORE_VALUES, engine.currentStep.type)
     }
 
     @Test
     fun `ends at FINISH and isLast is true`() {
         val engine = engine()
-        val answers = answersWithProfile(AddictionProfile.PPU)
+        val answers = answersRequiringCoreValues()
         advanceToGender(engine)
         engine.next(answers)
-        repeat(12) { engine.next(answers) }
+        repeat(8) { engine.next(answers) }
 
+        assertEquals(StepType.CORE_VALUES, engine.currentStep.type)
+        engine.next(answers)
         assertEquals(StepType.FINISH, engine.currentStep.type)
         assertTrue(engine.isLast)
     }
@@ -99,7 +107,7 @@ class OnboardingFlowEngineTest {
     fun `previous goes back one step`() {
         val engine = engine()
         engine.next(OnboardingAnswers())
-        assertEquals(StepType.PRESENTATION, engine.currentStep.type)
+        assertEquals(StepType.ASK_NAME, engine.currentStep.type)
 
         engine.previous()
         assertEquals(StepType.WELCOME, engine.currentStep.type)
