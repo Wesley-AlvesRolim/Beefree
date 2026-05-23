@@ -10,7 +10,7 @@ class OnboardingViewModelTest {
     private fun viewModel() = OnboardingViewModelMock()
 
     private fun OnboardingViewModelMock.advanceToGender() {
-        repeat(3) { next() }
+        repeat(2) { next() }
     }
 
     @Test
@@ -19,10 +19,10 @@ class OnboardingViewModelTest {
     }
 
     @Test
-    fun `next navigates from WELCOME to PRESENTATION`() {
+    fun `next navigates from WELCOME to ASK_NAME`() {
         val vm = viewModel()
         vm.next()
-        assertEquals(StepType.PRESENTATION, vm.currentStep.value.type)
+        assertEquals(StepType.ASK_NAME, vm.currentStep.value.type)
     }
 
     @Test
