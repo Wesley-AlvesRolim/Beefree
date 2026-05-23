@@ -86,6 +86,9 @@ class HomeViewModel(
     private val hasCompletedTodaysCheckInUseCase: HasCompletedTodaysCheckInUseCase,
     private val logger: Logger = AndroidLogger,
 ) : ViewModel() {
+    private var isHomeVisible = false
+    private var pendingOnboardingRedirect = false
+
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
@@ -113,11 +116,20 @@ class HomeViewModel(
         _navigationEvents.tryEmit(HomeNavigationDestination.TriggerMap)
     }
 
+    fun onHomeVisible() {
+        isHomeVisible = true
+        if (pendingOnboardingRedirect) {
+            pendingOnboardingRedirect = false
+            _navigationEvents.tryEmit(HomeNavigationDestination.Onboarding)
+        }
+    }
+
     init {
         refresh()
     }
 
     fun refresh() {
+        pendingOnboardingRedirect = false
         viewModelScope.launch {
             loadData()
         }
@@ -135,7 +147,11 @@ class HomeViewModel(
                 val userId = user.id ?: throw IllegalStateException("User ID not found")
                 val userAddiction = userProfileRepository.getAddictionsByUserId(userId).first().firstOrNull()
                 if (userAddiction == null) {
-                    _navigationEvents.emit(HomeNavigationDestination.Onboarding)
+                    pendingOnboardingRedirect = true
+                    if (isHomeVisible) {
+                        pendingOnboardingRedirect = false
+                        _navigationEvents.emit(HomeNavigationDestination.Onboarding)
+                    }
                     _uiState.update { it.copy(isLoading = false) }
                     return@coroutineScope
                 }
