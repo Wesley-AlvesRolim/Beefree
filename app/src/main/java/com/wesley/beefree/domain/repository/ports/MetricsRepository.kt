@@ -26,5 +26,7 @@ interface MetricsRepository {
 
     suspend fun insertRiskAssessment(assessment: RiskAssessment): Long
 
+    suspend fun deleteAllRiskAssessmentsForUser(userId: Int)
+
     fun getRiskAssessments(userId: Int): Flow<List<RiskAssessment>>
 }
