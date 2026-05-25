@@ -11,4 +11,7 @@ interface RiskAssessmentDAO {
 
     @Query("SELECT * FROM RiskAssessment WHERE user_profile_id = :userId ORDER BY created_at DESC")
     fun getAllByUser(userId: Int): Flow<List<RiskAssessmentEntity>>
+
+    @Query("DELETE FROM RiskAssessment WHERE user_profile_id = :userId")
+    suspend fun deleteAllByUser(userId: Int)
 }
