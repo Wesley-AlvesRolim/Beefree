@@ -7,10 +7,15 @@ import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.domain.emotion.usecases.SaveEmotionRecordUseCase
 import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
+import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.logging.Logger
+import com.wesley.beefree.infrastructure.storage.adapters.KeyValueRiskWeightsRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
+import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +59,7 @@ private fun defaultEmotionalRecordValues(): Map<FeelingType, Float> = emotionalR
 class EmotionalRecordViewModel(
     private val userProfileRepository: UserProfileRepository,
     private val saveEmotionRecordUseCase: SaveEmotionRecordUseCase,
+    private val calculateAndSaveRiskAssessmentUseCase: CalculateAndSaveRiskAssessmentUseCase,
     private val logger: Logger = AndroidLogger,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
@@ -102,6 +108,7 @@ class EmotionalRecordViewModel(
 
             result
                 .onSuccess {
+                    calculateAndSaveRiskAssessmentUseCase.execute(userId)
                     _uiState.value =
                         _uiState.value.copy(
                             step = EmotionalRecordStep.DONE,
@@ -149,6 +156,29 @@ class EmotionalRecordViewModel(
                                     database.riskFeatureSnapshotDao(),
                                     database.riskAssessmentDao(),
                                 ),
+                            ),
+                        calculateAndSaveRiskAssessmentUseCase =
+                            CalculateAndSaveRiskAssessmentUseCase(
+                                metricsRepository =
+                                    RoomMetricsRepository(
+                                        database.emotionRecordDao(),
+                                        database.riskFeatureSnapshotDao(),
+                                        database.riskAssessmentDao(),
+                                    ),
+                                riskWeightsRepository =
+                                    KeyValueRiskWeightsRepository(
+                                        SharedPreferencesKeyValueStorage(context),
+                                    ),
+                                checkInRepository =
+                                    RoomCheckInRepository(
+                                        database.dailyCheckInDao(),
+                                        database.weeklyCheckInDao(),
+                                    ),
+                                addictionRepository =
+                                    RoomAddictionRepository(
+                                        database.addictionCategoryDao(),
+                                        database.relapseRecordDao(),
+                                    ),
                             ),
                     ) as T
                 }
