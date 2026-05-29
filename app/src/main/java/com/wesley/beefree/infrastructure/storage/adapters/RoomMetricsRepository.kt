@@ -20,6 +20,8 @@ class RoomMetricsRepository(
 ) : MetricsRepository {
     override suspend fun insertEmotionRecord(record: EmotionRecord): Long = emotionRecordDao.insert(record.toEntity())
 
+    override suspend fun deleteEmotionRecordsByIds(ids: List<Long>) = emotionRecordDao.deleteByIds(ids)
+
     override fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>> =
         emotionRecordDao.getAllByUser(userId).map { list -> list.mapNotNull { it.toDomain() } }
 
