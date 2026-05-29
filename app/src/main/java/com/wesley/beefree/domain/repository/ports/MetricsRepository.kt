@@ -24,6 +24,8 @@ interface MetricsRepository {
 
     suspend fun getLatestRiskFeatureSnapshot(userId: Int): RiskFeatureSnapshot?
 
+    suspend fun deleteEmotionRecordsByIds(ids: List<Long>)
+
     suspend fun insertRiskAssessment(assessment: RiskAssessment): Long
 
     suspend fun deleteAllRiskAssessmentsForUser(userId: Int)
