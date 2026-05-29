@@ -25,8 +25,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.wesley.beefree.R
-import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.entities.RelapseRecord
+import com.wesley.beefree.domain.entities.RiskAssessment
+import com.wesley.beefree.domain.entities.RiskTrigger
 import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.ui.components.designsystem.BeeBodyMedium
@@ -36,12 +37,13 @@ import com.wesley.beefree.ui.components.designsystem.BeeLabelMedium
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
 import com.wesley.beefree.ui.components.home.CheckInBannerCard
 import com.wesley.beefree.ui.components.home.EvolutionCalendarCard
-import com.wesley.beefree.ui.components.home.FeelingEvolutionChartCard
 import com.wesley.beefree.ui.components.home.GreetingSection
 import com.wesley.beefree.ui.components.home.PsychoeducationCard
+import com.wesley.beefree.ui.components.home.RiskAssessmentTodayCard
 import com.wesley.beefree.ui.components.home.TriggersThisWeekCard
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.HomeViewModel
+import java.util.Calendar
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
@@ -83,18 +85,12 @@ fun HomeScreen(viewModel: HomeViewModel) {
         relapseSuccessRate = uiState.relapseSuccessRate,
         hasCheckedInToday = uiState.hasCheckedInToday,
         treatmentProfile = uiState.treatmentProfile,
-        anxietySeries = uiState.anxietySeries,
-        satisfactionSeries = uiState.satisfactionSeries,
+        todayRiskAssessments = uiState.todayRiskAssessments,
         alignedDays = uiState.alignedDays,
         relapseDays = uiState.relapseDays,
         topTriggers = uiState.topTriggers,
-        anxietyDelta = uiState.anxietyDelta,
-        satisfactionDelta = uiState.satisfactionDelta,
         onOpenCheckIn = viewModel::navigateToCheckIn,
-        onOpenRecoveryTrajectory = viewModel::navigateToRecoveryTrajectory,
-        onOpenTheFeelingDetails = viewModel::navigateToFeelingDetails,
         onOpenHelpIntervention = viewModel::navigateToHelpIntervention,
-        onOpenTriggerMap = viewModel::navigateToTriggerMap,
     )
 }
 
@@ -106,18 +102,12 @@ fun HomeScreenContent(
     relapseSuccessRate: Float,
     hasCheckedInToday: Boolean = false,
     treatmentProfile: TreatmentProfile = TreatmentProfile.ACT,
-    anxietySeries: List<Float> = emptyList(),
-    satisfactionSeries: List<Float> = emptyList(),
+    todayRiskAssessments: List<RiskAssessment> = emptyList(),
     alignedDays: Int = 30,
     relapseDays: Int = 0,
-    topTriggers: List<Pair<FeelingType, Int>> = emptyList(),
-    anxietyDelta: Int = 0,
-    satisfactionDelta: Int = 0,
+    topTriggers: List<Pair<RiskTrigger, Double>> = emptyList(),
     onOpenCheckIn: () -> Unit = {},
-    onOpenRecoveryTrajectory: () -> Unit = {},
-    onOpenTheFeelingDetails: () -> Unit = {},
     onOpenHelpIntervention: () -> Unit = {},
-    onOpenTriggerMap: () -> Unit = {},
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -148,24 +138,18 @@ fun HomeScreenContent(
                     relapseSuccessRate = relapseSuccessRate,
                     alignedDays = alignedDays,
                     setbackDays = relapseDays,
-                    onClick = onOpenRecoveryTrajectory,
                 )
             }
 
             item {
-                FeelingEvolutionChartCard(
-                    anxietySeries = anxietySeries,
-                    satisfactionSeries = satisfactionSeries,
-                    anxietyDelta = anxietyDelta,
-                    satisfactionDelta = satisfactionDelta,
-                    onClick = onOpenTheFeelingDetails,
+                RiskAssessmentTodayCard(
+                    assessments = todayRiskAssessments,
                 )
             }
 
             item {
                 TriggersThisWeekCard(
                     topTriggers = topTriggers,
-                    onSeeAll = onOpenTriggerMap,
                 )
             }
         }
@@ -212,13 +196,53 @@ fun HomeScreenPreview() {
             relapseSuccessRate = 0.84f,
             hasCheckedInToday = true,
             treatmentProfile = TreatmentProfile.ACT,
-            anxietySeries = listOf(78f, 70f, 66f, 60f, 52f, 48f, 42f, 36f),
-            satisfactionSeries = listOf(22f, 28f, 35f, 44f, 50f, 58f, 64f, 70f),
+            todayRiskAssessments =
+                listOf(
+                    RiskAssessment(
+                        userProfileId = 1,
+                        riskScore = 75,
+                        timeWindow =
+                            Calendar
+                                .getInstance()
+                                .apply {
+                                    set(Calendar.HOUR_OF_DAY, 6)
+                                }.timeInMillis
+                                .toString(),
+                        createdAt = now - dayMillis / 2,
+                    ),
+                    RiskAssessment(
+                        userProfileId = 1,
+                        riskScore = 45,
+                        timeWindow =
+                            Calendar
+                                .getInstance()
+                                .apply {
+                                    set(Calendar.HOUR_OF_DAY, 12)
+                                }.timeInMillis
+                                .toString(),
+                        createdAt = now - dayMillis / 4,
+                    ),
+                    RiskAssessment(
+                        userProfileId = 1,
+                        riskScore = 20,
+                        timeWindow =
+                            Calendar
+                                .getInstance()
+                                .apply {
+                                    set(Calendar.HOUR_OF_DAY, 18)
+                                }.timeInMillis
+                                .toString(),
+                        createdAt = now - dayMillis / 8,
+                    ),
+                ),
             alignedDays = 25,
             relapseDays = 1,
-            topTriggers = listOf(FeelingType.CRAVING to 3, FeelingType.STRESS to 2, FeelingType.BOREDOM to 1),
-            anxietyDelta = -53,
-            satisfactionDelta = 218,
+            topTriggers =
+                listOf(
+                    RiskTrigger.CRAVING to 90.0,
+                    RiskTrigger.STRESS to 70.0,
+                    RiskTrigger.BOREDOM to 50.0,
+                ),
         )
     }
 }
