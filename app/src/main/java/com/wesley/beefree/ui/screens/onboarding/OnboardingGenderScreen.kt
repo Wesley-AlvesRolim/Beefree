@@ -96,7 +96,7 @@ private fun GenderTile(
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(BeeSpacing.L),
             )
             Spacer(modifier = Modifier.height(BeeSpacing.XXL))
