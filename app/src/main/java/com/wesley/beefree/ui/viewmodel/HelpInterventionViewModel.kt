@@ -80,6 +80,7 @@ data class HelpInterventionUiState(
     val meditationTextIndex: Int = 0,
     val loopCount: Int = 0,
     val isLoading: Boolean = true,
+    val isSaving: Boolean = false,
     val isComplete: Boolean = false,
     val userId: Int? = null,
     val userProfileId: Int? = null,
@@ -173,7 +174,7 @@ class HelpInterventionViewModel(
             _uiState.update {
                 it.copy(
                     answers = newAnswers,
-                    isComplete = true,
+                    isSaving = true,
                 )
             }
             saveSession()
@@ -360,8 +361,10 @@ class HelpInterventionViewModel(
                     userProfileId = state.userProfileId,
                 )
                 state.userProfileId?.let { calculateAndSaveRiskAssessmentUseCase.execute(it) }
+                _uiState.update { it.copy(isComplete = true, isSaving = false) }
             } catch (e: Exception) {
                 logger.e(TAG, "Failed to save intervention session", e)
+                _uiState.update { it.copy(isSaving = false) }
             }
         }
     }

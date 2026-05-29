@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -82,6 +83,10 @@ fun HelpInterventionScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(state.isComplete) {
+        if (state.isComplete) onDismiss()
+    }
+
     if (state.isLoading) {
         return
     }
@@ -118,6 +123,7 @@ fun HelpInterventionScreen(
         breathingSecondsLeft = state.breathingSecondsLeft,
         breathingCycleCount = state.breathingCycleCount,
         isTheLastScreen = isTheLastScreen,
+        isSaving = state.isSaving,
         userCoreValues = state.userCoreValues,
         lastCommittedAction = lastCommittedAction,
         currentAnswer = currentAnswer,
@@ -142,6 +148,7 @@ private fun HelpInterventionContent(
     breathingSecondsLeft: Int,
     breathingCycleCount: Int,
     isTheLastScreen: Boolean,
+    isSaving: Boolean,
     userCoreValues: List<UserCoreValue>,
     lastCommittedAction: String?,
     currentAnswer: Any?,
@@ -181,6 +188,7 @@ private fun HelpInterventionContent(
                 onDismiss = onDismiss,
                 canGoNext = canContinue,
                 isTheLastScreen = isTheLastScreen,
+                isSaving = isSaving,
             )
         },
     ) { padding ->
@@ -412,6 +420,7 @@ private fun HelpInterventionBottomBar(
     onDismiss: () -> Unit,
     canGoNext: Boolean,
     isTheLastScreen: Boolean,
+    isSaving: Boolean,
 ) {
     Row(
         modifier =
@@ -433,7 +442,8 @@ private fun HelpInterventionBottomBar(
             }
         } else {
             BeeButtonPrimary(
-                onClick = onDismiss,
+                onClick = onNext,
+                enabled = !isSaving,
                 modifier = Modifier.weight(1f),
             ) {
                 BeeLabelMedium(
@@ -503,6 +513,7 @@ private fun HelpInterventionStepPreview(index: Int) {
             breathingSecondsLeft = 60,
             breathingCycleCount = 0,
             isTheLastScreen = index == allSteps.lastIndex,
+            isSaving = false,
             userCoreValues =
                 listOf(
                     UserCoreValue(
