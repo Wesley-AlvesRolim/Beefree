@@ -11,6 +11,8 @@ class InMemoryEventBus(
                 tag: String,
                 message: String,
             ) {}
+
+            override fun info(tag: String, message: String) {}
         },
 ) : EventBus {
     private val subscribers = mutableMapOf<Class<out DomainEvent>, MutableList<(DomainEvent) -> Unit>>()

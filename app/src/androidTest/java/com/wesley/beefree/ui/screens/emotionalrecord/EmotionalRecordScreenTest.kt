@@ -215,6 +215,8 @@ class EmotionalRecordScreenTest {
             tag: String,
             message: String,
         ) = Unit
+
+        override fun info(tag: String, message: String) = Unit
     }
 
     private class FakeUserProfileRepository : UserProfileRepository {
