@@ -100,13 +100,13 @@ private fun RiskBarChart(assessments: List<RiskAssessment>) {
 }
 
 private fun formatTimeWindowShort(assessment: RiskAssessment): String {
-    val timeWindow = assessment.timeWindow
-    if (!timeWindow.isNullOrBlank()) {
+    val timeWindowStart = assessment.timeWindowStart
+    if (timeWindowStart != null) {
         val initialHourForTimeWindow =
             Calendar
                 .getInstance()
                 .apply {
-                    timeInMillis = timeWindow.toLong()
+                    timeInMillis = timeWindowStart
                 }.get(Calendar.HOUR_OF_DAY)
         return "$initialHourForTimeWindow:00"
     }

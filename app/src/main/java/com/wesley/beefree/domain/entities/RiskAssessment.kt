@@ -4,6 +4,6 @@ data class RiskAssessment(
     val id: Int? = null,
     val userProfileId: Int,
     val riskScore: Int,
-    val timeWindow: String? = null,
+    val timeWindowStart: Long? = null,
     val createdAt: Long,
 )

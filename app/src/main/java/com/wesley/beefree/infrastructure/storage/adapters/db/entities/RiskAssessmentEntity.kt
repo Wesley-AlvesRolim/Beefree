@@ -22,6 +22,6 @@ data class RiskAssessmentEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "user_profile_id") val userProfileId: Int,
     @ColumnInfo(name = "risk_score") val riskScore: Int,
-    @ColumnInfo(name = "time_window") val timeWindow: String? = null,
+    @ColumnInfo(name = "time_window_start") val timeWindowStart: Long? = null,
     @ColumnInfo(name = "created_at") val createdAt: Long,
 )

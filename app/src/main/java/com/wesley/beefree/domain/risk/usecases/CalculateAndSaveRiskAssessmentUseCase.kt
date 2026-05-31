@@ -63,14 +63,14 @@ class CalculateAndSaveRiskAssessmentUseCase(
                         )
 
                     val score = riskEngine.calculateScore(projectedSnapshot, weights, hourOfDay, dayOfWeek)
-                    val riskScore = (score * PERCENT_SCALE).toInt()
+                    val riskScore = (score * PERCENT_SCALE).toInt().coerceIn(0, 100)
                     add(riskScore)
 
                     metricsRepository.insertRiskAssessment(
                         RiskAssessment(
                             userProfileId = userId,
                             riskScore = riskScore,
-                            timeWindow = targetMs.toString(),
+                            timeWindowStart = targetMs,
                             createdAt = now,
                         ),
                     )

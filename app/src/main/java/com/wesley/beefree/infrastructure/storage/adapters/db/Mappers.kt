@@ -3,7 +3,6 @@ package com.wesley.beefree.infrastructure.storage.adapters.db
 import com.wesley.beefree.domain.entities.*
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.infrastructure.storage.adapters.db.entities.*
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 fun AddictionCategoryEntity.toDomain() =
@@ -384,7 +383,7 @@ fun RiskAssessmentEntity.toDomain() =
         id = id,
         userProfileId = userProfileId,
         riskScore = riskScore,
-        timeWindow = timeWindow,
+        timeWindowStart = timeWindowStart,
         createdAt = createdAt,
     )
 
@@ -393,6 +392,6 @@ fun RiskAssessment.toEntity() =
         id = id,
         userProfileId = userProfileId,
         riskScore = riskScore,
-        timeWindow = timeWindow,
+        timeWindowStart = timeWindowStart,
         createdAt = createdAt,
     )

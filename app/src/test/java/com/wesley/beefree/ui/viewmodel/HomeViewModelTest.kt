@@ -304,7 +304,7 @@ class HomeViewModelTest {
                     RiskAssessment(
                         userProfileId = userId,
                         riskScore = 75,
-                        timeWindow =
+                        timeWindowStart =
                             Calendar
                                 .getInstance()
                                 .apply {
@@ -316,7 +316,7 @@ class HomeViewModelTest {
                     RiskAssessment(
                         userProfileId = userId,
                         riskScore = 30,
-                        timeWindow =
+                        timeWindowStart =
                             Calendar
                                 .getInstance()
                                 .apply {

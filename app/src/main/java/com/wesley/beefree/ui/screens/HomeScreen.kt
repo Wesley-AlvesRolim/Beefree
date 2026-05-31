@@ -201,37 +201,34 @@ fun HomeScreenPreview() {
                     RiskAssessment(
                         userProfileId = 1,
                         riskScore = 75,
-                        timeWindow =
+                        timeWindowStart =
                             Calendar
                                 .getInstance()
                                 .apply {
                                     set(Calendar.HOUR_OF_DAY, 6)
-                                }.timeInMillis
-                                .toString(),
+                                }.timeInMillis,
                         createdAt = now - dayMillis / 2,
                     ),
                     RiskAssessment(
                         userProfileId = 1,
                         riskScore = 45,
-                        timeWindow =
+                        timeWindowStart =
                             Calendar
                                 .getInstance()
                                 .apply {
                                     set(Calendar.HOUR_OF_DAY, 12)
-                                }.timeInMillis
-                                .toString(),
+                                }.timeInMillis,
                         createdAt = now - dayMillis / 4,
                     ),
                     RiskAssessment(
                         userProfileId = 1,
                         riskScore = 20,
-                        timeWindow =
+                        timeWindowStart =
                             Calendar
                                 .getInstance()
                                 .apply {
                                     set(Calendar.HOUR_OF_DAY, 18)
-                                }.timeInMillis
-                                .toString(),
+                                }.timeInMillis,
                         createdAt = now - dayMillis / 8,
                     ),
                 ),

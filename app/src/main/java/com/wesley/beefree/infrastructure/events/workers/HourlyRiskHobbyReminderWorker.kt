@@ -13,6 +13,8 @@ import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.domain.risk.DefaultRiskEngine
 import com.wesley.beefree.domain.risk.RiskLevel
 import com.wesley.beefree.domain.risk.ports.RiskEngine
+import com.wesley.beefree.infrastructure.logging.AndroidLogger
+import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomOnboardingRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
@@ -27,6 +29,7 @@ class HourlyRiskHobbyReminderWorker(
     private val userProfileRepository: UserProfileRepository,
     private val metricsRepository: MetricsRepository,
     private val onboardingRepository: OnboardingRepository,
+    private val logger: Logger = AndroidLogger,
     private val riskEngine: RiskEngine = DefaultRiskEngine(),
 ) : BeeNotificationWorker(context, workerParams) {
     private var suggestedHobbyName: String? = null
@@ -62,25 +65,25 @@ class HourlyRiskHobbyReminderWorker(
                 .getRiskAssessments(userId)
                 .first()
                 .firstOrNull { assessment ->
-                    assessment.timeWindow
-                        ?.toLongOrNull()
-                        ?.let { timeWindowMs -> matchesHour(calendarFromMillis(timeWindowMs), targetHour) }
-                        ?: false
+                    assessment.timeWindowStart?.let { timeWindowMs: Long ->
+                        matchesHour(calendarFromMillis(timeWindowMs), targetHour)
+                    } ?: false
                 }
                 ?: return false
 
         if (riskEngine.classify(riskAssessment.riskScore / 100.0) != RiskLevel.HIGH) return false
 
-        suggestedHobbyName =
-            onboardingRepository
-                .getHobbies(userId)
-                .first()
-                .randomOrNull()
-                ?.hobbyName
+        val hobbies = onboardingRepository.getHobbies(userId).first()
+        if (hobbies.isEmpty()) {
+            logger.info(TAG, "No hobbies found for user $userId")
+            return true
+        }
+        suggestedHobbyName = hobbies.randomOrNull()?.hobbyName
         return true
     }
 
     companion object {
+        private const val TAG = "HourlyRiskHobbyReminder"
         private const val CHANNEL_ID = "hourly_risk_hobby_reminder"
         private const val NOTIFICATION_ID = 2005
         private const val WORK_NAME = "hourly_risk_hobby_reminder"
@@ -144,6 +147,7 @@ class HourlyRiskHobbyReminderWorker(
                         userProfileRepository = userRepository,
                         metricsRepository = metricsRepository,
                         onboardingRepository = onboardingRepository,
+                        logger = AndroidLogger,
                     )
                 }
             }
