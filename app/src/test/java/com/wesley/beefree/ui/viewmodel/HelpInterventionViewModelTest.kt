@@ -24,6 +24,7 @@ import com.wesley.beefree.domain.repository.ports.RiskWeightsRepository
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.domain.risk.RiskWeights
 import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
+import com.wesley.beefree.infrastructure.logging.TestLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -40,6 +41,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.whenever
 import kotlin.OptIn
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,6 +58,7 @@ class HelpInterventionViewModelTest {
         Dispatchers.setMain(testDispatcher)
         mockOnboardingRepository = mock(OnboardingRepository::class.java)
         mockUserProfileRepository = mock(UserProfileRepository::class.java)
+        whenever(mockUserProfileRepository.getAllProfiles()).thenReturn(flowOf(emptyList()))
         fakeEMIRepository = FakeEMIRepository()
         saveInterventionSessionUseCase =
             SaveInterventionSessionUseCase(
@@ -341,6 +344,7 @@ class HelpInterventionViewModelTest {
             saveInterventionSessionUseCase = saveInterventionSessionUseCase,
             calculateAndSaveRiskAssessmentUseCase = noOpCalculateRiskUseCase(),
             ticker = fakeTicker,
+            logger = TestLogger,
         )
 
     private fun createViewModelWithProfile(profile: TreatmentProfile): HelpInterventionViewModel {
@@ -351,6 +355,7 @@ class HelpInterventionViewModelTest {
                 saveInterventionSessionUseCase = saveInterventionSessionUseCase,
                 calculateAndSaveRiskAssessmentUseCase = noOpCalculateRiskUseCase(),
                 ticker = fakeTicker,
+                logger = TestLogger,
             )
         testDispatcher.scheduler.advanceUntilIdle()
         return vm

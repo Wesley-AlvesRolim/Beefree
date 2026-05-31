@@ -79,7 +79,7 @@ class HourlyRiskHobbyReminderWorkerTest {
         runTest {
             val userId = 1
             val user = UserProfile(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)
-            val assessment = RiskAssessment(userProfileId = userId, riskScore = 90, timeWindowStart = 0L.toString(), createdAt = 0L)
+            val assessment = RiskAssessment(userProfileId = userId, riskScore = 90, timeWindowStart = 0L, createdAt = 0L)
             whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(listOf(user)))
             whenever(mockMetricsRepository.getRiskAssessments(userId)).thenReturn(flowOf(listOf(assessment)))
             assertFalse(worker.onTriggered())
@@ -94,7 +94,7 @@ class HourlyRiskHobbyReminderWorkerTest {
             val targetTimeWindow = now + hourInMillis
             val user = UserProfile(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)
             val assessment =
-                RiskAssessment(userProfileId = userId, riskScore = 40, timeWindowStart = targetTimeWindow.toString(), createdAt = 0L)
+                RiskAssessment(userProfileId = userId, riskScore = 40, timeWindowStart = targetTimeWindow, createdAt = 0L)
             whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(listOf(user)))
             whenever(mockMetricsRepository.getRiskAssessments(userId)).thenReturn(flowOf(listOf(assessment)))
             assertFalse(worker.onTriggered())
@@ -109,7 +109,7 @@ class HourlyRiskHobbyReminderWorkerTest {
             val targetTimeWindow = now + hourInMillis
             val user = UserProfile(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)
             val assessment =
-                RiskAssessment(userProfileId = userId, riskScore = 80, timeWindowStart = targetTimeWindow.toString(), createdAt = 0L)
+                RiskAssessment(userProfileId = userId, riskScore = 80, timeWindowStart = targetTimeWindow, createdAt = 0L)
             val hobby = UserHobby(userProfileId = userId, hobbyName = "Caminhar", createdAt = 0L)
             whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(listOf(user)))
             whenever(mockMetricsRepository.getRiskAssessments(userId)).thenReturn(flowOf(listOf(assessment)))
@@ -127,7 +127,7 @@ class HourlyRiskHobbyReminderWorkerTest {
             val targetTimeWindow = now + hourInMillis
             val user = UserProfile(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)
             val assessment =
-                RiskAssessment(userProfileId = userId, riskScore = 80, timeWindowStart = targetTimeWindow.toString(), createdAt = 0L)
+                RiskAssessment(userProfileId = userId, riskScore = 80, timeWindowStart = targetTimeWindow, createdAt = 0L)
             val hobbies =
                 listOf(
                     UserHobby(userProfileId = userId, hobbyName = "Ler", createdAt = 0L),
@@ -152,7 +152,7 @@ class HourlyRiskHobbyReminderWorkerTest {
             val targetTimeWindow = now + hourInMillis
             val user = UserProfile(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)
             val assessment =
-                RiskAssessment(userProfileId = userId, riskScore = 80, timeWindowStart = targetTimeWindow.toString(), createdAt = 0L)
+                RiskAssessment(userProfileId = userId, riskScore = 80, timeWindowStart = targetTimeWindow, createdAt = 0L)
             whenever(mockUserRepository.getAllProfiles()).thenReturn(flowOf(listOf(user)))
             whenever(mockMetricsRepository.getRiskAssessments(userId)).thenReturn(flowOf(listOf(assessment)))
             whenever(mockOnboardingRepository.getHobbies(userId)).thenReturn(flowOf(emptyList()))

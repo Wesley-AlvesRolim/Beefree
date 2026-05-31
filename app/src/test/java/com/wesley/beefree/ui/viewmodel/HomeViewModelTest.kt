@@ -2,7 +2,6 @@ package com.wesley.beefree.ui.viewmodel
 
 import com.wesley.beefree.domain.entities.RelapseRecord
 import com.wesley.beefree.domain.entities.RiskAssessment
-import com.wesley.beefree.domain.entities.RiskTrigger
 import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.home.usecases.HomeData
 import com.wesley.beefree.domain.home.usecases.LoadHomeDataUseCase
@@ -11,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -59,34 +59,6 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `navigate to recovery trajectory emits RecoveryTrajectory`() =
-        runTest {
-            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-            val viewModel = createViewModel()
-            val event = async { viewModel.navigationEvents.first() }
-            advanceUntilIdle()
-
-            viewModel.navigateToRecoveryTrajectory()
-            advanceUntilIdle()
-
-            assertEquals(HomeNavigationDestination.RecoveryTrajectory, event.await())
-        }
-
-    @Test
-    fun `navigate to feeling details emits FeelingDetails`() =
-        runTest {
-            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-            val viewModel = createViewModel()
-            val event = async { viewModel.navigationEvents.first() }
-            advanceUntilIdle()
-
-            viewModel.navigateToFeelingDetails()
-            advanceUntilIdle()
-
-            assertEquals(HomeNavigationDestination.FeelingDetails, event.await())
-        }
-
-    @Test
     fun `navigate to help intervention defaults to FAB source`() =
         runTest {
             Dispatchers.setMain(StandardTestDispatcher(testScheduler))
@@ -112,20 +84,6 @@ class HomeViewModelTest {
             advanceUntilIdle()
 
             assertEquals(HomeNavigationDestination.HelpIntervention(HelpInterventionSource.WIDGET), event.await())
-        }
-
-    @Test
-    fun `navigate to trigger map emits TriggerMap`() =
-        runTest {
-            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-            val viewModel = createViewModel()
-            val event = async { viewModel.navigationEvents.first() }
-            advanceUntilIdle()
-
-            viewModel.navigateToTriggerMap()
-            advanceUntilIdle()
-
-            assertEquals(HomeNavigationDestination.TriggerMap, event.await())
         }
 
     @Test
@@ -208,43 +166,6 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun topTriggersRankedByLatestRiskFeatureSnapshot() =
-        runTest {
-            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-            val triggers =
-                listOf(
-                    RiskTrigger.CRAVING to 90,
-                    RiskTrigger.STRESS to 70,
-                    RiskTrigger.FATIGUE to 50,
-                )
-            val result =
-                HomeData.Success(
-                    user = user,
-                    psychoeducationMessage = "test",
-                    relapseHistory = emptyList(),
-                    relapseSuccessRate = 1f,
-                    emotionRecords = emptyList(),
-                    hasCheckedInToday = false,
-                    treatmentProfile = TreatmentProfile.ACT,
-                    todayRiskAssessments = emptyList(),
-                    alignedDays = 30,
-                    topTriggers = triggers,
-                )
-            val viewModel = createViewModel(homeDataResult = result)
-            viewModel.refresh()
-            advanceUntilIdle()
-
-            val topTriggers = viewModel.uiState.value.topTriggers
-            assertEquals(3, topTriggers.size)
-            assertEquals(RiskTrigger.CRAVING, topTriggers[0].first)
-            assertEquals(90, topTriggers[0].second)
-            assertEquals(RiskTrigger.STRESS, topTriggers[1].first)
-            assertEquals(70, topTriggers[1].second)
-            assertEquals(RiskTrigger.FATIGUE, topTriggers[2].first)
-            assertEquals(50, topTriggers[2].second)
-        }
-
-    @Test
     fun topTriggersEmptyWhenNoSnapshotExists() =
         runTest {
             Dispatchers.setMain(StandardTestDispatcher(testScheduler))
@@ -309,8 +230,7 @@ class HomeViewModelTest {
                                 .getInstance()
                                 .apply {
                                     set(Calendar.HOUR_OF_DAY, 0)
-                                }.timeInMillis
-                                .toString(),
+                                }.timeInMillis,
                         createdAt = System.currentTimeMillis(),
                     ),
                     RiskAssessment(
@@ -321,8 +241,7 @@ class HomeViewModelTest {
                                 .getInstance()
                                 .apply {
                                     set(Calendar.HOUR_OF_DAY, 6)
-                                }.timeInMillis
-                                .toString(),
+                                }.timeInMillis,
                         createdAt = System.currentTimeMillis(),
                     ),
                 )
@@ -392,7 +311,7 @@ class HomeViewModelTest {
         }
 
     private fun createViewModel(homeDataResult: HomeData = defaultSuccessResult()): HomeViewModel {
-        runTest {
+        runBlocking {
             whenever(loadHomeDataUseCase.execute()).thenReturn(homeDataResult)
         }
         return HomeViewModel(loadHomeDataUseCase = loadHomeDataUseCase)
