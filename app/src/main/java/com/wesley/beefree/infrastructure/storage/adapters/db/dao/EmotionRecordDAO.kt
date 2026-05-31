@@ -20,4 +20,7 @@ interface EmotionRecordDAO {
         userId: Int,
         type: String,
     ): Flow<List<EmotionRecordEntity>>
+
+    @Query("DELETE FROM EmotionRecord WHERE id IN (:ids)")
+    suspend fun deleteByIds(ids: List<Long>)
 }

@@ -7,27 +7,24 @@ import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.domain.checkin.usecases.DetermineCheckInTypeUseCase
 import com.wesley.beefree.domain.checkin.usecases.HasCompletedTodaysCheckInUseCase
 import com.wesley.beefree.domain.entities.EmotionRecord
-import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.entities.RelapseRecord
+import com.wesley.beefree.domain.entities.RiskAssessment
+import com.wesley.beefree.domain.entities.RiskTrigger
 import com.wesley.beefree.domain.entities.UserProfile
-import com.wesley.beefree.domain.entities.WeeklyCheckIn
 import com.wesley.beefree.domain.home.usecases.ComputeRelapseSuccessRateUseCase
+import com.wesley.beefree.domain.home.usecases.HomeData
+import com.wesley.beefree.domain.home.usecases.LoadHomeDataUseCase
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
-import com.wesley.beefree.domain.repository.ports.AddictionRepository
-import com.wesley.beefree.domain.repository.ports.CheckInRepository
-import com.wesley.beefree.domain.repository.ports.LessonRepository
-import com.wesley.beefree.domain.repository.ports.MetricsRepository
-import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.logging.Logger
+import com.wesley.beefree.infrastructure.storage.adapters.KeyValueRiskWeightsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomLessonRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
+import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,24 +32,15 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 sealed class HomeNavigationDestination {
     object CheckIn : HomeNavigationDestination()
 
-    object RecoveryTrajectory : HomeNavigationDestination()
-
-    object FeelingDetails : HomeNavigationDestination()
-
     data class HelpIntervention(
         val source: HelpInterventionSource = HelpInterventionSource.FAB,
     ) : HomeNavigationDestination()
-
-    object TriggerMap : HomeNavigationDestination()
 
     object Onboarding : HomeNavigationDestination()
 }
@@ -65,25 +53,16 @@ data class HomeUiState(
     val emotionRecords: List<EmotionRecord> = emptyList(),
     val hasCheckedInToday: Boolean = false,
     val treatmentProfile: TreatmentProfile = TreatmentProfile.ACT,
-    val anxietySeries: List<Float> = emptyList(),
-    val satisfactionSeries: List<Float> = emptyList(),
+    val todayRiskAssessments: List<RiskAssessment> = emptyList(),
     val alignedDays: Int = 30,
     val relapseDays: Int = 0,
-    val topTriggers: List<Pair<FeelingType, Int>> = emptyList(),
-    val anxietyDelta: Int = 0,
-    val satisfactionDelta: Int = 0,
+    val topTriggers: List<Pair<RiskTrigger, Double>> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
 )
 
 class HomeViewModel(
-    private val lessonRepository: LessonRepository,
-    private val addictionRepository: AddictionRepository,
-    private val metricsRepository: MetricsRepository,
-    private val userProfileRepository: UserProfileRepository,
-    private val checkInRepository: CheckInRepository,
-    private val computeRelapseSuccessRateUseCase: ComputeRelapseSuccessRateUseCase,
-    private val hasCompletedTodaysCheckInUseCase: HasCompletedTodaysCheckInUseCase,
+    private val loadHomeDataUseCase: LoadHomeDataUseCase,
     private val logger: Logger = AndroidLogger,
 ) : ViewModel() {
     private var isHomeVisible = false
@@ -100,20 +79,8 @@ class HomeViewModel(
         _navigationEvents.tryEmit(HomeNavigationDestination.CheckIn)
     }
 
-    fun navigateToRecoveryTrajectory() {
-        _navigationEvents.tryEmit(HomeNavigationDestination.RecoveryTrajectory)
-    }
-
-    fun navigateToFeelingDetails() {
-        _navigationEvents.tryEmit(HomeNavigationDestination.FeelingDetails)
-    }
-
     fun navigateToHelpIntervention(source: HelpInterventionSource = HelpInterventionSource.FAB) {
         _navigationEvents.tryEmit(HomeNavigationDestination.HelpIntervention(source))
-    }
-
-    fun navigateToTriggerMap() {
-        _navigationEvents.tryEmit(HomeNavigationDestination.TriggerMap)
     }
 
     fun onHomeVisible() {
@@ -143,161 +110,39 @@ class HomeViewModel(
         coroutineScope {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                val user = resolveUser() ?: throw IllegalStateException("User profile not found")
-                val userId = user.id ?: throw IllegalStateException("User ID not found")
-                val userAddiction = userProfileRepository.getAddictionsByUserId(userId).first().firstOrNull()
-                if (userAddiction == null) {
-                    pendingOnboardingRedirect = true
-                    if (isHomeVisible) {
-                        pendingOnboardingRedirect = false
-                        _navigationEvents.emit(HomeNavigationDestination.Onboarding)
+                when (val result = loadHomeDataUseCase.execute()) {
+                    is HomeData.OnboardingRequired -> {
+                        pendingOnboardingRedirect = true
+                        if (isHomeVisible) {
+                            pendingOnboardingRedirect = false
+                            _navigationEvents.emit(HomeNavigationDestination.Onboarding)
+                        }
+                        _uiState.update { it.copy(isLoading = false) }
                     }
-                    _uiState.update { it.copy(isLoading = false) }
-                    return@coroutineScope
-                }
-
-                val allPsychoeducationMessagesDeferred =
-                    async(Dispatchers.IO) {
-                        lessonRepository
-                            .getContentByCategory(
-                                userAddiction.addictionCategoryId,
-                            ).first()
+                    is HomeData.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                user = result.user,
+                                psychoeducationMessage = result.psychoeducationMessage,
+                                relapseHistory = result.relapseHistory,
+                                relapseSuccessRate = result.relapseSuccessRate,
+                                emotionRecords = result.emotionRecords,
+                                hasCheckedInToday = result.hasCheckedInToday,
+                                treatmentProfile = result.treatmentProfile,
+                                todayRiskAssessments = result.todayRiskAssessments,
+                                alignedDays = result.alignedDays,
+                                relapseDays = 30 - result.alignedDays,
+                                topTriggers = result.topTriggers,
+                                isLoading = false,
+                            )
+                        }
                     }
-                val allRelapsesDeferred =
-                    async(Dispatchers.IO) { addictionRepository.getRelapseHistory().first() }
-                val metricsDeferred =
-                    async(Dispatchers.IO) { metricsRepository.getEmotionRecords(userId).first() }
-                val weeklyCheckInsDeferred =
-                    async(Dispatchers.IO) { checkInRepository.getWeeklyCheckIns(userId).first() }
-                val dailyCheckInsDeferred =
-                    async(Dispatchers.IO) { checkInRepository.getDailyCheckIns(userId).first() }
-
-                val allPsychoeducationMessages = allPsychoeducationMessagesDeferred.await()
-                val allRelapses = allRelapsesDeferred.await()
-                val metrics = metricsDeferred.await()
-                val weeklyCheckIns = weeklyCheckInsDeferred.await()
-                val dailyCheckIns = dailyCheckInsDeferred.await()
-
-                val psychoeducationMessage = allPsychoeducationMessages.randomOrNull()?.contentText ?: ""
-                val thirtyDaysAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)
-                val relapses =
-                    allRelapses
-                        .filter { it.createdAt >= thirtyDaysAgo }
-                        .sortedByDescending { it.createdAt }
-                val relapseRate = computeRelapseSuccessRateUseCase.execute(relapses)
-
-                val hasCheckedIn =
-                    hasCompletedTodaysCheckInUseCase.execute(userId, user.createdAt)
-
-                val treatmentProfile =
-                    dailyCheckIns.lastOrNull()?.treatmentProfile ?: TreatmentProfile.ACT
-                val anxietySeries = computeAnxietySeries(metrics)
-                val satisfactionSeries = computeSatisfactionSeries(weeklyCheckIns)
-                val alignedDays = computeAlignedDays(allRelapses)
-                val topTriggers = computeTopTriggers(metrics)
-                val anxietyDelta = computeSeriesDelta(anxietySeries)
-                val satisfactionDelta = computeSeriesDelta(satisfactionSeries)
-
-                _uiState.update {
-                    it.copy(
-                        user = user,
-                        psychoeducationMessage = psychoeducationMessage,
-                        relapseHistory = relapses,
-                        relapseSuccessRate = relapseRate,
-                        emotionRecords = metrics,
-                        hasCheckedInToday = hasCheckedIn,
-                        treatmentProfile = treatmentProfile,
-                        anxietySeries = anxietySeries,
-                        satisfactionSeries = satisfactionSeries,
-                        alignedDays = alignedDays,
-                        relapseDays = 30 - alignedDays,
-                        topTriggers = topTriggers,
-                        anxietyDelta = anxietyDelta,
-                        satisfactionDelta = satisfactionDelta,
-                        isLoading = false,
-                    )
                 }
             } catch (e: Exception) {
                 logger.e(TAG, "Failed to load home data", e)
                 _uiState.update { it.copy(isLoading = false, error = e.message ?: "Unknown error") }
             }
         }
-
-    private suspend fun resolveUser(): UserProfile? =
-        userProfileRepository
-            .getAllProfiles()
-            .first()
-            .firstOrNull()
-
-    private fun computeAnxietySeries(emotionRecords: List<EmotionRecord>): List<Float> {
-        val weeks = 6
-        val daysOnWeek: Long = 7
-        val now = System.currentTimeMillis()
-        val weekMs = TimeUnit.DAYS.toMillis(daysOnWeek)
-        val maxIntensityLevel = 5f
-        return (weeks downTo 0).map { weeksAgo ->
-            val weekEnd = now - weeksAgo * weekMs
-            val weekStart = weekEnd - weekMs
-            val records =
-                emotionRecords.filter { it.feelingType == FeelingType.STRESS && it.createdAt in weekStart..weekEnd }
-            if (records.isEmpty()) {
-                0f
-            } else {
-                (
-                    records
-                        .map { it.intensity }
-                        .average()
-                        .toFloat() / maxIntensityLevel
-                ) * 100f
-            }
-        }
-    }
-
-    private fun computeAlignedDays(relapses: List<RelapseRecord>): Int {
-        val calendar = Calendar.getInstance()
-        val today = calendar.timeInMillis
-        calendar.add(Calendar.DAY_OF_YEAR, -30)
-        val thirtyDaysAgo = calendar.timeInMillis
-        val relapseDays =
-            relapses
-                .filter { it.createdAt in thirtyDaysAgo..today }
-                .map {
-                    val c = Calendar.getInstance().apply { timeInMillis = it.createdAt }
-                    "${c.get(Calendar.DAY_OF_YEAR)}-${c.get(Calendar.YEAR)}"
-                }.toSet()
-        return (30 - relapseDays.size).coerceAtLeast(0)
-    }
-
-    private fun computeTopTriggers(emotionRecords: List<EmotionRecord>): List<Pair<FeelingType, Int>> =
-        emotionRecords
-            .groupBy { it.feelingType }
-            .entries
-            .sortedByDescending { it.value.size }
-            .take(3)
-            .map { it.key to it.value.size }
-
-    private fun computeSeriesDelta(series: List<Float>): Int {
-        if (series.size < 2) return 0
-        val first = series.firstOrNull { it > 0f } ?: return 0
-        val last = series.last()
-        return ((last - first) / first * 100).toInt()
-    }
-
-    private fun computeSatisfactionSeries(weeklyCheckIns: List<WeeklyCheckIn>): List<Float> {
-        val weeks = 6
-        val daysOnWeek: Long = 7
-        val now = System.currentTimeMillis()
-        val weekMs = TimeUnit.DAYS.toMillis(daysOnWeek)
-        val maxRealConnectionLevel = 10f
-        return (weeks downTo 0).map { weeksAgo ->
-            val weekEnd = now - weeksAgo * weekMs
-            val weekStart = weekEnd - weekMs
-            val checkIn = weeklyCheckIns.firstOrNull { it.weekStartDate in weekStart..weekEnd }
-            val realConnectionEnergy = 0
-            val energy = realConnectionEnergy
-            (energy / maxRealConnectionLevel) * 100f
-        }
-    }
 
     companion object {
         private const val TAG = "HomeViewModel"
@@ -311,35 +156,41 @@ class HomeViewModel(
                             database.dailyCheckInDao(),
                             database.weeklyCheckInDao(),
                         )
+                    val keyValueStorage = SharedPreferencesKeyValueStorage(context)
                     @Suppress("UNCHECKED_CAST")
                     return HomeViewModel(
-                        computeRelapseSuccessRateUseCase = ComputeRelapseSuccessRateUseCase(),
-                        hasCompletedTodaysCheckInUseCase =
-                            HasCompletedTodaysCheckInUseCase(
-                                checkInRepository,
-                                DetermineCheckInTypeUseCase(),
+                        loadHomeDataUseCase =
+                            LoadHomeDataUseCase(
+                                lessonRepository =
+                                    RoomLessonRepository(
+                                        database.psychoeducationContentDao(),
+                                    ),
+                                addictionRepository =
+                                    RoomAddictionRepository(
+                                        database.addictionCategoryDao(),
+                                        database.relapseRecordDao(),
+                                    ),
+                                metricsRepository =
+                                    RoomMetricsRepository(
+                                        database.emotionRecordDao(),
+                                        database.riskFeatureSnapshotDao(),
+                                        database.riskAssessmentDao(),
+                                    ),
+                                userProfileRepository =
+                                    RoomUserProfileRepository(
+                                        database.userProfileDao(),
+                                        database.userAddictionDao(),
+                                    ),
+                                checkInRepository = checkInRepository,
+                                riskWeightsRepository = KeyValueRiskWeightsRepository(keyValueStorage),
+                                computeRelapseSuccessRateUseCase =
+                                    ComputeRelapseSuccessRateUseCase(),
+                                hasCompletedTodaysCheckInUseCase =
+                                    HasCompletedTodaysCheckInUseCase(
+                                        checkInRepository,
+                                        DetermineCheckInTypeUseCase(),
+                                    ),
                             ),
-                        lessonRepository =
-                            RoomLessonRepository(
-                                database.psychoeducationContentDao(),
-                            ),
-                        addictionRepository =
-                            RoomAddictionRepository(
-                                database.addictionCategoryDao(),
-                                database.relapseRecordDao(),
-                            ),
-                        metricsRepository =
-                            RoomMetricsRepository(
-                                database.emotionRecordDao(),
-                                database.riskFeatureSnapshotDao(),
-                                database.riskAssessmentDao(),
-                            ),
-                        userProfileRepository =
-                            RoomUserProfileRepository(
-                                database.userProfileDao(),
-                                database.userAddictionDao(),
-                            ),
-                        checkInRepository = checkInRepository,
                     ) as T
                 }
             }

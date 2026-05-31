@@ -18,7 +18,10 @@ import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
 import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.repository.ports.MetricsRepository
+import com.wesley.beefree.domain.repository.ports.RiskWeightsRepository
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
+import com.wesley.beefree.domain.risk.RiskWeights
+import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
 import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.EmotionalRecordStep
@@ -199,11 +202,21 @@ class EmotionalRecordScreenTest {
         EmotionalRecordViewModel(
             userProfileRepository = userProfileRepository,
             saveEmotionRecordUseCase = SaveEmotionRecordUseCase(metricsRepository),
+            calculateAndSaveRiskAssessmentUseCase =
+                CalculateAndSaveRiskAssessmentUseCase(
+                    metricsRepository = metricsRepository,
+                    riskWeightsRepository = FakeRiskWeightsRepository(),
+                ),
             logger = NoOpLogger,
         )
 
     private object NoOpLogger : Logger {
         override fun d(
+            tag: String,
+            message: String,
+        ) = Unit
+
+        override fun info(
             tag: String,
             message: String,
         ) = Unit
@@ -260,6 +273,9 @@ class EmotionalRecordScreenTest {
 
         override suspend fun insertRiskAssessment(assessment: RiskAssessment): Long = 0L
 
+        override suspend fun deleteAllRiskAssessmentsForUser(userId: Int) {
+        }
+
         override fun getRiskAssessments(userId: Int): Flow<List<RiskAssessment>> = flowOf(emptyList())
     }
 
@@ -274,5 +290,14 @@ class EmotionalRecordScreenTest {
             delay(2_000L)
             return super.insertEmotionRecord(record)
         }
+    }
+
+    private class FakeRiskWeightsRepository : RiskWeightsRepository {
+        override fun getWeights(userId: Int): RiskWeights = RiskWeights()
+
+        override fun saveWeights(
+            userId: Int,
+            weights: RiskWeights,
+        ) = Unit
     }
 }

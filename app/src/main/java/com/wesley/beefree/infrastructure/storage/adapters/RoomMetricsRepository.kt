@@ -20,6 +20,8 @@ class RoomMetricsRepository(
 ) : MetricsRepository {
     override suspend fun insertEmotionRecord(record: EmotionRecord): Long = emotionRecordDao.insert(record.toEntity())
 
+    override suspend fun deleteEmotionRecordsByIds(ids: List<Long>) = emotionRecordDao.deleteByIds(ids)
+
     override fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>> =
         emotionRecordDao.getAllByUser(userId).map { list -> list.mapNotNull { it.toDomain() } }
 
@@ -42,6 +44,8 @@ class RoomMetricsRepository(
         riskFeatureSnapshotDao.getLatestByUser(userId)?.toDomain()
 
     override suspend fun insertRiskAssessment(assessment: RiskAssessment): Long = riskAssessmentDao.insert(assessment.toEntity())
+
+    override suspend fun deleteAllRiskAssessmentsForUser(userId: Int) = riskAssessmentDao.deleteAllByUser(userId)
 
     override fun getRiskAssessments(userId: Int): Flow<List<RiskAssessment>> =
         riskAssessmentDao.getAllByUser(userId).map { list -> list.map { it.toDomain() } }

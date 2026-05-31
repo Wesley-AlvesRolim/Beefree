@@ -9,8 +9,12 @@ import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.CognitiveThoughtRecord
+import com.wesley.beefree.domain.entities.EmotionRecord
+import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.entities.InterventionRecord
 import com.wesley.beefree.domain.entities.InterventionValueLink
+import com.wesley.beefree.domain.entities.RiskAssessment
+import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
 import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserCoreValue
 import com.wesley.beefree.domain.entities.UserHobby
@@ -22,8 +26,12 @@ import com.wesley.beefree.domain.intervention.ports.Ticker
 import com.wesley.beefree.domain.intervention.usecases.SaveInterventionSessionUseCase
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.domain.repository.ports.EMIRepository
+import com.wesley.beefree.domain.repository.ports.MetricsRepository
 import com.wesley.beefree.domain.repository.ports.OnboardingRepository
+import com.wesley.beefree.domain.repository.ports.RiskWeightsRepository
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
+import com.wesley.beefree.domain.risk.RiskWeights
+import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.HelpInterventionViewModel
 import kotlinx.coroutines.flow.Flow
@@ -134,12 +142,20 @@ class HelpInterventionScreenTest {
                 emiRepository = emiRepository,
                 onboardingRepository = onboardingRepository,
             )
+        val metricsRepository = FakeMetricsRepository()
+        val riskWeightsRepository = FakeRiskWeightsRepository()
+        val calculateAndSaveRiskAssessmentUseCase =
+            CalculateAndSaveRiskAssessmentUseCase(
+                metricsRepository = metricsRepository,
+                riskWeightsRepository = riskWeightsRepository,
+            )
         val ticker = FakeTicker()
 
         return HelpInterventionViewModel(
             onboardingRepository = onboardingRepository,
             userProfileRepository = userProfileRepository,
             saveInterventionSessionUseCase = useCase,
+            calculateAndSaveRiskAssessmentUseCase = calculateAndSaveRiskAssessmentUseCase,
             ticker = ticker,
         )
     }
@@ -290,5 +306,39 @@ class HelpInterventionScreenTest {
 
     private class FakeTicker : Ticker {
         override fun ticks(): Flow<Unit> = flowOf()
+    }
+
+    private class FakeMetricsRepository : MetricsRepository {
+        override suspend fun insertEmotionRecord(record: EmotionRecord): Long = 1L
+
+        override fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>> = flowOf(emptyList())
+
+        override fun getEmotionRecordsByType(
+            userId: Int,
+            feelingType: FeelingType,
+        ): Flow<List<EmotionRecord>> = flowOf(emptyList())
+
+        override suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord? = null
+
+        override suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long = 1L
+
+        override fun getRiskFeatureSnapshots(userId: Int): Flow<List<RiskFeatureSnapshot>> = flowOf(emptyList())
+
+        override suspend fun getLatestRiskFeatureSnapshot(userId: Int): RiskFeatureSnapshot? = null
+
+        override suspend fun insertRiskAssessment(assessment: RiskAssessment): Long = 1L
+
+        override suspend fun deleteAllRiskAssessmentsForUser(userId: Int) = Unit
+
+        override fun getRiskAssessments(userId: Int): Flow<List<RiskAssessment>> = flowOf(emptyList())
+    }
+
+    private class FakeRiskWeightsRepository : RiskWeightsRepository {
+        override fun getWeights(userId: Int): RiskWeights = RiskWeights()
+
+        override fun saveWeights(
+            userId: Int,
+            weights: RiskWeights,
+        ) = Unit
     }
 }

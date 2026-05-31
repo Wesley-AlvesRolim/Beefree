@@ -3,7 +3,6 @@ package com.wesley.beefree.infrastructure.storage.adapters.db
 import com.wesley.beefree.domain.entities.*
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.infrastructure.storage.adapters.db.entities.*
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 fun AddictionCategoryEntity.toDomain() =
@@ -344,10 +343,12 @@ fun RiskFeatureSnapshotEntity.toDomain() =
         id = id,
         userProfileId = userProfileId,
         previousSnapshotId = previousSnapshotId,
-        humor = humor,
+        sleep = sleep,
+        craving = craving,
+        boredom = boredom,
         stress = stress,
-        anxiety = anxiety,
-        urge = urge,
+        loneliness = loneliness,
+        fatigue = fatigue,
         hoursSinceLastRelapse = hoursSinceLastRelapse,
         hourOfDay = hourOfDay,
         dayOfWeek = dayOfWeek,
@@ -362,10 +363,12 @@ fun RiskFeatureSnapshot.toEntity() =
         id = id,
         userProfileId = userProfileId,
         previousSnapshotId = previousSnapshotId,
-        humor = humor,
+        sleep = sleep,
+        craving = craving,
+        boredom = boredom,
         stress = stress,
-        anxiety = anxiety,
-        urge = urge,
+        loneliness = loneliness,
+        fatigue = fatigue,
         hoursSinceLastRelapse = hoursSinceLastRelapse,
         hourOfDay = hourOfDay,
         dayOfWeek = dayOfWeek,
@@ -380,7 +383,7 @@ fun RiskAssessmentEntity.toDomain() =
         id = id,
         userProfileId = userProfileId,
         riskScore = riskScore,
-        timeWindow = timeWindow,
+        timeWindowStart = timeWindowStart,
         createdAt = createdAt,
     )
 
@@ -389,6 +392,6 @@ fun RiskAssessment.toEntity() =
         id = id,
         userProfileId = userProfileId,
         riskScore = riskScore,
-        timeWindow = timeWindow,
+        timeWindowStart = timeWindowStart,
         createdAt = createdAt,
     )

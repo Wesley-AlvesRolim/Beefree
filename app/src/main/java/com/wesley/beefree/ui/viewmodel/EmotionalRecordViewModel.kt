@@ -7,10 +7,17 @@ import androidx.lifecycle.viewModelScope
 import com.wesley.beefree.domain.emotion.usecases.SaveEmotionRecordUseCase
 import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
+import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
+import com.wesley.beefree.domain.risk.usecases.SaveRiskFeatureSnapshotUseCase
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.logging.Logger
+import com.wesley.beefree.infrastructure.storage.adapters.KeyValueRiskWeightsRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomRiskFeatureSnapshotRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
+import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -49,11 +56,16 @@ private val emotionalRecordFeelings =
         FeelingType.FATIGUE,
     )
 
-private fun defaultEmotionalRecordValues(): Map<FeelingType, Float> = emotionalRecordFeelings.associateWith { 5f }
+private const val DEFAULT_EMOTION_INTENSITY = 5
+
+private fun defaultEmotionalRecordValues(): Map<FeelingType, Float> =
+    emotionalRecordFeelings.associateWith { DEFAULT_EMOTION_INTENSITY.toFloat() }
 
 class EmotionalRecordViewModel(
     private val userProfileRepository: UserProfileRepository,
     private val saveEmotionRecordUseCase: SaveEmotionRecordUseCase,
+    private val saveRiskFeatureSnapshotUseCase: SaveRiskFeatureSnapshotUseCase,
+    private val calculateAndSaveRiskAssessmentUseCase: CalculateAndSaveRiskAssessmentUseCase,
     private val logger: Logger = AndroidLogger,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
@@ -62,6 +74,14 @@ class EmotionalRecordViewModel(
 
     private val _navigationEvents = MutableSharedFlow<EmotionalRecordNavigationDestination>()
     val navigationEvents = _navigationEvents.asSharedFlow()
+
+    init {
+        clearData()
+    }
+
+    fun clearData() {
+        _uiState.value = EmotionalRecordUiState()
+    }
 
     fun onNext() {
         _uiState.value = _uiState.value.copy(step = EmotionalRecordStep.CAPTURE)
@@ -85,41 +105,90 @@ class EmotionalRecordViewModel(
     fun onSave() {
         _uiState.value = _uiState.value.copy(isSaving = true)
         viewModelScope.launch {
-            val userId =
-                withContext(ioDispatcher) {
-                    userProfileRepository
-                        .getAllProfiles()
-                        .first()
-                        .firstOrNull()
-                        ?.id ?: 0
-                }
-            val state = _uiState.value
-            val result =
-                saveEmotionRecordUseCase.execute(
-                    userId = userId,
-                    emotions = state.emotions,
-                )
-
-            result
-                .onSuccess {
-                    _uiState.value =
-                        _uiState.value.copy(
-                            step = EmotionalRecordStep.DONE,
-                            isSaving = false,
-                        )
-                }.onFailure { exception ->
-                    logger.e(TAG, "Failed to save emotion record", exception)
-                    _uiState.value =
-                        _uiState.value.copy(
-                            error = exception.message,
-                            isSaving = false,
-                        )
-                }
+            try {
+                val userId =
+                    withContext(ioDispatcher) {
+                        userProfileRepository
+                            .getAllProfiles()
+                            .first()
+                            .firstOrNull()
+                            ?.id ?: 0
+                    }
+                val state = _uiState.value
+                var insertedIds: List<Long> = emptyList()
+                saveEmotionRecordUseCase
+                    .execute(userId = userId, emotions = state.emotions)
+                    .onSuccess { ids -> insertedIds = ids }
+                    .onFailure { exception ->
+                        logger.e(TAG, "Failed to save emotion record", exception)
+                        _uiState.value =
+                            _uiState.value.copy(
+                                error = exception.message,
+                                isSaving = false,
+                            )
+                        return@launch
+                    }
+                saveRiskFeatureSnapshotUseCase
+                    .execute(
+                        userId = userId,
+                        sleep =
+                            state.emotions[FeelingType.SLEEP]?.toInt()
+                                ?: DEFAULT_EMOTION_INTENSITY,
+                        craving =
+                            state.emotions[FeelingType.CRAVING]?.toInt()
+                                ?: DEFAULT_EMOTION_INTENSITY,
+                        boredom =
+                            state.emotions[FeelingType.BOREDOM]?.toInt()
+                                ?: DEFAULT_EMOTION_INTENSITY,
+                        stress =
+                            state.emotions[FeelingType.STRESS]?.toInt()
+                                ?: DEFAULT_EMOTION_INTENSITY,
+                        loneliness =
+                            state.emotions[FeelingType.LONELINESS]?.toInt()
+                                ?: DEFAULT_EMOTION_INTENSITY,
+                        fatigue =
+                            state.emotions[FeelingType.FATIGUE]?.toInt()
+                                ?: DEFAULT_EMOTION_INTENSITY,
+                    ).onFailure { exception ->
+                        saveEmotionRecordUseCase.deleteEmotionRecords(insertedIds)
+                        _uiState.value =
+                            _uiState.value.copy(
+                                error = exception.message,
+                                isSaving = false,
+                            )
+                        return@launch
+                    }
+                calculateAndSaveRiskAssessmentUseCase
+                    .execute(userId)
+                    .onFailure { exception ->
+                        logger.e(TAG, "Failed to calculate risk assessment", exception)
+                        saveEmotionRecordUseCase.deleteEmotionRecords(insertedIds)
+                        _uiState.value =
+                            _uiState.value.copy(
+                                error = exception.message,
+                                isSaving = false,
+                            )
+                        return@launch
+                    }
+                _uiState.value =
+                    _uiState.value.copy(
+                        step = EmotionalRecordStep.DONE,
+                        isSaving = false,
+                    )
+            } catch (e: Exception) {
+                logger.e(TAG, "Failed to save emotion record", e)
+                _uiState.value =
+                    _uiState.value.copy(
+                        error = e.message,
+                        isSaving = false,
+                    )
+            }
         }
     }
 
     fun onDone() {
         viewModelScope.launch {
+            clearData()
             _navigationEvents.emit(EmotionalRecordNavigationDestination.Done)
         }
     }
@@ -149,6 +218,36 @@ class EmotionalRecordViewModel(
                                     database.riskFeatureSnapshotDao(),
                                     database.riskAssessmentDao(),
                                 ),
+                            ),
+                        saveRiskFeatureSnapshotUseCase =
+                            SaveRiskFeatureSnapshotUseCase(
+                                riskFeatureSnapshotRepository =
+                                    RoomRiskFeatureSnapshotRepository(
+                                        database.riskFeatureSnapshotDao(),
+                                    ),
+                            ),
+                        calculateAndSaveRiskAssessmentUseCase =
+                            CalculateAndSaveRiskAssessmentUseCase(
+                                metricsRepository =
+                                    RoomMetricsRepository(
+                                        database.emotionRecordDao(),
+                                        database.riskFeatureSnapshotDao(),
+                                        database.riskAssessmentDao(),
+                                    ),
+                                riskWeightsRepository =
+                                    KeyValueRiskWeightsRepository(
+                                        SharedPreferencesKeyValueStorage(context),
+                                    ),
+                                checkInRepository =
+                                    RoomCheckInRepository(
+                                        database.dailyCheckInDao(),
+                                        database.weeklyCheckInDao(),
+                                    ),
+                                addictionRepository =
+                                    RoomAddictionRepository(
+                                        database.addictionCategoryDao(),
+                                        database.relapseRecordDao(),
+                                    ),
                             ),
                     ) as T
                 }

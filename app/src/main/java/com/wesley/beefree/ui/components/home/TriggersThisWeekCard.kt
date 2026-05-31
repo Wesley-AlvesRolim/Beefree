@@ -15,8 +15,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.Bedtime
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,22 +30,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.wesley.beefree.R
-import com.wesley.beefree.domain.entities.FeelingType
+import com.wesley.beefree.domain.entities.RiskTrigger
 import com.wesley.beefree.ui.components.designsystem.BeeBodySmall
 import com.wesley.beefree.ui.components.designsystem.BeeCardSection
 import com.wesley.beefree.ui.components.designsystem.BeeHeadlineSmall
 import com.wesley.beefree.ui.components.designsystem.BeeLabelMedium
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
+import java.util.Locale
 
 @Composable
-fun TriggersThisWeekCard(
-    topTriggers: List<Pair<FeelingType, Int>>,
-    onSeeAll: () -> Unit,
-) {
+fun TriggersThisWeekCard(topTriggers: List<Pair<RiskTrigger, Double>>) {
     BeeCardSection(
         modifier =
             Modifier
@@ -54,12 +56,6 @@ fun TriggersThisWeekCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 BeeHeadlineSmall(stringResource(R.string.home_triggers_week_title))
-                Surface(onClick = onSeeAll, color = Color.Transparent) {
-                    BeeLabelMedium(
-                        text = stringResource(R.string.home_triggers_see_all),
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                }
             }
 
             if (topTriggers.isEmpty()) {
@@ -71,12 +67,12 @@ fun TriggersThisWeekCard(
             } else {
                 Spacer(Modifier.height(BeeSpacing.S))
                 Column(verticalArrangement = Arrangement.spacedBy(BeeSpacing.S)) {
-                    val maxCount = topTriggers.firstOrNull()?.second ?: 1
-                    topTriggers.forEach { (feelingType, count) ->
-                        TriggerEmotionRow(
-                            feelingType = feelingType,
-                            count = count,
-                            maxCount = maxCount,
+                    val biggestWeight = topTriggers[0]
+                    topTriggers.forEach { (trigger, count) ->
+                        TriggerRow(
+                            trigger = trigger,
+                            weight = count,
+                            biggestWeight = biggestWeight.second,
                         )
                     }
                 }
@@ -86,29 +82,39 @@ fun TriggersThisWeekCard(
 }
 
 @Composable
-private fun TriggerEmotionRow(
-    feelingType: FeelingType,
-    count: Int,
-    maxCount: Int,
+private fun TriggerRow(
+    trigger: RiskTrigger,
+    weight: Double,
+    biggestWeight: Double,
 ) {
     val icon =
-        when (feelingType) {
-            FeelingType.SLEEP -> Icons.Default.Bedtime
-            FeelingType.CRAVING -> Icons.Default.Whatshot
-            FeelingType.BOREDOM -> Icons.Default.AccessTime
-            FeelingType.STRESS -> Icons.Default.Psychology
-            FeelingType.LONELINESS -> Icons.Default.FavoriteBorder
-            FeelingType.FATIGUE -> Icons.Default.BatteryAlert
+        when (trigger) {
+            RiskTrigger.SLEEP -> Icons.Default.Bedtime
+            RiskTrigger.CRAVING -> Icons.Default.Whatshot
+            RiskTrigger.BOREDOM -> Icons.Default.AccessTime
+            RiskTrigger.STRESS -> Icons.Default.Psychology
+            RiskTrigger.LONELINESS -> Icons.Default.FavoriteBorder
+            RiskTrigger.FATIGUE -> Icons.Default.BatteryAlert
+            RiskTrigger.HOURS_SINCE_LAST_RELAPSE -> Icons.Default.Timer
+            RiskTrigger.HOUR_OF_DAY -> Icons.Default.Schedule
+            RiskTrigger.DAY_OF_WEEK -> Icons.Default.CalendarToday
+            RiskTrigger.TIME_SINCE_LAST_APP_OPEN -> Icons.Default.PhoneAndroid
+            RiskTrigger.MISSING_CHECKINS -> Icons.Default.EventBusy
         }
 
     val text =
-        when (feelingType) {
-            FeelingType.SLEEP -> stringResource(R.string.feeling_type_sleep)
-            FeelingType.CRAVING -> stringResource(R.string.feeling_type_craving)
-            FeelingType.BOREDOM -> stringResource(R.string.feeling_type_boredom)
-            FeelingType.STRESS -> stringResource(R.string.feeling_type_stress)
-            FeelingType.LONELINESS -> stringResource(R.string.feeling_type_loneliness)
-            FeelingType.FATIGUE -> stringResource(R.string.feeling_type_fatigue)
+        when (trigger) {
+            RiskTrigger.SLEEP -> stringResource(R.string.feeling_type_sleep)
+            RiskTrigger.CRAVING -> stringResource(R.string.feeling_type_craving)
+            RiskTrigger.BOREDOM -> stringResource(R.string.feeling_type_boredom)
+            RiskTrigger.STRESS -> stringResource(R.string.feeling_type_stress)
+            RiskTrigger.LONELINESS -> stringResource(R.string.feeling_type_loneliness)
+            RiskTrigger.FATIGUE -> stringResource(R.string.feeling_type_fatigue)
+            RiskTrigger.HOURS_SINCE_LAST_RELAPSE -> stringResource(R.string.trigger_hours_since_last_relapse)
+            RiskTrigger.HOUR_OF_DAY -> stringResource(R.string.trigger_hour_of_day)
+            RiskTrigger.DAY_OF_WEEK -> stringResource(R.string.trigger_day_of_week)
+            RiskTrigger.TIME_SINCE_LAST_APP_OPEN -> stringResource(R.string.trigger_time_since_last_app_open)
+            RiskTrigger.MISSING_CHECKINS -> stringResource(R.string.trigger_missing_checkins)
         }
 
     Row(
@@ -131,30 +137,47 @@ private fun TriggerEmotionRow(
         }
 
         Column(modifier = Modifier.weight(1f)) {
+            val rounded = String.format(Locale.US, "%.1f", weight).toDouble()
+            val fraction = (weight / biggestWeight).toFloat().coerceIn(0f, 1f)
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom,
             ) {
                 BeeLabelMedium(text.lowercase().replaceFirstChar { it.uppercase() })
+
                 BeeBodySmall(
-                    text = "$count×",
+                    text = "${rounded}X",
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
+
             Spacer(Modifier.height(BeeSpacing.XS))
-            val fraction = (count.toFloat() / maxCount).coerceIn(0f, 1f)
+
+            BeeBodySmall(
+                text =
+                    stringResource(
+                        R.string.trigger_chance_description,
+                        rounded.toString(),
+                    ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Spacer(Modifier.height(BeeSpacing.XS))
+
             val barColor =
                 when {
                     fraction > 0.7f -> MaterialTheme.colorScheme.primary
                     fraction > 0.4f -> MaterialTheme.colorScheme.primaryContainer
                     else -> MaterialTheme.colorScheme.tertiaryContainer
                 }
+
             Box(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(4.dp)
+                        .height(BeeSpacing.XS)
                         .clip(RoundedCornerShape(999.dp))
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh),
             ) {
@@ -162,7 +185,7 @@ private fun TriggerEmotionRow(
                     modifier =
                         Modifier
                             .fillMaxWidth(fraction)
-                            .height(4.dp)
+                            .height(BeeSpacing.XS)
                             .clip(RoundedCornerShape(999.dp))
                             .background(barColor),
                 )

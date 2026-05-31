@@ -143,7 +143,7 @@ private fun CoreValueTile(
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
+                tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(BeeSpacing.L),
             )
             Spacer(modifier = Modifier.height(BeeSpacing.XXL))

@@ -11,9 +11,9 @@ class SaveEmotionRecordUseCase(
         userId: Int,
         emotions: Map<FeelingType, Float>,
         createdAt: Long = System.currentTimeMillis(),
-    ): Result<Unit> =
+    ): Result<List<Long>> =
         runCatching {
-            emotions.forEach { (feelingType, intensity) ->
+            emotions.map { (feelingType, intensity) ->
                 metricsRepository.insertEmotionRecord(
                     EmotionRecord(
                         userProfileId = userId,
@@ -24,4 +24,8 @@ class SaveEmotionRecordUseCase(
                 )
             }
         }
+
+    suspend fun deleteEmotionRecords(ids: List<Long>) {
+        metricsRepository.deleteEmotionRecordsByIds(ids)
+    }
 }

@@ -6,6 +6,11 @@ interface Logger {
         message: String,
     )
 
+    fun info(
+        tag: String,
+        message: String,
+    )
+
     fun e(
         tag: String,
         message: String,

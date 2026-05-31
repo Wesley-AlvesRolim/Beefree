@@ -1,7 +1,6 @@
 package com.wesley.beefree.ui.components.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,14 +35,12 @@ fun EvolutionCalendarCard(
     relapseSuccessRate: Float,
     alignedDays: Int,
     setbackDays: Int,
-    onClick: () -> Unit,
 ) {
     BeeCardSection(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = BeeSpacing.M)
-                .clickable { onClick() },
+                .padding(horizontal = BeeSpacing.M),
     ) {
         Column(modifier = Modifier.padding(BeeSpacing.M)) {
             Row(

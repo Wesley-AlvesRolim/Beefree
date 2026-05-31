@@ -14,6 +14,13 @@ object TestLogger : Logger {
         entries.clear()
     }
 
+    override fun info(
+        tag: String,
+        message: String,
+    ) {
+        entries += LogEntry(level = "INFO", tag = tag, message = message)
+    }
+
     override fun d(
         tag: String,
         message: String,

@@ -39,14 +39,26 @@ class SaveEmotionRecordUseCaseTest {
         }
 
     @Test
-    fun `save returns success`() =
+    fun `save returns success with inserted ids`() =
         runBlocking {
-            whenever(metricsRepository.insertEmotionRecord(any())).thenReturn(1L)
+            whenever(metricsRepository.insertEmotionRecord(any())).thenReturn(42L)
             val emotions = mapOf(FeelingType.STRESS to 5f)
 
             val result = useCase.execute(userId = 1, emotions = emotions)
 
             assertTrue(result.isSuccess)
+            assertEquals(listOf(42L), result.getOrNull())
+        }
+
+    @Test
+    fun `delete emotion records delegates to repository`() =
+        runBlocking {
+            val ids = listOf(1L, 2L, 3L)
+
+            useCase.deleteEmotionRecords(ids)
+
+            verify(metricsRepository).deleteEmotionRecordsByIds(ids)
+            Unit
         }
 
     @Test

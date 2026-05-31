@@ -22,11 +22,17 @@ import com.wesley.beefree.domain.intervention.usecases.SaveInterventionSessionUs
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.domain.repository.ports.OnboardingRepository
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
+import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.logging.Logger
+import com.wesley.beefree.infrastructure.storage.adapters.KeyValueRiskWeightsRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomEMIRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomOnboardingRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
+import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -74,6 +80,7 @@ data class HelpInterventionUiState(
     val meditationTextIndex: Int = 0,
     val loopCount: Int = 0,
     val isLoading: Boolean = true,
+    val isSaving: Boolean = false,
     val isComplete: Boolean = false,
     val userId: Int? = null,
     val userProfileId: Int? = null,
@@ -86,6 +93,7 @@ class HelpInterventionViewModel(
     private val onboardingRepository: OnboardingRepository,
     private val userProfileRepository: UserProfileRepository,
     private val saveInterventionSessionUseCase: SaveInterventionSessionUseCase,
+    private val calculateAndSaveRiskAssessmentUseCase: CalculateAndSaveRiskAssessmentUseCase,
     private val ticker: Ticker,
     private val source: HelpInterventionSource = HelpInterventionSource.FAB,
     private val logger: Logger = AndroidLogger,
@@ -166,7 +174,7 @@ class HelpInterventionViewModel(
             _uiState.update {
                 it.copy(
                     answers = newAnswers,
-                    isComplete = true,
+                    isSaving = true,
                 )
             }
             saveSession()
@@ -352,8 +360,11 @@ class HelpInterventionViewModel(
                     selectedCoreValue = selectedCoreValue,
                     userProfileId = state.userProfileId,
                 )
+                state.userProfileId?.let { calculateAndSaveRiskAssessmentUseCase.execute(it) }
+                _uiState.update { it.copy(isComplete = true, isSaving = false) }
             } catch (e: Exception) {
                 logger.e(TAG, "Failed to save intervention session", e)
+                _uiState.update { it.copy(isSaving = false) }
             }
         }
     }
@@ -397,6 +408,29 @@ class HelpInterventionViewModel(
                                         hobbyDao = db.userHobbyDao(),
                                         objectiveDao = db.userObjectiveDao(),
                                         symptomDao = db.userSymptomDao(),
+                                    ),
+                            ),
+                        calculateAndSaveRiskAssessmentUseCase =
+                            CalculateAndSaveRiskAssessmentUseCase(
+                                metricsRepository =
+                                    RoomMetricsRepository(
+                                        emotionRecordDao = db.emotionRecordDao(),
+                                        riskFeatureSnapshotDao = db.riskFeatureSnapshotDao(),
+                                        riskAssessmentDao = db.riskAssessmentDao(),
+                                    ),
+                                riskWeightsRepository =
+                                    KeyValueRiskWeightsRepository(
+                                        SharedPreferencesKeyValueStorage(context),
+                                    ),
+                                checkInRepository =
+                                    RoomCheckInRepository(
+                                        dailyCheckInDao = db.dailyCheckInDao(),
+                                        weeklyCheckInDao = db.weeklyCheckInDao(),
+                                    ),
+                                addictionRepository =
+                                    RoomAddictionRepository(
+                                        addictionCategoryDao = db.addictionCategoryDao(),
+                                        relapseRecordDao = db.relapseRecordDao(),
                                     ),
                             ),
                         ticker = RealTicker(),

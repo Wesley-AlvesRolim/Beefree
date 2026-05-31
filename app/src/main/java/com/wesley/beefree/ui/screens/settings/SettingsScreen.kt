@@ -158,25 +158,35 @@ fun SettingsScreenContent(
             }
 
             Section(stringResource(R.string.settings_data_management_section_title)) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(BeeSpacing.M),
+                BeeCardSection(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
                 ) {
-                    BeeButtonPrimary(
-                        onClick = onExportData,
-                        modifier = Modifier.fillMaxWidth(),
+                    Column(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(BeeSpacing.M),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(BeeSpacing.M),
                     ) {
-                        Icon(Icons.Default.Share, null, Modifier.padding(end = BeeSpacing.S))
-                        BeeLabelLarge(
-                            stringResource(R.string.settings_export_data),
-                            color = MaterialTheme.colorScheme.onPrimary,
+                        BeeButtonPrimary(
+                            onClick = onExportData,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Icon(Icons.Default.Share, null, Modifier.padding(end = BeeSpacing.S))
+                            BeeLabelLarge(
+                                stringResource(R.string.settings_export_data),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        }
+                        BeeBodySmall(
+                            stringResource(R.string.settings_export_data_subtitle),
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    BeeBodySmall(
-                        stringResource(R.string.settings_export_data_subtitle),
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
                 }
             }
 

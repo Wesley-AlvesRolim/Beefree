@@ -14,6 +14,8 @@ import androidx.work.DelegatingWorkerFactory
 import androidx.work.WorkManager
 import com.wesley.beefree.infrastructure.events.workers.DailyCheckInWorker
 import com.wesley.beefree.infrastructure.events.workers.EmotionalRecordReminderWorker
+import com.wesley.beefree.infrastructure.events.workers.HourlyRiskHobbyReminderWorker
+import com.wesley.beefree.infrastructure.events.workers.MidnightRiskCalculationWorker
 import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.navigation.NavBar
@@ -40,6 +42,8 @@ class MainActivity : ComponentActivity() {
             DelegatingWorkerFactory().apply {
                 addFactory(EmotionalRecordReminderWorker.factory(application))
                 addFactory(DailyCheckInWorker.factory(application))
+                addFactory(HourlyRiskHobbyReminderWorker.factory(application))
+                addFactory(MidnightRiskCalculationWorker.factory(application))
             }
         WorkManager.initialize(
             this,
@@ -50,6 +54,8 @@ class MainActivity : ComponentActivity() {
         )
         DailyCheckInWorker.scheduleCheckInWorker(this)
         EmotionalRecordReminderWorker.scheduleEmotionalRecordWorker(this)
+        HourlyRiskHobbyReminderWorker.scheduleHourlyRiskHobbyReminderWorker(this)
+        MidnightRiskCalculationWorker.scheduleMidnightWorker(this)
 
         setContent {
             BeeFreeTheme {
