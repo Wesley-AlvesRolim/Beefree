@@ -9,9 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.work.Configuration
-import androidx.work.DelegatingWorkerFactory
-import androidx.work.WorkManager
 import com.wesley.beefree.infrastructure.events.workers.DailyCheckInWorker
 import com.wesley.beefree.infrastructure.events.workers.EmotionalRecordReminderWorker
 import com.wesley.beefree.infrastructure.events.workers.HourlyRiskHobbyReminderWorker
@@ -38,20 +35,6 @@ class MainActivity : ComponentActivity() {
         openSos = intent.getBooleanExtra(SosWidget.EXTRA_OPEN_SOS, false)
         openEmotionalRecord = intent.getBooleanExtra(EmotionalRecordReminderWorker.EXTRA_OPEN_EMOTIONAL_RECORD, false)
 
-        val workerFactory =
-            DelegatingWorkerFactory().apply {
-                addFactory(EmotionalRecordReminderWorker.factory(application))
-                addFactory(DailyCheckInWorker.factory(application))
-                addFactory(HourlyRiskHobbyReminderWorker.factory(application))
-                addFactory(MidnightRiskCalculationWorker.factory(application))
-            }
-        WorkManager.initialize(
-            this,
-            Configuration
-                .Builder()
-                .setWorkerFactory(workerFactory)
-                .build(),
-        )
         DailyCheckInWorker.scheduleCheckInWorker(this)
         EmotionalRecordReminderWorker.scheduleEmotionalRecordWorker(this)
         HourlyRiskHobbyReminderWorker.scheduleHourlyRiskHobbyReminderWorker(this)
