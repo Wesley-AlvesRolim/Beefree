@@ -3,6 +3,7 @@ package com.wesley.beefree.infrastructure.storage.adapters.db.exporters
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.wesley.beefree.TestApplication
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import com.wesley.beefree.infrastructure.storage.adapters.db.entities.AddictionCategoryEntity
 import kotlinx.coroutines.runBlocking
@@ -12,8 +13,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(application = TestApplication::class)
 class SqlDatabaseExporterTest {
     private lateinit var database: AppDatabase
     private lateinit var context: Context

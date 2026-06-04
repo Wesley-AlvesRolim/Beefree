@@ -1,5 +1,6 @@
 package com.wesley.beefree.infrastructure.bus.subscribers.intervention
 
+import com.wesley.beefree.TestApplication
 import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.events.InterventionTriggered
 import com.wesley.beefree.domain.events.InterventionUIPending
@@ -10,8 +11,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(application = TestApplication::class)
 class DeviceGoBackInterventionTest {
     private val eventBus: EventBus = mock()
     private val deviceActionProvider: DeviceActionProvider = mock()

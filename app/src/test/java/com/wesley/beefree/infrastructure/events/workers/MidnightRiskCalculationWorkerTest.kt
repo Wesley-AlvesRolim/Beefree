@@ -7,6 +7,7 @@ import androidx.work.ListenableWorker.Result
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
+import com.wesley.beefree.TestApplication
 import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.domain.risk.RiskLevel
@@ -23,8 +24,10 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(application = TestApplication::class)
 class MidnightRiskCalculationWorkerTest {
     private lateinit var context: Context
     private lateinit var mockUserProfileRepository: UserProfileRepository

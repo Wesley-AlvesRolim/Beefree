@@ -7,6 +7,7 @@ import androidx.work.ListenableWorker.Result
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
+import com.wesley.beefree.TestApplication
 import com.wesley.beefree.domain.entities.RiskAssessment
 import com.wesley.beefree.domain.entities.UserHobby
 import com.wesley.beefree.domain.entities.UserProfile
@@ -24,8 +25,10 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(application = TestApplication::class)
 class HourlyRiskHobbyReminderWorkerTest {
     private lateinit var context: Context
     private lateinit var mockUserRepository: UserProfileRepository

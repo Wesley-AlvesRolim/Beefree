@@ -2,6 +2,7 @@ package com.wesley.beefree.ui.viewmodel
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.wesley.beefree.TestApplication
 import com.wesley.beefree.domain.entities.AddictionCategory
 import com.wesley.beefree.domain.entities.AddictionCategoryEnum
 import com.wesley.beefree.domain.entities.RelapseRecord
@@ -27,10 +28,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.io.OutputStreamWriter
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@Config(application = TestApplication::class)
 class SettingsViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
