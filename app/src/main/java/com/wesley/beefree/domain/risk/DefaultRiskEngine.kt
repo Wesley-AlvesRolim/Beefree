@@ -17,7 +17,7 @@ class DefaultRiskEngine(
     ): Double {
         var score = 0.0
 
-        val sleep = (snapshot.sleep ?: 0) / MAX_EMOTION_INTENSITY
+        val sleepDeficit = (1.0 - (snapshot.sleep?.div(MAX_EMOTION_INTENSITY) ?: 1.0))
         val craving = (snapshot.craving ?: 0) / MAX_EMOTION_INTENSITY
         val boredom = (snapshot.boredom ?: 0) / MAX_EMOTION_INTENSITY
         val stress = (snapshot.stress ?: 0) / MAX_EMOTION_INTENSITY
@@ -27,7 +27,7 @@ class DefaultRiskEngine(
         val missingCheckins = snapshot.missingCheckins ?: 0
         val recentIntenseUsage = snapshot.recentIntenseUsage ?: 0
 
-        score += sleep * weights.sleep
+        score += sleepDeficit * weights.sleep
         score += craving * weights.craving
         score += boredom * weights.boredom
         score += stress * weights.stress
@@ -64,7 +64,7 @@ class DefaultRiskEngine(
         val stress = snapshot.stress ?: 0
         val loneliness = snapshot.loneliness ?: 0
         val fatigue = snapshot.fatigue ?: 0
-        val sleep = snapshot.sleep ?: 0
+        val sleep = snapshot.sleep
 
         val adjusted =
             weights.copy(
@@ -72,7 +72,7 @@ class DefaultRiskEngine(
                 stress = weights.stress + if (stress > HIGH_EMOTION_THRESHOLD) EMOTION_WEIGHT_BOOST else 0.0,
                 loneliness = weights.loneliness + if (loneliness > HIGH_EMOTION_THRESHOLD) EMOTION_WEIGHT_BOOST else 0.0,
                 fatigue = weights.fatigue + if (fatigue > HIGH_EMOTION_THRESHOLD) EMOTION_WEIGHT_BOOST else 0.0,
-                sleep = weights.sleep + if (sleep > HIGH_EMOTION_THRESHOLD) EMOTION_WEIGHT_BOOST else 0.0,
+                sleep = weights.sleep + if (sleep != null && sleep <= LOW_SLEEP_THRESHOLD) EMOTION_WEIGHT_BOOST else 0.0,
             )
         return normalize(adjusted)
     }
@@ -133,6 +133,7 @@ class DefaultRiskEngine(
     private companion object {
         const val MAX_EMOTION_INTENSITY = 10.0
         const val HIGH_EMOTION_THRESHOLD = 7
+        const val LOW_SLEEP_THRESHOLD = 3
         const val CRAVING_WEIGHT_BOOST = 0.015
         const val EMOTION_WEIGHT_BOOST = 0.01
         const val PERCENT_SCALE = 100.0
