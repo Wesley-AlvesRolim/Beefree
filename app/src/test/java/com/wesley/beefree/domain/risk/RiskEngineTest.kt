@@ -23,6 +23,7 @@ class RiskEngineTest {
         const val SUNDAY = 7
         const val MAX_FEATURE_SCORE = 10
         const val HIGH_FEATURE_SCORE = 8
+        const val LOW_FEATURE_SCORE = 2
         const val ZERO = 0
         const val ONE = 1
         const val PEAK_RELAPSE_HOURS = 720
@@ -61,10 +62,10 @@ class RiskEngineTest {
     }
 
     @Test
-    fun `all emotions at max produces high risk`() {
+    fun `all risk factors at worst produces high risk`() {
         val bad =
             snapshot.copy(
-                sleep = MAX_FEATURE_SCORE,
+                sleep = ZERO,
                 craving = MAX_FEATURE_SCORE,
                 boredom = MAX_FEATURE_SCORE,
                 stress = MAX_FEATURE_SCORE,
@@ -73,6 +74,34 @@ class RiskEngineTest {
             )
         val score = riskEngine.calculateScore(bad, RiskWeights(), hourOfDay = DEFAULT_HOUR_OF_DAY, dayOfWeek = DEFAULT_DAY_OF_WEEK)
         assertEquals(RiskLevel.HIGH, riskEngine.classify(score))
+    }
+
+    @Test
+    fun `good sleep lowers score than poor sleep`() {
+        val goodSleep = snapshot.copy(sleep = MAX_FEATURE_SCORE)
+        val poorSleep = snapshot.copy(sleep = ZERO)
+        val scoreGood =
+            riskEngine.calculateScore(
+                goodSleep,
+                RiskWeights(),
+                hourOfDay = DEFAULT_HOUR_OF_DAY,
+                dayOfWeek = DEFAULT_DAY_OF_WEEK,
+            )
+        val scorePoor =
+            riskEngine.calculateScore(
+                poorSleep,
+                RiskWeights(),
+                hourOfDay = DEFAULT_HOUR_OF_DAY,
+                dayOfWeek = DEFAULT_DAY_OF_WEEK,
+            )
+        assertTrue(scorePoor > scoreGood)
+    }
+
+    @Test
+    fun `max sleep adds no risk contribution`() {
+        val goodSleep = snapshot.copy(sleep = MAX_FEATURE_SCORE)
+        val score = riskEngine.calculateScore(goodSleep, RiskWeights(), hourOfDay = DEFAULT_HOUR_OF_DAY, dayOfWeek = DEFAULT_DAY_OF_WEEK)
+        assertEquals(ZERO_DOUBLE, score, EPSILON)
     }
 
     @Test
@@ -323,11 +352,19 @@ class RiskEngineTest {
     }
 
     @Test
-    fun `adjust weights increases sleep weight when high sleep`() {
-        val highSleep = snapshot.copy(sleep = HIGH_FEATURE_SCORE)
+    fun `adjust weights increases sleep weight when poor sleep`() {
+        val poorSleep = snapshot.copy(sleep = LOW_FEATURE_SCORE)
         val original = RiskWeights()
-        val adjusted = riskEngine.adjustWeights(highSleep, original)
+        val adjusted = riskEngine.adjustWeights(poorSleep, original)
         assertTrue(adjusted.sleep > original.sleep)
+    }
+
+    @Test
+    fun `adjust weights does not increase sleep weight when good sleep`() {
+        val goodSleep = snapshot.copy(sleep = MAX_FEATURE_SCORE)
+        val original = riskEngine.adjustWeights(goodSleep, RiskWeights())
+        val baseline = RiskWeights()
+        assertTrue(original.sleep <= baseline.sleep + EPSILON)
     }
 
     @Test
@@ -356,6 +393,7 @@ class RiskEngineTest {
                 stress = DEFAULT_DAY_OF_WEEK,
                 loneliness = DEFAULT_DAY_OF_WEEK,
                 fatigue = DEFAULT_DAY_OF_WEEK,
+                sleep = MAX_FEATURE_SCORE,
             )
         val original = RiskWeights()
         val adjusted = riskEngine.adjustWeights(normal, original)
