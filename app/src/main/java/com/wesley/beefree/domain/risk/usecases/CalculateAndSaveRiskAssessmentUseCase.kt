@@ -39,11 +39,12 @@ class CalculateAndSaveRiskAssessmentUseCase(
             val enrichedSnapshot =
                 enrichSnapshotFromHistory(
                     baseSnapshot = baseSnapshot,
-                    emotions = emotionHistory,
                     checkIns = checkInHistory,
                     relapses = relapseHistory,
                     now = now,
                 )
+
+            val emotionByHour = emotionIntensityByHour(emotionHistory, now)
 
             val weights = riskWeightsRepository.getWeights(userId)
 
@@ -56,8 +57,15 @@ class CalculateAndSaveRiskAssessmentUseCase(
                     val hourOfDay = calendar.get(Calendar.HOUR_OF_DAY)
                     val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
 
+                    val hourlyEmotions = emotionByHour[hourOfDay].orEmpty()
                     val projectedSnapshot =
                         enrichedSnapshot.copy(
+                            sleep = hourlyEmotions[FeelingType.SLEEP] ?: enrichedSnapshot.sleep,
+                            craving = hourlyEmotions[FeelingType.CRAVING] ?: enrichedSnapshot.craving,
+                            boredom = hourlyEmotions[FeelingType.BOREDOM] ?: enrichedSnapshot.boredom,
+                            stress = hourlyEmotions[FeelingType.STRESS] ?: enrichedSnapshot.stress,
+                            loneliness = hourlyEmotions[FeelingType.LONELINESS] ?: enrichedSnapshot.loneliness,
+                            fatigue = hourlyEmotions[FeelingType.FATIGUE] ?: enrichedSnapshot.fatigue,
                             hoursSinceLastRelapse =
                                 enrichedSnapshot.hoursSinceLastRelapse?.plus(offset),
                         )
@@ -80,15 +88,10 @@ class CalculateAndSaveRiskAssessmentUseCase(
 
     private fun enrichSnapshotFromHistory(
         baseSnapshot: RiskFeatureSnapshot,
-        emotions: List<EmotionRecord>,
         checkIns: List<DailyCheckIn>,
         relapses: List<RelapseRecord>,
         now: Long,
     ): RiskFeatureSnapshot {
-        val emotionCutoff = now - EMOTION_HORIZON_DAYS * MILLIS_PER_DAY
-        val recentEmotions = emotions.filter { it.createdAt >= emotionCutoff }
-        val derivedEmotion = derivedEmotionByType(recentEmotions, now)
-
         val mostRecentRelapseMs = relapses.maxOfOrNull { it.createdAt }
         val hoursSinceLastRelapse =
             mostRecentRelapseMs
@@ -103,16 +106,23 @@ class CalculateAndSaveRiskAssessmentUseCase(
             }
 
         return baseSnapshot.copy(
-            sleep = derivedEmotion[FeelingType.SLEEP] ?: baseSnapshot.sleep,
-            craving = derivedEmotion[FeelingType.CRAVING] ?: baseSnapshot.craving,
-            boredom = derivedEmotion[FeelingType.BOREDOM] ?: baseSnapshot.boredom,
-            stress = derivedEmotion[FeelingType.STRESS] ?: baseSnapshot.stress,
-            loneliness = derivedEmotion[FeelingType.LONELINESS] ?: baseSnapshot.loneliness,
-            fatigue = derivedEmotion[FeelingType.FATIGUE] ?: baseSnapshot.fatigue,
             hoursSinceLastRelapse = hoursSinceLastRelapse,
             missingCheckins = missingCheckins,
         )
     }
+
+    private fun emotionIntensityByHour(
+        emotions: List<EmotionRecord>,
+        now: Long,
+    ): Map<Int, Map<FeelingType, Int>> {
+        val emotionCutoff = now - EMOTION_HORIZON_DAYS * MILLIS_PER_DAY
+        return emotions
+            .filter { it.createdAt >= emotionCutoff }
+            .groupBy { hourOfDay(it.createdAt) }
+            .mapValues { (_, records) -> derivedEmotionByType(records, now) }
+    }
+
+    private fun hourOfDay(timestampMs: Long): Int = Calendar.getInstance().apply { timeInMillis = timestampMs }.get(Calendar.HOUR_OF_DAY)
 
     private fun derivedEmotionByType(
         records: List<EmotionRecord>,
