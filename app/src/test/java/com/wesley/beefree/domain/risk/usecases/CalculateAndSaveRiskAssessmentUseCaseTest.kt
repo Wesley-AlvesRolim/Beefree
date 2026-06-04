@@ -228,6 +228,38 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
             assertNotEquals(baselineResult, enrichedResult)
         }
 
+    @Test
+    fun `concentrates emotion impact on the hour it historically occurs`() =
+        runTest {
+            val now = System.currentTimeMillis()
+            val snapshot = quietSnapshot()
+            val stressAtSameHour =
+                List(3) {
+                    EmotionRecord(
+                        userProfileId = 1,
+                        feelingType = FeelingType.STRESS,
+                        intensity = 9,
+                        createdAt = now - it * MILLIS_PER_DAY,
+                    )
+                }
+            val metrics =
+                FakeMetricsRepository(
+                    latestSnapshot = snapshot,
+                    emotionRecords = stressAtSameHour,
+                )
+            val weights = FakeRiskWeightsRepository()
+
+            val scores = CalculateAndSaveRiskAssessmentUseCase(metrics, weights).execute(userId = 1).getOrThrow()
+
+            val baseline =
+                CalculateAndSaveRiskAssessmentUseCase(FakeMetricsRepository(latestSnapshot = snapshot), weights)
+                    .execute(userId = 1)
+                    .getOrThrow()
+
+            assertTrue(scores[0] > baseline[0])
+            assertEquals(baseline[1], scores[1])
+        }
+
     private fun quietSnapshot(
         craving: Int = 0,
         hoursSinceLastRelapse: Int? = null,
