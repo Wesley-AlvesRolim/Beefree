@@ -1,8 +1,7 @@
 package com.wesley.beefree.domain.checkin.usecases
 
-import com.wesley.beefree.domain.checkin.ArtificialDopamineSource
-import com.wesley.beefree.domain.checkin.DopamineType
-import com.wesley.beefree.domain.checkin.NaturalDopamineSource
+import com.wesley.beefree.domain.checkin.DailyCheckInAnswer
+import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.domain.repository.ports.AddictionRepository
 import com.wesley.beefree.domain.repository.ports.CheckInRepository
 import kotlinx.coroutines.runBlocking
@@ -17,20 +16,21 @@ import org.mockito.kotlin.whenever
 class SaveDailyCheckInUseCaseTest {
     private val checkInRepository: CheckInRepository = mock()
     private val addictionRepository: AddictionRepository = mock()
-
     private val useCase = SaveDailyCheckInUseCase(checkInRepository, addictionRepository)
 
     @Test
-    fun `natural dopamine saves check-in and micro-activity log, no relapse`() {
+    fun `saves check-in with answers and no relapse when no relapse answer present`() {
         runBlocking {
             whenever(checkInRepository.insertDailyCheckIn(any())).thenReturn(1L)
+
             val result =
                 useCase.execute(
                     userId = 1,
-                    dopamineLevel = 4,
-                    mood = "Feliz",
-                    anxietyLevel = 2,
-                    dopamineType = DopamineType.Natural(NaturalDopamineSource.HOBBY),
+                    treatmentProfile = TreatmentProfile.ACT,
+                    answers =
+                        mapOf(
+                            "act.goal_definition" to DailyCheckInAnswer.TextWithSuggestions("Vou caminhar amanhã"),
+                        ),
                 )
 
             assertTrue(result.isSuccess)
@@ -40,26 +40,7 @@ class SaveDailyCheckInUseCaseTest {
     }
 
     @Test
-    fun `natural dopamine with no existing activity creates micro-activity first`() {
-        runBlocking {
-            whenever(checkInRepository.insertDailyCheckIn(any())).thenReturn(1L)
-
-            val result =
-                useCase.execute(
-                    userId = 1,
-                    dopamineLevel = 3,
-                    mood = "Ok",
-                    anxietyLevel = null,
-                    dopamineType = DopamineType.Natural(NaturalDopamineSource.EXERCISE),
-                )
-
-            assertTrue(result.isSuccess)
-            verify(addictionRepository, never()).insertRelapse(any())
-        }
-    }
-
-    @Test
-    fun `artificial dopamine saves check-in and relapse, no activity log`() {
+    fun `saves check-in and relapse record when relapse answer present`() {
         runBlocking {
             whenever(checkInRepository.insertDailyCheckIn(any())).thenReturn(1L)
             whenever(addictionRepository.insertRelapse(any())).thenReturn(1L)
@@ -67,10 +48,17 @@ class SaveDailyCheckInUseCaseTest {
             val result =
                 useCase.execute(
                     userId = 1,
-                    dopamineLevel = 5,
-                    mood = "Ansioso",
-                    anxietyLevel = 4,
-                    dopamineType = DopamineType.Artificial(ArtificialDopamineSource.ADULT_CONTENT),
+                    treatmentProfile = TreatmentProfile.TCC,
+                    answers =
+                        mapOf(
+                            "tcc.relapse_reg" to
+                                DailyCheckInAnswer.RelapseRegistration(
+                                    hour = 22,
+                                    minute = 0,
+                                    triggers = listOf("stress", "boredom"),
+                                    context = null,
+                                ),
+                        ),
                     addictionTypeId = 1,
                 )
 
@@ -81,19 +69,35 @@ class SaveDailyCheckInUseCaseTest {
     }
 
     @Test
-    fun `propagates failure on repository error`() =
+    fun `saves check-in with empty answers`() {
+        runBlocking {
+            whenever(checkInRepository.insertDailyCheckIn(any())).thenReturn(1L)
+
+            val result =
+                useCase.execute(
+                    userId = 1,
+                    treatmentProfile = TreatmentProfile.ACT,
+                    answers = emptyMap(),
+                )
+
+            assertTrue(result.isSuccess)
+            verify(checkInRepository).insertDailyCheckIn(any())
+        }
+    }
+
+    @Test
+    fun `propagates failure on repository error`() {
         runBlocking {
             whenever(checkInRepository.insertDailyCheckIn(any())).thenThrow(RuntimeException("DB error"))
 
             val result =
                 useCase.execute(
                     userId = 1,
-                    dopamineLevel = 3,
-                    mood = "Ok",
-                    anxietyLevel = null,
-                    dopamineType = DopamineType.Natural(NaturalDopamineSource.SOCIAL),
+                    treatmentProfile = TreatmentProfile.ACT,
+                    answers = emptyMap(),
                 )
 
             assertTrue(result.isFailure)
         }
+    }
 }
