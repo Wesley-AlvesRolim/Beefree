@@ -11,6 +11,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TagFaces
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -29,7 +31,9 @@ import com.wesley.beefree.ui.screens.onboarding.OnboardingScreen
 import com.wesley.beefree.ui.screens.settings.AboutScreen
 import com.wesley.beefree.ui.screens.settings.SettingsScreen
 import com.wesley.beefree.ui.screens.settings.TermsOfServiceScreen
+import com.wesley.beefree.ui.viewmodel.CheckInNavigationDestination
 import com.wesley.beefree.ui.viewmodel.CheckInViewModel
+import com.wesley.beefree.ui.viewmodel.DailyCheckInPhase
 import com.wesley.beefree.ui.viewmodel.EmotionalRecordNavigationDestination
 import com.wesley.beefree.ui.viewmodel.EmotionalRecordViewModel
 import com.wesley.beefree.ui.viewmodel.HelpInterventionSource
@@ -70,16 +74,20 @@ fun Routes(
     innerPadding: PaddingValues,
     isOnboardingCompleted: Boolean = true,
     onOnboardingFinished: () -> Unit = {},
+    onCheckInFlowVisibilityChange: (Boolean) -> Unit = {},
 ) {
     val context = LocalContext.current
     val onboardingViewModel: OnboardingViewModelImpl =
         viewModel(factory = OnboardingViewModelImpl.factory(context))
     val homeViewModel: HomeViewModel =
         viewModel(factory = HomeViewModel.factory(context))
+    val checkInViewModel: CheckInViewModel =
+        viewModel(factory = CheckInViewModel.factory(context))
     val emotionalRecordViewModel: EmotionalRecordViewModel =
         viewModel(factory = EmotionalRecordViewModel.factory(context))
     val settingsViewModel: SettingsViewModel =
         viewModel(factory = SettingsViewModel.factory(context))
+    val checkInPhase by checkInViewModel.dailyPhase.collectAsState()
 
     val startDestination = if (isOnboardingCompleted) Screen.Home.route else Screen.Onboarding.route
 
@@ -120,8 +128,19 @@ fun Routes(
             HomeScreen(viewModel = homeViewModel)
         }
         composable(Screen.CheckIn.route) {
+            LaunchedEffect(checkInViewModel) {
+                checkInViewModel.navigationEvents.collect { destination ->
+                    when (destination) {
+                        CheckInNavigationDestination.EmotionalRecord ->
+                            navController.navigate(Screen.EmotionalRecord.route)
+                    }
+                }
+            }
+            LaunchedEffect(checkInPhase) {
+                onCheckInFlowVisibilityChange(checkInPhase == DailyCheckInPhase.INVITE)
+            }
             CheckInScreen(
-                viewModel = viewModel(factory = CheckInViewModel.factory(context)),
+                viewModel = checkInViewModel,
                 onDone = {
                     navController.popBackStack()
                     homeViewModel.refresh()
@@ -155,8 +174,11 @@ fun Routes(
             LaunchedEffect(emotionalRecordViewModel) {
                 emotionalRecordViewModel.navigationEvents.collect { destination ->
                     when (destination) {
-                        EmotionalRecordNavigationDestination.Done ->
-                            navController.popBackStack()
+                        EmotionalRecordNavigationDestination.Done -> {
+                            if (navController.popBackStack()) {
+                                checkInViewModel.onReturnFromEmotionalRecord()
+                            }
+                        }
                     }
                 }
             }
