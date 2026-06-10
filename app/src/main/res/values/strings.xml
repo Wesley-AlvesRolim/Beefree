@@ -3,14 +3,11 @@
     <string name="accessibility_service_label">Serviço de Acessibilidade BeeFree</string>
     <string name="accessibility_service_description">O BeeFree utiliza este serviço para identificar conteúdos relacionados a vícios digitais exibidos na tela, permitindo que o aplicativo bloqueie acessos de risco e ajude você a manter o foco na sua recuperação.</string>
     <string name="dont_do_this">Não faça isso</string>
-    <string name="request_screen_monitor_permission">Esta permissão permite que o app identifique conteúdos de risco na tela e intervenha antes que o impulso tome conta — sempre de forma discreta e respeitosa.</string>
-    <string name="request_overlay_permission">Esta permissão permite exibir ferramentas de apoio em tela cheia nos momentos de maior risco, ajudando você a atravessar o impulso sem ceder.</string>
 
     <!-- Onboarding shared -->
     <string name="onboarding_mascot_description">Mascote - Abelha</string>
     <string name="onboarding_btn_continue">Continuar</string>
     <string name="onboarding_btn_back">Voltar</string>
-    <string name="onboarding_btn_start">Começar</string>
     <string name="onboarding_top_bar_title">Jornada de Recuperação</string>
     <string name="onboarding_chapter_label">Capítulo %d de 5</string>
     <string name="onboarding_section_sobre_voce">Sobre você</string>
@@ -81,12 +78,6 @@
     <string name="onboarding_ppu_freq_sub_5">Quase toda semana</string>
     <string name="onboarding_frequency_mascot_speech">Sem julgamentos. Queremos entender seus padrões para te ajudar melhor.</string>
 
-    <!-- Onboarding: Scale labels (shared) -->
-    <string name="onboarding_scale_never">Nunca</string>
-    <string name="onboarding_scale_always">Sempre</string>
-    <string name="onboarding_scale_almost_always">Quase sempre</string>
-    <string name="onboarding_option_value_label">%1$d – %2$s</string>
-
     <!-- Onboarding: Symptoms -->
     <string name="onboarding_symptoms_title">O que você costuma sentir por causa do consumo?</string>
     <string name="onboarding_symptom_anxiety">Ansiedade</string>
@@ -117,7 +108,6 @@
     <string name="onboarding_hobby_photography">Fotografia</string>
     <string name="onboarding_hobby_art">Arte / Desenho</string>
     <string name="onboarding_hobby_team_sports">Esportes coletivos</string>
-    <string name="onboarding_hobby_board_games">Jogos de tabuleiro</string>
     <string name="onboarding_hobby_videogames">Videogames</string>
     <string name="onboarding_hobby_volunteering">Voluntariado</string>
     <string name="onboarding_hobby_other">Outro</string>
@@ -133,8 +123,6 @@
     <string name="onboarding_goal_family">Fortalecer os vínculos familiares</string>
     <string name="onboarding_goal_spiritual">Crescimento espiritual</string>
     <string name="onboarding_goal_mental_health">Cuidar da minha saúde mental</string>
-    <string name="onboarding_goal_social">Reduzir culpa e vergonha</string>
-    <string name="onboarding_goal_career">Desenvolver minha carreira</string>
     <string name="onboarding_goals_mascot_speech">O que você quer ver de diferente na sua vida? Pode escolher mais de um.</string>
 
     <!-- Onboarding: Core values -->
@@ -147,10 +135,10 @@
     <string name="onboarding_core_value_relationships">Relacionamentos</string>
     <string name="onboarding_core_value_growth">Crescimento</string>
     <string name="onboarding_core_value_work">Trabalho</string>
-    <string name="onboarding_core_value_community">Comunidade</string>
-    <string name="onboarding_core_value_love">Amor</string>
     <string name="onboarding_core_value_freedom">Liberdade</string>
     <string name="onboarding_core_value_presence">Presença</string>
+    <string name="onboarding_core_value_community">Comunidade</string>
+    <string name="onboarding_core_value_love">Amor</string>
     <string name="onboarding_core_values_mascot_speech">Seus valores são a bússola que vai guiar suas escolhas. Escolha até 3.</string>
 
     <!-- Onboarding: Score result -->
@@ -178,26 +166,14 @@
 
     <!-- Home screen -->
     <string name="home_greeting">Olá, %1$s</string>
-    <string name="home_welcome_title">Bem-vindo ao BeeFree</string>
-    <string name="home_progress_section_title">Evolução em 30 dias</string>
-    <string name="home_relapse_apps_title">Aplicativos com mais recaídas</string>
 
     <!-- Settings screen -->
     <string name="settings_title">Configurações</string>
     <string name="settings_monitoring_section_title">Monitoramento Ativo</string>
     <string name="settings_adult_content_label">Conteúdo adulto</string>
     <string name="settings_bets_label">Apostas online</string>
-    <string name="settings_customization_section_title">Personalização</string>
-    <string name="settings_block_message_title">Mensagem de Bloqueio</string>
-    <string name="settings_block_message_subtitle">Edite o texto e a imagem da tela de alerta</string>
     <string name="settings_support_network_section_title">Rede de Apoio (WhatsApp)</string>
-    <string name="settings_add_contact">Adicionar</string>
-    <string name="settings_remove_contact">Remover</string>
-    <string name="settings_privacy_section_title">Privacidade</string>
     <string name="settings_export_data">Exportar os meus dados</string>
-    <string name="settings_permissions_section_title">Permissões</string>
-    <string name="settings_screen_reader_label">Leitura de tela</string>
-    <string name="settings_screen_blocker_label">Bloqueio de tela</string>
     <string name="settings_manage_contacts">Gerenciar contatos</string>
     <string name="settings_manage_contacts_coming_soon">Em breve</string>
     <string name="settings_data_management_section_title">Gerenciamento de Dados</string>
@@ -212,32 +188,10 @@
     <string name="settings_about_title">Sobre</string>
     <string name="settings_terms_of_service_title">Termos de Serviço</string>
 
-    <!-- Accessibility settings component -->
-    <string name="accessibility_service_enabled_status">O Serviço de Acessibilidade está ATIVADO</string>
-    <string name="accessibility_service_stop">Parar serviço</string>
-    <string name="accessibility_service_start">Iniciar serviço</string>
-    <string name="accessibility_service_disabled_status">O Serviço de Acessibilidade está DESATIVADO. Por favor, ative-o nas configurações.</string>
-    <string name="accessibility_go_to_settings">Ir para Configurações de Acessibilidade</string>
-
-    <!-- Overlay settings component -->
-    <string name="overlay_permission_enabled_status">A permissão de sobreposição está ATIVADA</string>
-    <string name="overlay_service_start">Iniciar sobreposição</string>
-    <string name="overlay_permission_disabled_status">A permissão de sobreposição está DESATIVADA. Por favor, ative-a nas configurações.</string>
-    <string name="overlay_go_to_settings">Ir para Configurações de Sobreposição</string>
-
     <!-- EMI Intervention UI -->
     <string name="emi_close_description">Fechar</string>
     <string name="emi_remember_values">Lembre-se dos seus valores</string>
     <string name="emi_breathe">Respire. Você está em um momento de desejo. Vamos te ajudar.</string>
-
-    <!-- Stats summary -->
-    <string name="stats_total_30d">Total (30d)</string>
-    <string name="stats_this_week">Esta Semana</string>
-
-    <!-- Heatmap -->
-    <string name="heatmap_legend_label">Legenda:</string>
-    <string name="heatmap_no_relapse">Sem recaída</string>
-    <string name="heatmap_relapse">Recaída</string>
 
     <!-- Navigation -->
     <string name="nav_home">Início</string>
@@ -249,53 +203,23 @@
     <string name="onboarding_finish_next_step_label">Próximo passo</string>
     <string name="onboarding_finish_next_step_value">Seu primeiro check-in de 2 min</string>
 
-    <!-- Settings: Banking compatibility -->
-    <string name="settings_banking_warning_title">Compatibilidade com apps bancários</string>
-    <string name="settings_banking_warning_body">Alguns aplicativos bancários podem bloquear transações enquanto o monitoramento de tela estiver ativo. Se isso ocorrer, desative temporariamente o serviço de acessibilidade antes de acessar seu banco.</string>
-
     <!-- Home: sections -->
-    <string name="home_activity_section_title">Micro-atividades (30 dias)</string>
-    <string name="home_triggers_section_title">Gatilhos mapeados</string>
-    <string name="home_emotional_section_title">Evolução emocional</string>
     <string name="home_checkin_banner_sub">~2 min</string>
     <string name="home_checkin_banner_cta">Iniciar</string>
     <string name="home_evolution_title">Evolução em 30 dias</string>
     <string name="home_legend_aligned">Alinhado · %d</string>
     <string name="home_legend_setback">Recaída · %d</string>
     <string name="home_legend_today">Hoje</string>
-    <string name="home_dual_chart_title">Ansiedade × satisfação</string>
-    <string name="home_dual_chart_subtitle">Últimas semanas</string>
     <string name="home_triggers_week_title">Gatilhos esta semana</string>
-    <string name="home_triggers_see_all">Ver todos</string>
-    <string name="home_track_days_aligned">DIAS ALINHADOS</string>
-    <string name="home_track_days_treatment_progress">Progresso no %s</string>
 
     <!-- Home derived screens -->
-    <string name="trigger_map_title">Mapeamento de Gatilhos</string>
-    <string name="activity_trajectory_title">Atividade</string>
-    <string name="recovery_trajectory_title">Recuperação</string>
     <string name="help_title">Ajuda</string>
 
     <!-- Relapse calendar -->
-    <string name="relapse_calendar_title">Calendário de recaídas</string>
     <string name="relapse_calendar_success_rate">Taxa de sucesso</string>
-    <string name="relapse_calendar_clean_day">Dia limpo</string>
-    <string name="relapse_calendar_relapse_day">Recaída</string>
-    <string name="relapse_calendar_legend">Legenda:</string>
-
-    <!-- Activity calendar -->
-    <string name="activity_calendar_success_rate">Taxa de atividade: %d%%</string>
-    <string name="activity_calendar_active_day">Atividade realizada</string>
-    <string name="activity_calendar_inactive_day">Sem atividade</string>
 
     <!-- Triggers list -->
     <string name="triggers_empty">Nenhum gatilho registrado ainda.</string>
-    <string name="triggers_craving_label">Intensidade:</string>
-
-    <!-- Emotional chart -->
-    <string name="emotional_chart_anxiety">Ansiedade</string>
-    <string name="emotional_chart_satisfaction">Satisfação emocional</string>
-    <string name="emotional_chart_empty">Sem dados emocionais ainda.</string>
 
     <!-- Quick help -->
     <string name="quick_help_button_description">Ajuda rápida</string>
@@ -304,24 +228,7 @@
     <string name="check_in_title">Check-in</string>
     <string name="check_in_daily_title">Check-in Diário</string>
     <string name="check_in_weekly_title">Check-in Semanal</string>
-    <string name="check_in_dopamine_section">De onde veio sua energia hoje?</string>
-    <string name="check_in_source_hobby">Hobby</string>
-    <string name="check_in_source_exercise">Exercício</string>
-    <string name="check_in_source_social">Social</string>
-    <string name="check_in_source_mindfulness">Mindfulness</string>
-    <string name="check_in_source_creative">Criativo</string>
-    <string name="check_in_source_adult_content">Conteúdo adulto</string>
-    <string name="check_in_source_gambling">Apostas</string>
-    <string name="check_in_dopamine_level_label">Nível de dopamina</string>
-    <string name="check_in_mood_label">Como você está se sentindo?</string>
-    <string name="check_in_mood_relapse_label">Como você se sentiu durante?</string>
-    <string name="check_in_mood_hint">Descreva seu estado emocional…</string>
-    <string name="check_in_anxiety_label">Nível de ansiedade</string>
-    <string name="check_in_values_label">O que fez esta semana alinhado com seus valores?</string>
-    <string name="check_in_values_hint">Descreva uma atitude prática…</string>
-    <string name="check_in_energy_label">Energia para conexões reais</string>
     <string name="check_in_your_values">Seus valores fundamentais</string>
-    <string name="check_in_subtitle">Cada momento é um recomeço. Como você está navegando seu caminho hoje?</string>
     <string name="check_in_weather_section">Estado atual</string>
     <string name="check_in_weather_heavy">Pesado</string>
     <string name="check_in_weather_tired">Cansado</string>
@@ -345,10 +252,8 @@
     <string name="check_in_progress_title">Você está progredindo.</string>
     <string name="check_in_progress_body">Aparecer para este check-in é prova de sua flexibilidade psicológica. Você não é seus pensamentos; você é quem os observa.</string>
     <string name="check_in_log_button">Registrar Check-in</string>
-    <string name="check_in_submit">Registrar</string>
 
     <!-- Weekly check-in: multi-step flow -->
-    <string name="check_in_weekly_step_label">PASSO %1$d DE %2$d</string>
     <string name="check_in_weekly_valores_title">Seus Valores</string>
     <string name="check_in_weekly_valores_subtitle">Dos valores que você escolheu, em quais se sentiu mais conectado esta semana?</string>
     <string name="check_in_weekly_acao_title">Ação Comprometida</string>
@@ -388,7 +293,6 @@
     <string name="onboarding_save_error">Falha ao salvar os seus dados. Tente novamente.</string>
 
     <!-- Feeling types -->
-    <string name="feeling_type_anxiety">Ansiedade</string>
     <string name="feeling_type_sleep">Sono</string>
     <string name="feeling_type_craving">Fissura</string>
     <string name="feeling_type_stress">Estresse</string>
@@ -425,7 +329,6 @@
     <string name="emotional_record_done_message">Próximo registro em ~3h. Você pode fazer um novo a qualquer momento.</string>
     <string name="emotional_record_done_section_title">Seus números agora</string>
     <string name="emotional_record_done_button">Concluir</string>
-    <string name="emotional_record_done_overline">SALVO</string>
 
     <!-- Emotional Record – Sono (SLEEP) -->
     <string name="emotional_record_var_sleep">Sono</string>
@@ -463,9 +366,115 @@
     <string name="emotional_record_fatigue_low">Descansado</string>
     <string name="emotional_record_fatigue_high">Esgotado</string>
 
-    <!-- Support Network -->
-    <string name="support_network_title">Rede de Apoio</string>
+    <!-- Daily Check-in – common -->
+    <string name="daily_checkin_track_tcc">TCC</string>
+    <string name="daily_checkin_track_act">ACT</string>
+    <string name="daily_checkin_tcc_path">Caminho TCC</string>
+    <string name="daily_checkin_act_path">Caminho ACT</string>
+    <string name="daily_checkin_invite_greeting_no_name">Olá!</string>
+    <string name="daily_checkin_invite_greeting">Olá, %s!</string>
+    <string name="daily_checkin_invite_subtitle">Como foi o seu dia até agora?</string>
+    <string name="daily_checkin_invite_steps_title">O que você vai registrar</string>
+    <string name="daily_checkin_invite_start">Começar check-in</string>
+    <string name="daily_checkin_invite_start_emotional_record">Registro emocional</string>
+    <string name="daily_checkin_invite_remind">Lembrar mais tarde</string>
+    <string name="daily_checkin_flow_title">Check-in diário</string>
+    <string name="daily_checkin_continue">Continuar</string>
+    <string name="daily_checkin_log">Registrar</string>
+    <string name="daily_checkin_done_title">Check-in concluído!</string>
+    <string name="daily_checkin_done_subtitle">Ótimo trabalho. Seus dados foram salvos.</string>
+    <string name="daily_checkin_done_close">Fechar</string>
+    <string name="daily_checkin_done_back">Voltar ao início</string>
+    <string name="daily_checkin_back">Voltar</string>
 
+    <!-- Daily Check-in – ACT steps -->
+    <string name="daily_checkin_act_craving_title">Nível de craving</string>
+    <string name="daily_checkin_act_craving_subtitle">Quanto você sentiu vontade de usar hoje?</string>
+    <string name="daily_checkin_act_craving_low">Sem craving</string>
+    <string name="daily_checkin_act_craving_high">Craving intenso</string>
+    <string name="daily_checkin_act_acceptance_title">Aceitação</string>
+    <string name="daily_checkin_act_acceptance_subtitle">Quanto você conseguiu aceitar seus pensamentos sem lutar?</string>
+    <string name="daily_checkin_act_acceptance_low">Muita luta</string>
+    <string name="daily_checkin_act_acceptance_high">Plena aceitação</string>
+    <string name="daily_checkin_act_emotions_title">Emoções presentes</string>
+    <string name="daily_checkin_act_emotions_subtitle">Quais emoções você percebeu hoje?</string>
+    <string name="daily_checkin_act_presence_title">Presença</string>
+    <string name="daily_checkin_act_presence_subtitle">Quanto você ficou presente no momento hoje?</string>
+    <string name="daily_checkin_act_presence_low">Totalmente disperso</string>
+    <string name="daily_checkin_act_presence_high">Totalmente presente</string>
+    <string name="daily_checkin_act_committed_action_title">Ação comprometida</string>
+    <string name="daily_checkin_act_committed_action_subtitle">Você realizou uma ação alinhada com seus valores hoje?</string>
+    <string name="daily_checkin_act_committed_action_yes">Sim</string>
+    <string name="daily_checkin_act_committed_action_yes_desc">Agi de acordo com meus valores</string>
+    <string name="daily_checkin_act_committed_action_no">Não</string>
+    <string name="daily_checkin_act_committed_action_no_desc">Não consegui hoje</string>
+    <string name="daily_checkin_act_direction_title">Direção de valor</string>
+    <string name="daily_checkin_act_direction_subtitle">O que você quer fazer amanhã alinhado com seus valores?</string>
+    <string name="daily_checkin_act_direction_hint">Ex.: "Ligar para um amigo" ou "fazer exercício"</string>
+
+    <!-- Daily Check-in – TCC steps -->
+    <string name="daily_checkin_tcc_mood_anxiety_title">Humor e ansiedade</string>
+    <string name="daily_checkin_tcc_mood_anxiety_subtitle">Como seu humor e ansiedade estiveram hoje?</string>
+    <string name="daily_checkin_tcc_mood_label">Humor</string>
+    <string name="daily_checkin_tcc_mood_low">Muito baixo</string>
+    <string name="daily_checkin_tcc_mood_high">Muito bom</string>
+    <string name="daily_checkin_tcc_anxiety_label">Ansiedade</string>
+    <string name="daily_checkin_tcc_anxiety_low">Sem ansiedade</string>
+    <string name="daily_checkin_tcc_anxiety_high">Muito ansioso</string>
+    <string name="daily_checkin_tcc_craving_title">Craving</string>
+    <string name="daily_checkin_tcc_craving_subtitle">Qual foi a intensidade do seu craving hoje?</string>
+    <string name="daily_checkin_tcc_craving_low">Sem craving</string>
+    <string name="daily_checkin_tcc_craving_high">Craving intenso</string>
+    <string name="daily_checkin_tcc_triggers_title">Gatilhos</string>
+    <string name="daily_checkin_tcc_triggers_subtitle">Quais situações ou emoções desencadearam o craving?</string>
+    <string name="daily_checkin_tcc_triggers_context_hint">Descreva o contexto...</string>
+    <string name="daily_checkin_trigger_sleep">Sono</string>
+    <string name="daily_checkin_trigger_craving">Craving</string>
+    <string name="daily_checkin_trigger_boredom">Tédio</string>
+    <string name="daily_checkin_trigger_stress">Estresse</string>
+    <string name="daily_checkin_trigger_loneliness">Solidão</string>
+    <string name="daily_checkin_trigger_fatigue">Fadiga</string>
+    <string name="daily_checkin_trigger_other">Outro</string>
+    <string name="daily_checkin_tcc_use_branch_title">Houve uso hoje?</string>
+    <string name="daily_checkin_tcc_use_branch_subtitle">Seja honesto — isso é para te ajudar.</string>
+    <string name="daily_checkin_tcc_use_branch_yes">Sim, houve uso</string>
+    <string name="daily_checkin_tcc_use_branch_no">Não, resisti</string>
+    <string name="daily_checkin_tcc_consequence_title">Como se sentiu depois?</string>
+    <string name="daily_checkin_tcc_consequence_subtitle">Qual sentimento predominou após o uso?</string>
+    <string name="daily_checkin_consequence_guilt">Culpa</string>
+    <string name="daily_checkin_consequence_guilt_desc">Sinto que errei</string>
+    <string name="daily_checkin_consequence_shame">Vergonha</string>
+    <string name="daily_checkin_consequence_shame_desc">Sinto vergonha de mim</string>
+    <string name="daily_checkin_consequence_relief">Alívio</string>
+    <string name="daily_checkin_consequence_relief_desc">Senti alívio temporário</string>
+    <string name="daily_checkin_consequence_neutral">Neutro</string>
+    <string name="daily_checkin_consequence_neutral_desc">Não senti muito</string>
+    <string name="daily_checkin_tcc_resistance_title">Como foi resistir?</string>
+    <string name="daily_checkin_tcc_resistance_subtitle">Descreva como foi não ceder ao impulso.</string>
+    <string name="daily_checkin_resistance_hard">Foi difícil</string>
+    <string name="daily_checkin_resistance_hard_desc">Tive que me esforçar muito</string>
+    <string name="daily_checkin_resistance_easy">Foi tranquilo</string>
+    <string name="daily_checkin_resistance_easy_desc">O impulso passou rápido</string>
+    <string name="daily_checkin_resistance_no_impulse">Não senti impulso</string>
+    <string name="daily_checkin_resistance_no_impulse_desc">Hoje foi um dia tranquilo</string>
+
+    <!-- Daily Check-in – ACT emotion options -->
+    <string name="daily_checkin_emotion_anxiety">Ansiedade</string>
+    <string name="daily_checkin_emotion_guilt">Culpa</string>
+    <string name="daily_checkin_emotion_shame">Vergonha</string>
+    <string name="daily_checkin_emotion_sadness">Tristeza</string>
+    <string name="daily_checkin_emotion_anger">Raiva</string>
+    <string name="daily_checkin_emotion_loneliness">Solidão</string>
+    <string name="daily_checkin_emotion_numb">Entorpecimento</string>
+    <string name="daily_checkin_emotion_other">Outro</string>
+
+    <!-- Scale Step Type Labels & Hints -->
+    <string name="scale_step_craving_label">Impulso</string>
+    <string name="scale_step_craving_hint">Como você se sente neste momento</string>
+    <string name="scale_step_acceptance_label">Aceitação</string>
+    <string name="scale_step_acceptance_hint">Sua capacidade de lidar com a situação</string>
+    <string name="scale_step_presence_label">Presença</string>
+    <string name="scale_step_presence_hint">Seu estado mental e emocional</string>
 
     <!-- Emotional Record notifications -->
     <string name="emotional_record_notification_title">Como você está agora?</string>
@@ -490,16 +499,6 @@
     <string name="help_intervention.meditation.accept">Apenas aceite como é.</string>
     <string name="help_intervention.meditation.no_resist">Não lute, não resista a nenhuma de suas sensações, pensamentos ou emoções.</string>
     <string name="help_intervention.meditation.present_moment">Apenas esteja consciente do momento presente.</string>
-
-    <!-- Help Urge Surfing -->
-    <string name="urge_surfing_headline">A onda vai passar.</string>
-    <string name="urge_surfing_body">Respire com a onda. Observe ela subir. Observe ela cair. Você não precisa fazer mais nada.</string>
-    <string name="urge_surfing_cycle_label">CICLO %d</string>
-    <string name="urge_surfing_continue">Continuar ciclo</string>
-    <string name="urge_surfing_phase_inhale">INSPIRA</string>
-    <string name="urge_surfing_phase_hold">SEGURA</string>
-    <string name="urge_surfing_phase_exhale">EXPIRA</string>
-    <string name="urge_surfing_seconds">segundos</string>
 
     <!-- Common intensity steps -->
     <string name="help_intervention.initial_intensity.title">Qual a intensidade do impulso agora?</string>
@@ -528,16 +527,23 @@
     <string name="help_intervention.act_values.resilient">Resiliente</string>
     <string name="help_intervention.act_values.selfcontrolled">Autocontrolado</string>
     <string name="help_intervention.act_values.kind_to_self">Gentil comigo mesmo</string>
-    <string name="help_intervention_user_value">Seu valor</string>
-
-    <!-- ACT direction step -->
     <string name="help_intervention.act_direction.title">Seguir o impulso te aproxima ou afasta dessa pessoa?</string>
     <string name="help_intervention.act_direction.approximates">Aproxima</string>
     <string name="help_intervention.act_direction.distances">Afasta</string>
     <string name="help_intervention.act_direction.uncertain">Não tenho certeza</string>
-
-    <!-- ACT committed action step -->
     <string name="help_intervention.act_committed_action.title">Qual pequena ação alinhada você pode fazer agora?</string>
+
+    <!-- Help Urge Surfing -->
+    <string name="urge_surfing_headline">A onda vai passar.</string>
+    <string name="urge_surfing_body">Respire com a onda. Observe ela subir. Observe ela cair. Você não precisa fazer mais nada.</string>
+    <string name="urge_surfing_cycle_label">CICLO %d</string>
+    <string name="urge_surfing_phase_inhale">INSPIRA</string>
+    <string name="urge_surfing_phase_hold">SEGURA</string>
+    <string name="urge_surfing_phase_exhale">EXPIRA</string>
+    <string name="urge_surfing_seconds">segundos</string>
+
+    <!-- ACT values step -->
+    <string name="help_intervention_user_value">Seu valor</string>
 
     <!-- ACT actions -->
     <string name="help_intervention.act_actions.call_family">Ligar para alguém da família</string>
@@ -567,7 +573,6 @@
     <string name="help_intervention.act_actions.leave_environment">Sair do ambiente</string>
     <string name="help_intervention.act_actions.go_another_room">Ir para outro cômodo</string>
     <string name="help_intervention.act_actions.put_phone_away">Guardar o celular por alguns minutos</string>
-
     <string name="help_intervention.custom_value_other">Outro:</string>
     <string name="help_intervention.custom_action_other">Ex.: &quot;Ir para academia&quot; ou &quot;mandar mensagem para alguém&quot;.</string>
 
@@ -607,7 +612,6 @@
 
     <!-- Final steps -->
     <string name="help_intervention.timer_remaining">Tempo decorrido</string>
-    <string name="help_intervention.timer_title">Timer</string>
     <string name="help_intervention.reflection.was_impulse_strong">O impulso era tão forte quanto parecia?</string>
     <string name="help_intervention.reflection_yes">Sim, era forte</string>
     <string name="help_intervention.reflection_no">Não, passou rápido</string>
@@ -624,7 +628,6 @@
     <string name="help_intervention.timer_format_sec">s</string>
 
     <!-- Mascot speech and encouragement -->
-    <string name="help_intervention.intensity_greeting">Tô com você</string>
     <string name="help_intervention.mascot_speech_intensity">Perceber o impulso já é um passo importante. Você não precisa fugir da onda. Apenas atravesse este momento de cada vez.</string>
     <string name="help_intervention.mascot_speech_body_location">Seu corpo dá sinais antes da ação. Observe onde esse impulso aparece agora: peito, barriga, mãos, respiração. Apenas perceba.</string>
     <string name="help_intervention.mascot_speech_urge_surfing">Não lute contra o impulso. Respire e observe como uma onda. Ela cresce, muda e depois diminui.</string>
@@ -646,10 +649,8 @@
     <string name="help_intervention.session_summary_header">SESSÃO · RESUMO</string>
     <string name="help_intervention.session_initial_intensity">Intensidade inicial</string>
     <string name="help_intervention.session_post_surf">Após o surf</string>
-    <string name="help_intervention.session_final">Ao final</string>
     <string name="help_intervention.session_total_time">Tempo total</string>
     <string name="help_intervention.session_action_taken">Ação executada</string>
-    <string name="help_intervention.session_saved_message">Sessão salva. Janelas de risco serão recalculadas. O app vai te conhecer melhor a partir daqui.</string>
 
     <!-- Navigation buttons -->
     <string name="back">Voltar</string>
@@ -669,10 +670,90 @@
     <!-- Home: Risk Assessment Today -->
     <string name="home_risk_assessment_title">Avaliação de risco do dia</string>
     <string name="home_risk_assessment_empty">Nenhuma avaliação de risco hoje.</string>
-    <string name="home_risk_assessment_scores">%1$d / 100</string>
-    <string name="home_risk_low">Baixo</string>
-    <string name="home_risk_moderate">Moderado</string>
-    <string name="home_risk_high">Alto</string>
-    <string name="home_risk_very_high">Severo</string>
 
+    <!-- Daily check-in: invite done state -->
+    <string name="daily_checkin_already_done_message">Você já fez o check-in de hoje. Que tal registrar como está se sentindo agora?</string>
+
+    <!-- Daily check-in: Step 1 - Emotional record -->
+    <string name="daily_checkin_emotional_record_title">Registro emocional</string>
+    <string name="daily_checkin_emotional_record_subtitle">Como você está se sentindo hoje?</string>
+    <string name="daily_checkin_emotional_record_go_record">Registrar agora</string>
+    <string name="daily_checkin_close_description">Fechar check-in</string>
+
+    <!-- Daily check-in: Step 2 - Objective review -->
+    <string name="daily_checkin_objective_review_title">Revisão do objetivo</string>
+    <string name="daily_checkin_objective_review_subtitle">O objetivo de ontem foi cumprido?</string>
+    <string name="daily_checkin_objective_review_yes">Sim, cumpri</string>
+    <string name="daily_checkin_objective_review_partially">Parcialmente</string>
+    <string name="daily_checkin_objective_review_no">Não consegui</string>
+    <string name="daily_checkin_objective_review_context_hint">O que ajudou ou atrapalhou? (opcional)</string>
+
+    <!-- Daily check-in: Step 3 - Therapeutic activity -->
+    <string name="daily_checkin_activity_selector_title">Atividade terapêutica</string>
+    <string name="daily_checkin_activity_selector_subtitle">Escolhida para hoje</string>
+    <string name="daily_checkin_activity_mindfulness_title">Mindfulness</string>
+    <string name="daily_checkin_activity_mindfulness_desc">Exercício de atenção plena</string>
+    <string name="daily_checkin_activity_exercise_act_title">Exercício ACT</string>
+    <string name="daily_checkin_activity_exercise_act_desc">Aceitação e ação comprometida</string>
+    <string name="daily_checkin_activity_exercise_tcc_title">Desafio de pensamentos</string>
+    <string name="daily_checkin_activity_exercise_tcc_desc">Identifique e reestruture pensamentos automáticos</string>
+    <string name="daily_checkin_activity_video_title">Vídeo educativo</string>
+    <string name="daily_checkin_activity_video_desc">Gary Wilson: Por que o conteúdo adulto muda o cérebro</string>
+    <string name="daily_checkin_activity_swap_label">OU TROCAR POR</string>
+
+    <!-- Daily check-in: TCC sub-steps (thought challenge) -->
+    <string name="daily_checkin_tcc_situation_title">Situação</string>
+    <string name="daily_checkin_tcc_situation_subtitle">O que aconteceu antes da vontade surgir?</string>
+    <string name="daily_checkin_tcc_situation_hint">Descreva a situação...</string>
+    <string name="daily_checkin_tcc_auto_thought_title">Pensamento automático</string>
+    <string name="daily_checkin_tcc_auto_thought_subtitle">Que pensamento apareceu?</string>
+    <string name="daily_checkin_tcc_auto_thought_hint">Descreva o pensamento...</string>
+    <string name="daily_checkin_tcc_emotion_title">Emoção</string>
+    <string name="daily_checkin_tcc_emotion_subtitle">Quais emoções estavam presentes?</string>
+    <string name="daily_checkin_tcc_alternative_thought_title">Pensamento alternativo</string>
+    <string name="daily_checkin_tcc_alternative_thought_subtitle">Existe outra forma de ver isso?</string>
+    <string name="daily_checkin_tcc_alternative_thought_hint">Descreva uma perspectiva alternativa...</string>
+
+    <!-- Daily check-in: video watch -->
+    <string name="daily_checkin_video_watch_title">Assista ao vídeo</string>
+    <string name="daily_checkin_video_watch_subtitle">Reserve um momento para assistir ao conteúdo com atenção</string>
+
+    <!-- Daily check-in: video reflection -->
+    <string name="daily_checkin_video_reflection_title">Reflexão sobre o vídeo</string>
+    <string name="daily_checkin_video_reflection_subtitle">O que esse vídeo te fez pensar?</string>
+    <string name="daily_checkin_video_reflection_hint">Escreva sua reflexão...</string>
+
+    <!-- Daily check-in: Step 4 - Goal definition -->
+    <string name="daily_checkin_goal_definition_title">Definição de objetivo</string>
+    <string name="daily_checkin_goal_definition_subtitle">Qual o seu objetivo para amanhã?</string>
+    <string name="daily_checkin_goal_definition_hint">Ex: Amanhã vou caminhar 10 minutos quando sentir vontade</string>
+    <string name="daily_checkin_goal_suggestion_1">Vou fazer uma caminhada quando sentir vontade</string>
+    <string name="daily_checkin_goal_suggestion_2">Vou ligar para um amigo se sentir impulso</string>
+    <string name="daily_checkin_goal_suggestion_3">Vou praticar respiração profunda por 5 minutos</string>
+    <string name="daily_checkin_goal_suggestion_4">Vou me distrair com um hobby favorito</string>
+
+    <!-- Daily check-in: Step 5 - Relapse check -->
+    <string name="daily_checkin_relapse_check_title">Houve recaída?</string>
+    <string name="daily_checkin_relapse_check_subtitle">Seja honesto, isso ajuda no seu tratamento</string>
+    <string name="daily_checkin_relapse_check_yes">Sim, houve</string>
+    <string name="daily_checkin_relapse_check_no">Não, resisti</string>
+
+    <!-- Daily check-in: Step 5A - Day evaluation -->
+    <string name="daily_checkin_day_eval_title">Como foi o dia?</string>
+    <string name="daily_checkin_day_eval_subtitle">Descreva seu contexto emocional</string>
+    <string name="daily_checkin_day_eval_calm">Tranquilo</string>
+    <string name="daily_checkin_day_eval_balanced">Equilibrado</string>
+    <string name="daily_checkin_day_eval_difficult">Difícil</string>
+    <string name="daily_checkin_day_eval_context_hint">Contexto emocional (opcional)</string>
+
+    <!-- Daily check-in: Step 5B - Relapse registration -->
+    <string name="daily_checkin_relapse_reg_title">Registro de recaída</string>
+    <string name="daily_checkin_relapse_reg_subtitle">Vamos registrar com cuidado</string>
+    <string name="daily_checkin_relapse_time_label">Quando aconteceu?</string>
+    <string name="daily_checkin_relapse_time_hint">clique no relógio abaixo para editar</string>
+    <string name="daily_checkin_relapse_time_empty">--:--</string>
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="daily_checkin_relapse_triggers_label">O que desencadeou?</string>
+    <string name="daily_checkin_relapse_context_hint">Outro gatilho (opcional)</string>
 </resources>
