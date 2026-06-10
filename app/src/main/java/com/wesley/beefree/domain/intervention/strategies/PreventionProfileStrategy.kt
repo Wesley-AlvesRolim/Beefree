@@ -1,5 +1,7 @@
 package com.wesley.beefree.domain.intervention.strategies
 
+import com.wesley.beefree.domain.checkin.DailyCheckInFlow
+import com.wesley.beefree.domain.checkin.TccDailyCheckInFlow
 import com.wesley.beefree.domain.intervention.EmiTool
 import com.wesley.beefree.domain.intervention.HelpInterventionFlow
 import com.wesley.beefree.domain.intervention.ports.ClinicalProfileStrategy
@@ -14,4 +16,5 @@ class PreventionProfileStrategy : ClinicalProfileStrategy {
             clinicalSteps = TccHelpInterventionFlow.steps,
             finalSteps = CommonHelpInterventionFlow.finalSteps,
         )
+    override val dailyCheckInFlow: DailyCheckInFlow = TccDailyCheckInFlow.flow
 }
