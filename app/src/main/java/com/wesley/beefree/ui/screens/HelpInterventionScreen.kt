@@ -30,9 +30,9 @@ import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.BreathingPhaseEnum
 import com.wesley.beefree.domain.entities.CoreValueType
 import com.wesley.beefree.domain.entities.UserCoreValue
-import com.wesley.beefree.domain.intervention.ClinicalProfileStrategyFactory
 import com.wesley.beefree.domain.intervention.HelpInterventionStep
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
+import com.wesley.beefree.domain.treatments.factories.ClinicalProfileStrategyFactory
 import com.wesley.beefree.ui.components.designsystem.BeeButtonPrimary
 import com.wesley.beefree.ui.components.designsystem.BeeHeadlineSmall
 import com.wesley.beefree.ui.components.designsystem.BeeLabelMedium

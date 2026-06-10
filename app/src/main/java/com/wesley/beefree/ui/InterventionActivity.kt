@@ -4,10 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
-import com.wesley.beefree.domain.intervention.ClinicalProfileStrategyFactory
 import com.wesley.beefree.domain.intervention.EmiTool
-import com.wesley.beefree.domain.intervention.ports.ClinicalProfileStrategy
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
+import com.wesley.beefree.domain.treatments.factories.ClinicalProfileStrategyFactory
+import com.wesley.beefree.domain.treatments.ports.ClinicalProfileStrategy
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import com.wesley.beefree.ui.components.EMIInterventionUI
 import kotlinx.coroutines.CoroutineScope

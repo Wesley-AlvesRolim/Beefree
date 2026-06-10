@@ -11,7 +11,7 @@ import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.domain.risk.DefaultRiskEngine
 import com.wesley.beefree.domain.risk.RiskLevel
 import com.wesley.beefree.domain.risk.ports.RiskEngine
-import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
+import com.wesley.beefree.domain.usecases.risk.CalculateAndSaveRiskAssessmentUseCase
 import com.wesley.beefree.infrastructure.storage.adapters.KeyValueRiskWeightsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository

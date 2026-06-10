@@ -7,9 +7,9 @@ import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.wesley.beefree.MainActivity
 import com.wesley.beefree.R
-import com.wesley.beefree.domain.checkin.usecases.DetermineCheckInTypeUseCase
-import com.wesley.beefree.domain.checkin.usecases.HasCompletedTodaysCheckInUseCase
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
+import com.wesley.beefree.domain.usecases.checkin.DetermineCheckInTypeUseCase
+import com.wesley.beefree.domain.usecases.checkin.HasCompletedTodaysCheckInUseCase
 import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase

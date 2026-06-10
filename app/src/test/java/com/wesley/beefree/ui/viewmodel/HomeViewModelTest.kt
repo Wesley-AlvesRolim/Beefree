@@ -3,9 +3,9 @@ package com.wesley.beefree.ui.viewmodel
 import com.wesley.beefree.domain.entities.RelapseRecord
 import com.wesley.beefree.domain.entities.RiskAssessment
 import com.wesley.beefree.domain.entities.UserProfile
-import com.wesley.beefree.domain.home.usecases.HomeData
-import com.wesley.beefree.domain.home.usecases.LoadHomeDataUseCase
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
+import com.wesley.beefree.domain.usecases.home.HomeData
+import com.wesley.beefree.domain.usecases.home.LoadHomeDataUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async

@@ -1,6 +1,5 @@
 package com.wesley.beefree.ui.viewmodel
 
-import com.wesley.beefree.domain.emotion.usecases.SaveEmotionRecordUseCase
 import com.wesley.beefree.domain.entities.EmotionRecord
 import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.entities.RiskAssessment
@@ -12,8 +11,9 @@ import com.wesley.beefree.domain.repository.ports.RiskFeatureSnapshotRepository
 import com.wesley.beefree.domain.repository.ports.RiskWeightsRepository
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.domain.risk.RiskWeights
-import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
-import com.wesley.beefree.domain.risk.usecases.SaveRiskFeatureSnapshotUseCase
+import com.wesley.beefree.domain.usecases.emotion.SaveEmotionRecordUseCase
+import com.wesley.beefree.domain.usecases.risk.CalculateAndSaveRiskAssessmentUseCase
+import com.wesley.beefree.domain.usecases.risk.SaveRiskFeatureSnapshotUseCase
 import com.wesley.beefree.infrastructure.logging.TestLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

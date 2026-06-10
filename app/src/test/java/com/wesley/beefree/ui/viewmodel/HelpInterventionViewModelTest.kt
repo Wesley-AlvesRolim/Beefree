@@ -14,8 +14,6 @@ import com.wesley.beefree.domain.entities.UserOnboardingSession
 import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.entities.UserSymptom
 import com.wesley.beefree.domain.intervention.HelpInterventionStep
-import com.wesley.beefree.domain.intervention.ports.Ticker
-import com.wesley.beefree.domain.intervention.usecases.SaveInterventionSessionUseCase
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.domain.repository.ports.EMIRepository
 import com.wesley.beefree.domain.repository.ports.MetricsRepository
@@ -23,7 +21,9 @@ import com.wesley.beefree.domain.repository.ports.OnboardingRepository
 import com.wesley.beefree.domain.repository.ports.RiskWeightsRepository
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.domain.risk.RiskWeights
-import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
+import com.wesley.beefree.domain.shared.Ticker
+import com.wesley.beefree.domain.usecases.intervention.SaveInterventionSessionUseCase
+import com.wesley.beefree.domain.usecases.risk.CalculateAndSaveRiskAssessmentUseCase
 import com.wesley.beefree.infrastructure.logging.TestLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

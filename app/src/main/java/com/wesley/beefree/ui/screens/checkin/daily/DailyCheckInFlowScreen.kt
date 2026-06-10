@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.wesley.beefree.R
-import com.wesley.beefree.domain.checkin.ActDailyCheckInFlow
 import com.wesley.beefree.domain.checkin.ActivityType
 import com.wesley.beefree.domain.checkin.BooleanBranchStep
 import com.wesley.beefree.domain.checkin.DailyCheckInAnswer
@@ -39,13 +38,14 @@ import com.wesley.beefree.domain.checkin.RelapseRegistrationStep
 import com.wesley.beefree.domain.checkin.ScaleStep
 import com.wesley.beefree.domain.checkin.SingleSelectStep
 import com.wesley.beefree.domain.checkin.SingleSelectWithContextStep
-import com.wesley.beefree.domain.checkin.TccDailyCheckInFlow
 import com.wesley.beefree.domain.checkin.TextStep
 import com.wesley.beefree.domain.checkin.TextWithSuggestionsStep
 import com.wesley.beefree.domain.checkin.TherapeuticActivityStep
 import com.wesley.beefree.domain.checkin.VideoWatchStep
 import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
+import com.wesley.beefree.domain.treatments.checkin.ActDailyCheckInFlow
+import com.wesley.beefree.domain.treatments.checkin.TccDailyCheckInFlow
 import com.wesley.beefree.ui.components.checkin.daily.BooleanBranchStepContent
 import com.wesley.beefree.ui.components.checkin.daily.DualScaleStepContent
 import com.wesley.beefree.ui.components.checkin.daily.EmotionalRecordStepContent

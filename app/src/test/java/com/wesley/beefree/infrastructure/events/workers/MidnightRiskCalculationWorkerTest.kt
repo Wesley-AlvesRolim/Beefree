@@ -12,7 +12,7 @@ import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
 import com.wesley.beefree.domain.risk.RiskLevel
 import com.wesley.beefree.domain.risk.ports.RiskEngine
-import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
+import com.wesley.beefree.domain.usecases.risk.CalculateAndSaveRiskAssessmentUseCase
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals

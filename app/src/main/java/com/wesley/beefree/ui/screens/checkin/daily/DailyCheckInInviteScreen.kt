@@ -34,11 +34,11 @@ import com.wesley.beefree.domain.checkin.RelapseRegistrationStep
 import com.wesley.beefree.domain.checkin.ScaleStep
 import com.wesley.beefree.domain.checkin.SingleSelectStep
 import com.wesley.beefree.domain.checkin.SingleSelectWithContextStep
-import com.wesley.beefree.domain.checkin.TccDailyCheckInFlow
 import com.wesley.beefree.domain.checkin.TextStep
 import com.wesley.beefree.domain.checkin.TextWithSuggestionsStep
 import com.wesley.beefree.domain.checkin.TherapeuticActivityStep
 import com.wesley.beefree.domain.checkin.VideoWatchStep
+import com.wesley.beefree.domain.treatments.checkin.TccDailyCheckInFlow
 import com.wesley.beefree.ui.components.checkin.daily.stringByName
 import com.wesley.beefree.ui.components.designsystem.BeeBodyMedium
 import com.wesley.beefree.ui.components.designsystem.BeeButtonOutlined
