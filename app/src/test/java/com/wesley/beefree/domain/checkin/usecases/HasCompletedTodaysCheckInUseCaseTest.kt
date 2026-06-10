@@ -1,7 +1,6 @@
 package com.wesley.beefree.domain.checkin.usecases
 
 import com.wesley.beefree.domain.entities.DailyCheckIn
-import com.wesley.beefree.domain.entities.WeeklyCheckIn
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.domain.repository.ports.CheckInRepository
 import kotlinx.coroutines.flow.flowOf
@@ -75,18 +74,16 @@ class HasCompletedTodaysCheckInUseCaseTest {
     }
 
     @Test
-    fun `returns true when weekly check-in exists for current week`() {
+    fun `returns true when daily check-in exists today for long-running user`() {
         runBlocking {
-            val weekStart = HasCompletedTodaysCheckInUseCase.currentWeekStart(now)
-            whenever(checkInRepository.getWeeklyCheckIns(userId)).thenReturn(
+            whenever(checkInRepository.getDailyCheckIns(userId)).thenReturn(
                 flowOf(
                     listOf(
-                        WeeklyCheckIn(
+                        DailyCheckIn(
                             userProfileId = userId,
-                            weekStartDate = weekStart,
-                            valuesAlignmentText = null,
-                            realConnectionEnergy = null,
-                            createdAt = now,
+                            treatmentProfile = TreatmentProfile.ACT,
+                            answers = emptyMap(),
+                            checkedInAt = now,
                         ),
                     ),
                 ),
@@ -97,22 +94,9 @@ class HasCompletedTodaysCheckInUseCaseTest {
     }
 
     @Test
-    fun `returns false when weekly check-in is from a different week`() {
+    fun `returns false when no daily check-in for long-running user`() {
         runBlocking {
-            val lastWeekStart = HasCompletedTodaysCheckInUseCase.currentWeekStart(now) - (7 * dayMs)
-            whenever(checkInRepository.getWeeklyCheckIns(userId)).thenReturn(
-                flowOf(
-                    listOf(
-                        WeeklyCheckIn(
-                            userProfileId = userId,
-                            weekStartDate = lastWeekStart,
-                            valuesAlignmentText = null,
-                            realConnectionEnergy = null,
-                            createdAt = now,
-                        ),
-                    ),
-                ),
-            )
+            whenever(checkInRepository.getDailyCheckIns(userId)).thenReturn(flowOf(emptyList()))
 
             assertFalse(useCase.execute(userId, weeklyCreatedAt, now))
         }
