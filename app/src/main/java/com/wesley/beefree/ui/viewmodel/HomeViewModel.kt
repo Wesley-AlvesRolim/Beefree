@@ -10,7 +10,6 @@ import com.wesley.beefree.domain.entities.RiskAssessment
 import com.wesley.beefree.domain.entities.RiskTrigger
 import com.wesley.beefree.domain.entities.UserProfile
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
-import com.wesley.beefree.domain.usecases.checkin.DetermineCheckInTypeUseCase
 import com.wesley.beefree.domain.usecases.checkin.HasCompletedTodaysCheckInUseCase
 import com.wesley.beefree.domain.usecases.home.ComputeRelapseSuccessRateUseCase
 import com.wesley.beefree.domain.usecases.home.HomeData
@@ -188,7 +187,6 @@ class HomeViewModel(
                                 hasCompletedTodaysCheckInUseCase =
                                     HasCompletedTodaysCheckInUseCase(
                                         checkInRepository,
-                                        DetermineCheckInTypeUseCase(),
                                     ),
                             ),
                     ) as T

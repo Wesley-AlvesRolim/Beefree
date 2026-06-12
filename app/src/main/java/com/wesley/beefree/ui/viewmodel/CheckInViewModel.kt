@@ -16,7 +16,6 @@ import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.domain.repository.ports.OnboardingRepository
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
-import com.wesley.beefree.domain.usecases.checkin.DetermineCheckInTypeUseCase
 import com.wesley.beefree.domain.usecases.checkin.HasCompletedTodaysCheckInUseCase
 import com.wesley.beefree.domain.usecases.checkin.LoadDailyCheckInFlowUseCase
 import com.wesley.beefree.domain.usecases.checkin.LoadPreviousObjectiveUseCase
@@ -353,7 +352,6 @@ class CheckInViewModel(
                         hasCompletedTodaysCheckInUseCase =
                             HasCompletedTodaysCheckInUseCase(
                                 checkInRepository = checkInRepository,
-                                determineCheckInTypeUseCase = DetermineCheckInTypeUseCase(),
                             ),
                         loadPreviousObjectiveUseCase =
                             LoadPreviousObjectiveUseCase(checkInRepository),

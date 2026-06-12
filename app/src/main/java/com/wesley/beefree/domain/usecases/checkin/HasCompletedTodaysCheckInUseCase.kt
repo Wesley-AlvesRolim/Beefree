@@ -1,7 +1,5 @@
 package com.wesley.beefree.domain.usecases.checkin
 
-import com.wesley.beefree.domain.checkin.CheckInDateUtils
-import com.wesley.beefree.domain.checkin.CheckInType
 import com.wesley.beefree.domain.repository.ports.CheckInRepository
 import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
@@ -10,21 +8,10 @@ import java.util.Locale
 
 class HasCompletedTodaysCheckInUseCase(
     private val checkInRepository: CheckInRepository,
-    private val determineCheckInTypeUseCase: DetermineCheckInTypeUseCase,
 ) {
     suspend fun execute(
         userId: Int,
-        userCreatedAt: Long,
         now: Long = System.currentTimeMillis(),
-    ): Boolean =
-        when (determineCheckInTypeUseCase.execute(userCreatedAt, now)) {
-            CheckInType.DAILY -> hasDailyCheckInToday(userId, now)
-            CheckInType.WEEKLY -> hasWeeklyCheckInThisWeek(userId, now)
-        }
-
-    private suspend fun hasDailyCheckInToday(
-        userId: Int,
-        now: Long,
     ): Boolean {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val today = sdf.format(Date(now))
@@ -32,20 +19,5 @@ class HasCompletedTodaysCheckInUseCase(
             .getDailyCheckIns(userId)
             .first()
             .any { sdf.format(Date(it.checkedInAt)) == today }
-    }
-
-    private suspend fun hasWeeklyCheckInThisWeek(
-        userId: Int,
-        now: Long,
-    ): Boolean {
-        val weekStart = currentWeekStart(now)
-        return checkInRepository
-            .getWeeklyCheckIns(userId)
-            .first()
-            .any { it.weekStartDate == weekStart }
-    }
-
-    companion object {
-        fun currentWeekStart(now: Long = System.currentTimeMillis()): Long = CheckInDateUtils.startOfWeek(now)
     }
 }

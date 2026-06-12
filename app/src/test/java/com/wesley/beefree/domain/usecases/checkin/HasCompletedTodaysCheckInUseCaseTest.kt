@@ -13,7 +13,7 @@ import org.mockito.kotlin.whenever
 
 class HasCompletedTodaysCheckInUseCaseTest {
     private val checkInRepository: CheckInRepository = mock()
-    private val useCase = HasCompletedTodaysCheckInUseCase(checkInRepository, DetermineCheckInTypeUseCase())
+    private val useCase = HasCompletedTodaysCheckInUseCase(checkInRepository)
 
     private val userId = 1
     private val now = System.currentTimeMillis()
@@ -39,7 +39,7 @@ class HasCompletedTodaysCheckInUseCaseTest {
                 ),
             )
 
-            assertTrue(useCase.execute(userId, dailyCreatedAt, now))
+            assertTrue(useCase.execute(userId, now))
         }
     }
 
@@ -60,7 +60,7 @@ class HasCompletedTodaysCheckInUseCaseTest {
                 ),
             )
 
-            assertFalse(useCase.execute(userId, dailyCreatedAt, now))
+            assertFalse(useCase.execute(userId, now))
         }
     }
 
@@ -69,7 +69,7 @@ class HasCompletedTodaysCheckInUseCaseTest {
         runBlocking {
             whenever(checkInRepository.getDailyCheckIns(userId)).thenReturn(flowOf(emptyList()))
 
-            assertFalse(useCase.execute(userId, dailyCreatedAt, now))
+            assertFalse(useCase.execute(userId, now))
         }
     }
 
@@ -89,7 +89,7 @@ class HasCompletedTodaysCheckInUseCaseTest {
                 ),
             )
 
-            assertTrue(useCase.execute(userId, weeklyCreatedAt, now))
+            assertTrue(useCase.execute(userId, now))
         }
     }
 
@@ -98,7 +98,7 @@ class HasCompletedTodaysCheckInUseCaseTest {
         runBlocking {
             whenever(checkInRepository.getDailyCheckIns(userId)).thenReturn(flowOf(emptyList()))
 
-            assertFalse(useCase.execute(userId, weeklyCreatedAt, now))
+            assertFalse(useCase.execute(userId, now))
         }
     }
 }

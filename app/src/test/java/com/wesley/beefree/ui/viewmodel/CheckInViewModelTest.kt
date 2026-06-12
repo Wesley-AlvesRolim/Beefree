@@ -14,7 +14,6 @@ import com.wesley.beefree.domain.mocks.RiskWeightsRepositoryMock
 import com.wesley.beefree.domain.mocks.UserProfileRepositoryMock
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.domain.treatments.checkin.ActDailyCheckInFlow
-import com.wesley.beefree.domain.usecases.checkin.DetermineCheckInTypeUseCase
 import com.wesley.beefree.domain.usecases.checkin.HasCompletedTodaysCheckInUseCase
 import com.wesley.beefree.domain.usecases.checkin.LoadDailyCheckInFlowUseCase
 import com.wesley.beefree.domain.usecases.checkin.LoadPreviousObjectiveUseCase
@@ -213,7 +212,6 @@ class CheckInViewModelTest {
             hasCompletedTodaysCheckInUseCase =
                 HasCompletedTodaysCheckInUseCase(
                     checkInRepository = checkInRepository,
-                    determineCheckInTypeUseCase = DetermineCheckInTypeUseCase(),
                 ),
             loadPreviousObjectiveUseCase = LoadPreviousObjectiveUseCase(checkInRepository),
             loadDailyCheckInFlowUseCase = LoadDailyCheckInFlowUseCase(),

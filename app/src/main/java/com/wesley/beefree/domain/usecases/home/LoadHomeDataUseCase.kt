@@ -91,7 +91,7 @@ class LoadHomeDataUseCase(
             val relapseRate = computeRelapseSuccessRateUseCase.execute(relapses)
 
             val hasCheckedIn =
-                hasCompletedTodaysCheckInUseCase.execute(userId, user.createdAt)
+                hasCompletedTodaysCheckInUseCase.execute(userId)
 
             val treatmentProfile =
                 dailyCheckIns.lastOrNull()?.treatmentProfile ?: TreatmentProfile.ACT
