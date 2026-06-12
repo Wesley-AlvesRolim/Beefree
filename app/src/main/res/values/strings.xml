@@ -756,4 +756,14 @@
     <string name="cancel">Cancelar</string>
     <string name="daily_checkin_relapse_triggers_label">O que desencadeou?</string>
     <string name="daily_checkin_relapse_context_hint">Outro gatilho (opcional)</string>
+
+    <!-- Accessibility: Icon descriptions -->
+    <string name="btn_add">Adicionar</string>
+    <string name="btn_favorite">Favorito</string>
+    <string name="btn_selected">Selecionado</string>
+    <string name="calendar_day_aligned">Dia alinhado com objetivos</string>
+    <string name="checkin_banner_icon">Ícone de check-in</string>
+    <string name="onboarding_finish_progress_icon">Ícone de progresso</string>
+    <string name="help_intervention_timer_icon">Ícone de cronômetro</string>
+    <string name="emotional_record_info_icon">Ícone de informação</string>
 </resources>
