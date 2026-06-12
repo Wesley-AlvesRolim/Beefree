@@ -18,3 +18,7 @@ interface DatabaseExporterStrategy {
 
     fun writeData(stream: OutputStreamWriter)
 }
+
+interface DataExportSharer {
+    suspend fun shareExportedData()
+}
