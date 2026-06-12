@@ -291,8 +291,8 @@ class CheckInViewModel(
                         answers = _dailyAnswers.value,
                         addictionTypeId = addictionTypeId,
                     )
+                    calculateAndSaveRiskAssessmentUseCase.execute(userId)
                 }
-                calculateAndSaveRiskAssessmentUseCase.execute(userId)
                 _isCompleted.value = true
             } catch (e: Exception) {
                 logger.e(TAG, "Failed to submit check-in", e)
