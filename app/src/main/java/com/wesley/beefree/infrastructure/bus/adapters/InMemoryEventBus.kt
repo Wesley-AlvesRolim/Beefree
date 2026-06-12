@@ -1,7 +1,7 @@
 package com.wesley.beefree.infrastructure.bus.adapters
 
-import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.events.DomainEvent
+import com.wesley.beefree.domain.events.ports.EventBus
 import com.wesley.beefree.infrastructure.logging.Logger
 
 class InMemoryEventBus(

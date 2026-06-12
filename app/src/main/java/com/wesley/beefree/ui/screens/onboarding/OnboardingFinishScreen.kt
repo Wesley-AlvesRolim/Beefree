@@ -61,7 +61,7 @@ fun OnboardingFinishScreen(onFinish: () -> Unit) {
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.TrendingUp,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.onboarding_finish_progress_icon),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(BeeSpacing.XL),
                 )

@@ -1,9 +1,9 @@
 package com.wesley.beefree.domain.intervention
 
-import com.wesley.beefree.domain.intervention.strategies.ActHelpInterventionFlow
-import com.wesley.beefree.domain.intervention.strategies.CommonHelpInterventionFlow
-import com.wesley.beefree.domain.intervention.strategies.HybridHelpInterventionFlow
-import com.wesley.beefree.domain.intervention.strategies.TccHelpInterventionFlow
+import com.wesley.beefree.domain.treatments.intervention.ActHelpInterventionFlow
+import com.wesley.beefree.domain.treatments.intervention.CommonHelpInterventionFlow
+import com.wesley.beefree.domain.treatments.intervention.HybridHelpInterventionFlow
+import com.wesley.beefree.domain.treatments.intervention.TccHelpInterventionFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

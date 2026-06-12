@@ -4,10 +4,10 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.wesley.beefree.data.apps.BRAZILIAN_BANK_PACKAGE_NAMES
 import com.wesley.beefree.data.apps.HELP_APPS_PACKAGE_NAMES
-import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.detection.ports.WindowContentProvider
 import com.wesley.beefree.domain.events.BankingAppForegrounded
 import com.wesley.beefree.domain.events.ScreenContentCaptured
+import com.wesley.beefree.domain.events.ports.EventBus
 import com.wesley.beefree.infrastructure.storage.repositories.KeyValueStorageRepository
 import com.wesley.beefree.ui.InterventionActivity
 import org.junit.Assert.assertEquals

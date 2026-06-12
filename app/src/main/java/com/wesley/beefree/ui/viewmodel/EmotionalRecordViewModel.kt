@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.wesley.beefree.domain.emotion.usecases.SaveEmotionRecordUseCase
 import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
-import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
-import com.wesley.beefree.domain.risk.usecases.SaveRiskFeatureSnapshotUseCase
+import com.wesley.beefree.domain.usecases.emotion.SaveEmotionRecordUseCase
+import com.wesley.beefree.domain.usecases.risk.CalculateAndSaveRiskAssessmentUseCase
+import com.wesley.beefree.domain.usecases.risk.SaveRiskFeatureSnapshotUseCase
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.KeyValueRiskWeightsRepository

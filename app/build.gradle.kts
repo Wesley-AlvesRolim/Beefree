@@ -64,6 +64,10 @@ android {
             isIncludeAndroidResources = true
         }
     }
+    sourceSets {
+        getByName("test") { java.srcDir("src/sharedTest/java") }
+        getByName("androidTest") { java.srcDir("src/sharedTest/java") }
+    }
 }
 
 kotlin {
@@ -82,6 +86,7 @@ ktlint {
         exclude("**/build/**")
         exclude("**/test/**")
         exclude("**/androidTest/**")
+        exclude("**/sharedTest/**")
     }
 }
 
@@ -107,6 +112,7 @@ dependencies {
     implementation(libs.vico.compose)
     implementation(libs.vico.compose.m3)
     implementation(libs.vico.views)
+    implementation(libs.youtube.player.core)
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)

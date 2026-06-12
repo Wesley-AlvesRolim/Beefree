@@ -12,19 +12,8 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/bee_logo"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BeeFree">
-        <service android:name=".infrastructure.events.so.AccessibilityServiceActivity"
-            android:exported="false"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:label="@string/accessibility_service_label">
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/accessibility_service_config" />
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-        </service>
-
+        android:theme="@style/Theme.BeeFree"
+        android:name=".BeeFreeApplication">
         <activity
             android:name=".ui.InterventionActivity"
             android:exported="false"

@@ -8,7 +8,7 @@ import com.wesley.beefree.domain.onboarding.OnboardingNode
 import com.wesley.beefree.domain.onboarding.OnboardingSequence
 import com.wesley.beefree.domain.onboarding.OnboardingStep
 import com.wesley.beefree.domain.onboarding.StepType
-import com.wesley.beefree.domain.onboarding.usecases.ComputeClinicalProfileUseCase
+import com.wesley.beefree.domain.usecases.onboarding.ComputeClinicalProfileUseCase
 
 object OnboardingFlowFactory {
     fun factory(): OnboardingNode =

@@ -1,9 +1,9 @@
 package com.wesley.beefree.domain.detection
 
-import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.detection.ports.DetectionEngine
 import com.wesley.beefree.domain.detection.ports.DetectionScorer
 import com.wesley.beefree.domain.events.ScreenContentCaptured
+import com.wesley.beefree.domain.events.ports.EventBus
 
 class KeywordsDetectionEngine(
     override val eventBus: EventBus,

@@ -16,6 +16,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,10 +42,17 @@ fun NavBar(
     openCheckIn: Boolean = false,
     openSos: Boolean = false,
     openEmotionalRecord: Boolean = false,
+    showBottomBar: Boolean = true,
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val showBottomBar = navBackStackEntry?.destination?.route in bottomBarRoutes
+    var contentBottomBarVisible by remember { mutableStateOf(true) }
+    val shouldShowBottomBar =
+        showBottomBar && contentBottomBarVisible && navBackStackEntry?.destination?.route in bottomBarRoutes
+
+    LaunchedEffect(navBackStackEntry?.destination?.route) {
+        contentBottomBarVisible = true
+    }
 
     LaunchedEffect(openCheckIn) {
         if (openCheckIn) {
@@ -64,13 +74,14 @@ fun NavBar(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        bottomBar = { if (showBottomBar) NavBarWithItems(navController) },
+        bottomBar = { if (shouldShowBottomBar) NavBarWithItems(navController) },
     ) { innerPadding ->
         Routes(
             navController = navController,
             innerPadding = innerPadding,
             isOnboardingCompleted = isOnboardingCompleted,
             onOnboardingFinished = onOnboardingFinished,
+            onCheckInFlowVisibilityChange = { contentBottomBarVisible = it },
         )
     }
 }
@@ -116,7 +127,7 @@ fun NavBarWithItems(navController: NavHostController) {
                         .clickable { onClick(screen) }
                         .padding(horizontal = BeeSpacing.L, vertical = BeeSpacing.S),
             ) {
-                Icon(screen.icon, contentDescription = null, tint = fgColor)
+                Icon(screen.icon, contentDescription = stringResource(screen.labelRes), tint = fgColor)
                 BeeBodySmall(stringResource(screen.labelRes), color = fgColor, textAlign = TextAlign.Center)
             }
         }

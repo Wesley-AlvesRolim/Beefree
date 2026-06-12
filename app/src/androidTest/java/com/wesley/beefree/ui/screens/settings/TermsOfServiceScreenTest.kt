@@ -18,7 +18,7 @@ class TermsOfServiceScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun termsOfServiceScreenRendersTitleAndMascot() {
+    fun terms_of_service_screen_renders_title_and_mascot() {
         composeTestRule.setContent {
             BeeFreeTheme {
                 TermsOfServiceScreen()
@@ -36,7 +36,7 @@ class TermsOfServiceScreenTest {
     }
 
     @Test
-    fun termsOfServiceScreenBackButtonInvokesCallback() {
+    fun terms_of_service_screen_back_button_invokes_callback() {
         var backCalled = false
         val context = ApplicationProvider.getApplicationContext<Context>()
         composeTestRule.setContent {

@@ -1,27 +1,19 @@
 package com.wesley.beefree.ui.viewmodel
 
-import com.wesley.beefree.domain.emotion.usecases.SaveEmotionRecordUseCase
-import com.wesley.beefree.domain.entities.EmotionRecord
 import com.wesley.beefree.domain.entities.FeelingType
-import com.wesley.beefree.domain.entities.RiskAssessment
-import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
-import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserProfile
-import com.wesley.beefree.domain.repository.ports.MetricsRepository
-import com.wesley.beefree.domain.repository.ports.RiskFeatureSnapshotRepository
-import com.wesley.beefree.domain.repository.ports.RiskWeightsRepository
-import com.wesley.beefree.domain.repository.ports.UserProfileRepository
-import com.wesley.beefree.domain.risk.RiskWeights
-import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
-import com.wesley.beefree.domain.risk.usecases.SaveRiskFeatureSnapshotUseCase
+import com.wesley.beefree.domain.mocks.MetricsRepositoryMock
+import com.wesley.beefree.domain.mocks.RiskFeatureSnapshotRepositoryMock
+import com.wesley.beefree.domain.mocks.RiskWeightsRepositoryMock
+import com.wesley.beefree.domain.mocks.UserProfileRepositoryMock
+import com.wesley.beefree.domain.usecases.emotion.SaveEmotionRecordUseCase
+import com.wesley.beefree.domain.usecases.risk.CalculateAndSaveRiskAssessmentUseCase
+import com.wesley.beefree.domain.usecases.risk.SaveRiskFeatureSnapshotUseCase
 import com.wesley.beefree.infrastructure.logging.TestLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -90,7 +82,7 @@ class EmotionalRecordViewModelTest {
     @Test
     fun `on save stores all emotion records and finishes in done step`() =
         runTest {
-            val repository = RecordingMetricsRepository()
+            val repository = MetricsRepositoryMock()
             val viewModel = createViewModel(repository = repository)
             val sleep = 8.9f
             val craving = 4.2f
@@ -113,27 +105,30 @@ class EmotionalRecordViewModelTest {
             assertEquals(EmotionalRecordStep.DONE, viewModel.uiState.value.step)
             assertFalse(viewModel.uiState.value.isSaving)
             assertNull(viewModel.uiState.value.error)
-            assertEquals(6, repository.savedRecords.size)
-            assertEquals(FeelingType.SLEEP to sleep.toInt(), repository.savedRecords[0].feelingType to repository.savedRecords[0].intensity)
+            assertEquals(6, repository.insertEmotionRecordArgs.size)
+            assertEquals(
+                FeelingType.SLEEP to sleep.toInt(),
+                repository.insertEmotionRecordArgs[0].feelingType to repository.insertEmotionRecordArgs[0].intensity,
+            )
             assertEquals(
                 FeelingType.CRAVING to craving.toInt(),
-                repository.savedRecords[1].feelingType to repository.savedRecords[1].intensity,
+                repository.insertEmotionRecordArgs[1].feelingType to repository.insertEmotionRecordArgs[1].intensity,
             )
             assertEquals(
                 FeelingType.BOREDOM to boredom.toInt(),
-                repository.savedRecords[2].feelingType to repository.savedRecords[2].intensity,
+                repository.insertEmotionRecordArgs[2].feelingType to repository.insertEmotionRecordArgs[2].intensity,
             )
             assertEquals(
                 FeelingType.STRESS to stress.toInt(),
-                repository.savedRecords[3].feelingType to repository.savedRecords[3].intensity,
+                repository.insertEmotionRecordArgs[3].feelingType to repository.insertEmotionRecordArgs[3].intensity,
             )
             assertEquals(
                 FeelingType.LONELINESS to loneliness.toInt(),
-                repository.savedRecords[4].feelingType to repository.savedRecords[4].intensity,
+                repository.insertEmotionRecordArgs[4].feelingType to repository.insertEmotionRecordArgs[4].intensity,
             )
             assertEquals(
                 FeelingType.FATIGUE to fatigue.toInt(),
-                repository.savedRecords[5].feelingType to repository.savedRecords[5].intensity,
+                repository.insertEmotionRecordArgs[5].feelingType to repository.insertEmotionRecordArgs[5].intensity,
             )
         }
 
@@ -141,7 +136,7 @@ class EmotionalRecordViewModelTest {
     fun `on save surfaces repository errors`() =
         runTest {
             val errorMessage = "DB error"
-            val repository = RecordingMetricsRepository(throwOnInsert = RuntimeException(errorMessage))
+            val repository = MetricsRepositoryMock().apply { throwOnInsertEmotionRecord = RuntimeException(errorMessage) }
             val viewModel = createViewModel(repository = repository)
 
             viewModel.onNext()
@@ -151,14 +146,14 @@ class EmotionalRecordViewModelTest {
             assertEquals(EmotionalRecordStep.CAPTURE, viewModel.uiState.value.step)
             assertFalse(viewModel.uiState.value.isSaving)
             assertEquals(errorMessage, viewModel.uiState.value.error)
-            assertEquals(1, repository.insertCalls)
+            assertEquals(1, repository.insertEmotionRecordCount)
         }
 
     @Test
     fun `on save rolls back emotion records when risk calculation fails`() =
         runTest {
             val errorMessage = "Risk query error"
-            val repository = RecordingMetricsRepository(throwOnRiskQuery = RuntimeException(errorMessage))
+            val repository = MetricsRepositoryMock().apply { throwOnGetLatestRiskFeatureSnapshot = RuntimeException(errorMessage) }
             val viewModel = createViewModel(repository = repository)
 
             viewModel.onNext()
@@ -168,7 +163,7 @@ class EmotionalRecordViewModelTest {
             assertEquals(EmotionalRecordStep.CAPTURE, viewModel.uiState.value.step)
             assertFalse(viewModel.uiState.value.isSaving)
             assertEquals(errorMessage, viewModel.uiState.value.error)
-            assertTrue(repository.deletedIds.isNotEmpty())
+            assertTrue(repository.deleteEmotionRecordsByIdsArgs.isNotEmpty())
         }
 
     @Test
@@ -197,11 +192,14 @@ class EmotionalRecordViewModelTest {
 
     private fun createViewModel(
         userId: Int = DEFAULT_USER_ID,
-        repository: MetricsRepository = RecordingMetricsRepository(),
-        snapshotRepository: RiskFeatureSnapshotRepository = NoOpRiskFeatureSnapshotRepository(),
+        repository: MetricsRepositoryMock = MetricsRepositoryMock(),
+        snapshotRepository: RiskFeatureSnapshotRepositoryMock = RiskFeatureSnapshotRepositoryMock(),
     ): EmotionalRecordViewModel =
         EmotionalRecordViewModel(
-            userProfileRepository = StubUserProfileRepository(userId),
+            userProfileRepository =
+                UserProfileRepositoryMock().apply {
+                    profiles = listOf(UserProfile(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L))
+                },
             saveEmotionRecordUseCase = SaveEmotionRecordUseCase(repository),
             saveRiskFeatureSnapshotUseCase = SaveRiskFeatureSnapshotUseCase(snapshotRepository),
             calculateAndSaveRiskAssessmentUseCase = noOpCalculateRiskUseCase(repository),
@@ -209,89 +207,9 @@ class EmotionalRecordViewModelTest {
             ioDispatcher = testDispatcher,
         )
 
-    private class StubUserProfileRepository(
-        private val userId: Int,
-    ) : UserProfileRepository {
-        override suspend fun insertProfile(profile: UserProfile): Long = 0
-
-        override suspend fun updateProfile(profile: UserProfile) {}
-
-        override suspend fun getProfileById(id: Int): UserProfile? = null
-
-        override fun getAllProfiles(): Flow<List<UserProfile>> =
-            flowOf(listOf(UserProfile(id = userId, profileName = "Test", createdAt = 0L, updatedAt = 0L)))
-
-        override suspend fun associateAddictionToProfile(userAddiction: UserAddiction): Long = 0
-
-        override suspend fun removeAddictionFromProfile(userAddiction: UserAddiction) {}
-
-        override fun getAddictionsByUserId(userId: Int): Flow<List<UserAddiction>> = emptyFlow()
-    }
-
-    private class RecordingMetricsRepository(
-        private val throwOnInsert: Throwable? = null,
-        private val throwOnRiskQuery: Throwable? = null,
-    ) : MetricsRepository {
-        val savedRecords: MutableList<EmotionRecord> = mutableListOf()
-        val deletedIds: MutableList<Long> = mutableListOf()
-        var insertCalls: Int = 0
-            private set
-
-        override suspend fun insertEmotionRecord(record: EmotionRecord): Long {
-            insertCalls++
-            throwOnInsert?.let { throw it }
-            savedRecords += record
-            return savedRecords.size.toLong()
-        }
-
-        override suspend fun deleteEmotionRecordsByIds(ids: List<Long>) {
-            deletedIds += ids
-        }
-
-        override fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>> = emptyFlow()
-
-        override fun getEmotionRecordsByType(
-            userId: Int,
-            feelingType: FeelingType,
-        ): Flow<List<EmotionRecord>> = emptyFlow()
-
-        override suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord? = null
-
-        override suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long = 0
-
-        override fun getRiskFeatureSnapshots(userId: Int): Flow<List<RiskFeatureSnapshot>> = emptyFlow()
-
-        override suspend fun getLatestRiskFeatureSnapshot(userId: Int): RiskFeatureSnapshot? {
-            throwOnRiskQuery?.let { throw it }
-            return null
-        }
-
-        override suspend fun insertRiskAssessment(assessment: RiskAssessment): Long = 0
-
-        override suspend fun deleteAllRiskAssessmentsForUser(userId: Int) = Unit
-
-        override fun getRiskAssessments(userId: Int): Flow<List<RiskAssessment>> = emptyFlow()
-    }
-
-    private class NoOpRiskFeatureSnapshotRepository : RiskFeatureSnapshotRepository {
-        override suspend fun save(snapshot: RiskFeatureSnapshot): Long = 0L
-
-        override fun getAllByUser(userId: Int): Flow<List<RiskFeatureSnapshot>> = emptyFlow()
-
-        override suspend fun getLatestByUser(userId: Int): RiskFeatureSnapshot? = null
-    }
-
-    private fun noOpCalculateRiskUseCase(repository: MetricsRepository): CalculateAndSaveRiskAssessmentUseCase =
+    private fun noOpCalculateRiskUseCase(repository: MetricsRepositoryMock): CalculateAndSaveRiskAssessmentUseCase =
         CalculateAndSaveRiskAssessmentUseCase(
             metricsRepository = repository,
-            riskWeightsRepository =
-                object : RiskWeightsRepository {
-                    override fun getWeights(userId: Int) = RiskWeights()
-
-                    override fun saveWeights(
-                        userId: Int,
-                        weights: RiskWeights,
-                    ) = Unit
-                },
+            riskWeightsRepository = RiskWeightsRepositoryMock(),
         )
 }

@@ -12,9 +12,9 @@ import com.wesley.beefree.domain.onboarding.StepType
 import com.wesley.beefree.domain.onboarding.engine.CompositeOnboardingFlowEngine
 import com.wesley.beefree.domain.onboarding.engine.OnboardingFlowFactory
 import com.wesley.beefree.domain.onboarding.ports.OnboardingFlowEngine
-import com.wesley.beefree.domain.onboarding.usecases.ComputeClinicalProfileUseCase
-import com.wesley.beefree.domain.onboarding.usecases.ComputeScoreUseCase
-import com.wesley.beefree.domain.onboarding.usecases.SaveOnboardingDataUseCase
+import com.wesley.beefree.domain.usecases.onboarding.ComputeClinicalProfileUseCase
+import com.wesley.beefree.domain.usecases.onboarding.ComputeScoreUseCase
+import com.wesley.beefree.domain.usecases.onboarding.SaveOnboardingDataUseCase
 import com.wesley.beefree.infrastructure.logging.AndroidLogger
 import com.wesley.beefree.infrastructure.logging.Logger
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository

@@ -18,7 +18,7 @@ class AboutScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun aboutScreenRendersTitleAndMascot() {
+    fun about_screen_renders_title_and_mascot() {
         composeTestRule.setContent {
             BeeFreeTheme {
                 AboutScreen()
@@ -36,7 +36,7 @@ class AboutScreenTest {
     }
 
     @Test
-    fun aboutScreenBackButtonInvokesCallback() {
+    fun about_screen_back_button_invokes_callback() {
         var backCalled = false
         val context = ApplicationProvider.getApplicationContext<Context>()
         composeTestRule.setContent {

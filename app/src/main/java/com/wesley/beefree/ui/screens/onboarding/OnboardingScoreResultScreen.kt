@@ -142,7 +142,7 @@ private fun TreatmentApproachCard(profile: TreatmentProfile) {
             ) {
                 Icon(
                     imageVector = Icons.Filled.AutoAwesome,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.onboarding_score_result_approach_label),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(BeeSpacing.L),
                 )

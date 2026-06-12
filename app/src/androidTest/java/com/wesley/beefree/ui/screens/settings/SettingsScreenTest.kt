@@ -17,44 +17,10 @@ class SettingsScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun monitoringSectionDisplayed() {
+    fun no_support_network_contacts_shown() {
         composeTestRule.setContent {
             BeeFreeTheme {
                 SettingsScreenContent(
-                    isAdultMonitoringEnabled = true,
-                    isBetsMonitoringEnabled = false,
-                    onToggleAdultMonitoring = {},
-                    onToggleBetsMonitoring = {},
-                    onExportData = {},
-                    onNavigateToAbout = {},
-                    onNavigateToTerms = {},
-                )
-            }
-        }
-
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        composeTestRule
-            .onNodeWithText(context.getString(R.string.settings_monitoring_section_title))
-            .assertIsDisplayed()
-
-        composeTestRule
-            .onNodeWithText(context.getString(R.string.settings_adult_content_label))
-            .assertIsDisplayed()
-
-        composeTestRule
-            .onNodeWithText(context.getString(R.string.settings_bets_label))
-            .assertIsDisplayed()
-    }
-
-    @Test
-    fun noSupportNetworkContactsShown() {
-        composeTestRule.setContent {
-            BeeFreeTheme {
-                SettingsScreenContent(
-                    isAdultMonitoringEnabled = true,
-                    isBetsMonitoringEnabled = false,
-                    onToggleAdultMonitoring = {},
-                    onToggleBetsMonitoring = {},
                     onExportData = {},
                     onNavigateToAbout = {},
                     onNavigateToTerms = {},
@@ -68,14 +34,10 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun manageContactsDisabledRowDisplayed() {
+    fun manage_contacts_disabled_row_displayed() {
         composeTestRule.setContent {
             BeeFreeTheme {
                 SettingsScreenContent(
-                    isAdultMonitoringEnabled = true,
-                    isBetsMonitoringEnabled = false,
-                    onToggleAdultMonitoring = {},
-                    onToggleBetsMonitoring = {},
                     onExportData = {},
                     onNavigateToAbout = {},
                     onNavigateToTerms = {},
@@ -94,14 +56,10 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun aboutRowDisplayed() {
+    fun about_row_displayed() {
         composeTestRule.setContent {
             BeeFreeTheme {
                 SettingsScreenContent(
-                    isAdultMonitoringEnabled = true,
-                    isBetsMonitoringEnabled = false,
-                    onToggleAdultMonitoring = {},
-                    onToggleBetsMonitoring = {},
                     onExportData = {},
                     onNavigateToAbout = {},
                     onNavigateToTerms = {},
@@ -116,14 +74,10 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun termsOfServiceRowDisplayed() {
+    fun terms_of_service_row_displayed() {
         composeTestRule.setContent {
             BeeFreeTheme {
                 SettingsScreenContent(
-                    isAdultMonitoringEnabled = true,
-                    isBetsMonitoringEnabled = false,
-                    onToggleAdultMonitoring = {},
-                    onToggleBetsMonitoring = {},
                     onExportData = {},
                     onNavigateToAbout = {},
                     onNavigateToTerms = {},
@@ -138,14 +92,10 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun helpCenterNotDisplayed() {
+    fun help_center_not_displayed() {
         composeTestRule.setContent {
             BeeFreeTheme {
                 SettingsScreenContent(
-                    isAdultMonitoringEnabled = true,
-                    isBetsMonitoringEnabled = false,
-                    onToggleAdultMonitoring = {},
-                    onToggleBetsMonitoring = {},
                     onExportData = {},
                     onNavigateToAbout = {},
                     onNavigateToTerms = {},
@@ -159,14 +109,10 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun versionFooterDisplayed() {
+    fun version_footer_displayed() {
         composeTestRule.setContent {
             BeeFreeTheme {
                 SettingsScreenContent(
-                    isAdultMonitoringEnabled = true,
-                    isBetsMonitoringEnabled = false,
-                    onToggleAdultMonitoring = {},
-                    onToggleBetsMonitoring = {},
                     onExportData = {},
                     onNavigateToAbout = {},
                     onNavigateToTerms = {},
@@ -183,14 +129,10 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun footerTaglineDisplayed() {
+    fun footer_tagline_displayed() {
         composeTestRule.setContent {
             BeeFreeTheme {
                 SettingsScreenContent(
-                    isAdultMonitoringEnabled = true,
-                    isBetsMonitoringEnabled = false,
-                    onToggleAdultMonitoring = {},
-                    onToggleBetsMonitoring = {},
                     onExportData = {},
                     onNavigateToAbout = {},
                     onNavigateToTerms = {},

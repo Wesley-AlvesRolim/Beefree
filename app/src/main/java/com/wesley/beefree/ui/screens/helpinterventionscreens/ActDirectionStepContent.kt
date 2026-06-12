@@ -68,7 +68,7 @@ fun ActDirectionStepContent(
                     indicator = {
                         Icon(
                             imageVector = icon,
-                            contentDescription = null,
+                            contentDescription = optionLabel,
                             modifier = Modifier.size(BeeSpacing.L),
                         )
                     },

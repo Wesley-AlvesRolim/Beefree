@@ -117,6 +117,8 @@ private fun TriggerRow(
             RiskTrigger.MISSING_CHECKINS -> stringResource(R.string.trigger_missing_checkins)
         }
 
+    val triggerDescription = trigger.name.lowercase()
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(BeeSpacing.S),
@@ -129,7 +131,7 @@ private fun TriggerRow(
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = triggerDescription,
                     tint = MaterialTheme.colorScheme.onTertiaryContainer,
                     modifier = Modifier.size(14.dp),
                 )

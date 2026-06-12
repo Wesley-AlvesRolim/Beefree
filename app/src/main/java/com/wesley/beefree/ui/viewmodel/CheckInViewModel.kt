@@ -4,210 +4,326 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.wesley.beefree.domain.checkin.CheckInType
-import com.wesley.beefree.domain.checkin.DopamineType
-import com.wesley.beefree.domain.checkin.NaturalDopamineSource
-import com.wesley.beefree.domain.checkin.usecases.DetermineCheckInTypeUseCase
-import com.wesley.beefree.domain.checkin.usecases.HasCompletedTodaysCheckInUseCase
-import com.wesley.beefree.domain.checkin.usecases.SaveDailyCheckInUseCase
-import com.wesley.beefree.domain.checkin.usecases.SaveWeeklyCheckInUseCase
-import com.wesley.beefree.domain.entities.UserCoreValue
-import com.wesley.beefree.domain.repository.ports.AddictionRepository
-import com.wesley.beefree.domain.repository.ports.CheckInRepository
+import com.wesley.beefree.domain.checkin.ActivityType
+import com.wesley.beefree.domain.checkin.BooleanBranchStep
+import com.wesley.beefree.domain.checkin.DailyCheckInAnswer
+import com.wesley.beefree.domain.checkin.DailyCheckInFlow
+import com.wesley.beefree.domain.checkin.DailyCheckInStep
+import com.wesley.beefree.domain.checkin.EmotionalRecordStep
+import com.wesley.beefree.domain.checkin.SingleSelectWithContextStep
+import com.wesley.beefree.domain.checkin.TherapeuticActivityStep
+import com.wesley.beefree.domain.entities.FeelingType
+import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import com.wesley.beefree.domain.repository.ports.OnboardingRepository
 import com.wesley.beefree.domain.repository.ports.UserProfileRepository
+import com.wesley.beefree.domain.usecases.checkin.HasCompletedTodaysCheckInUseCase
+import com.wesley.beefree.domain.usecases.checkin.LoadDailyCheckInFlowUseCase
+import com.wesley.beefree.domain.usecases.checkin.LoadPreviousObjectiveUseCase
+import com.wesley.beefree.domain.usecases.checkin.LoadTodaysEmotionRecordUseCase
+import com.wesley.beefree.domain.usecases.checkin.SaveDailyCheckInUseCase
+import com.wesley.beefree.domain.usecases.checkin.SelectTherapeuticActivityUseCase
+import com.wesley.beefree.domain.usecases.risk.CalculateAndSaveRiskAssessmentUseCase
+import com.wesley.beefree.infrastructure.logging.AndroidLogger
+import com.wesley.beefree.infrastructure.logging.Logger
+import com.wesley.beefree.infrastructure.storage.adapters.KeyValueRiskWeightsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomAddictionRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomCheckInRepository
+import com.wesley.beefree.infrastructure.storage.adapters.RoomMetricsRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomOnboardingRepository
 import com.wesley.beefree.infrastructure.storage.adapters.RoomUserProfileRepository
+import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyValueStorage
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+enum class DailyCheckInPhase { INVITE, FLOW, DONE }
+
+sealed class CheckInNavigationDestination {
+    object EmotionalRecord : CheckInNavigationDestination()
+}
+
 class CheckInViewModel(
-    private val checkInRepository: CheckInRepository,
-    private val addictionRepository: AddictionRepository,
     private val userProfileRepository: UserProfileRepository,
     private val onboardingRepository: OnboardingRepository,
+    private val calculateAndSaveRiskAssessmentUseCase: CalculateAndSaveRiskAssessmentUseCase,
+    private val loadTodaysEmotionRecordUseCase: LoadTodaysEmotionRecordUseCase,
+    private val hasCompletedTodaysCheckInUseCase: HasCompletedTodaysCheckInUseCase,
+    private val loadPreviousObjectiveUseCase: LoadPreviousObjectiveUseCase,
+    private val loadDailyCheckInFlowUseCase: LoadDailyCheckInFlowUseCase,
+    private val selectTherapeuticActivityUseCase: SelectTherapeuticActivityUseCase,
+    private val saveDailyCheckInUseCase: SaveDailyCheckInUseCase,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val logger: Logger = AndroidLogger,
 ) : ViewModel() {
-    private val _checkInType = MutableStateFlow(CheckInType.DAILY)
-    val checkInType: StateFlow<CheckInType> = _checkInType.asStateFlow()
-
     private val _isCompleted = MutableStateFlow(false)
     val isCompleted: StateFlow<Boolean> = _isCompleted.asStateFlow()
 
-    private val _dopamineLevel = MutableStateFlow(3)
-    val dopamineLevel: StateFlow<Int> = _dopamineLevel.asStateFlow()
+    private val _dailyPhase = MutableStateFlow(DailyCheckInPhase.INVITE)
+    val dailyPhase: StateFlow<DailyCheckInPhase> = _dailyPhase.asStateFlow()
 
-    private val _dopamineType = MutableStateFlow<DopamineType>(DopamineType.Natural(NaturalDopamineSource.HOBBY))
-    val dopamineType: StateFlow<DopamineType> = _dopamineType.asStateFlow()
+    private val _dailyFlow = MutableStateFlow<DailyCheckInFlow?>(null)
+    val dailyFlow: StateFlow<DailyCheckInFlow?> = _dailyFlow.asStateFlow()
 
-    private val _mood = MutableStateFlow("")
-    val mood: StateFlow<String> = _mood.asStateFlow()
+    private val _dailyAnswers = MutableStateFlow<Map<String, DailyCheckInAnswer>>(emptyMap())
+    val dailyAnswers: StateFlow<Map<String, DailyCheckInAnswer>> = _dailyAnswers.asStateFlow()
 
-    private val _anxietyLevel = MutableStateFlow<Int?>(null)
-    val anxietyLevel: StateFlow<Int?> = _anxietyLevel.asStateFlow()
+    private val _dailyVisitedSteps = MutableStateFlow<List<String>>(emptyList())
+    val dailyVisitedSteps: StateFlow<List<String>> = _dailyVisitedSteps.asStateFlow()
 
-    private val _valuesAlignmentText = MutableStateFlow("")
-    val valuesAlignmentText: StateFlow<String> = _valuesAlignmentText.asStateFlow()
+    private val _profileName = MutableStateFlow<String?>(null)
+    val profileName: StateFlow<String?> = _profileName.asStateFlow()
 
-    private val _coreValues = MutableStateFlow<List<UserCoreValue>>(emptyList())
-    val coreValues: StateFlow<List<UserCoreValue>> = _coreValues.asStateFlow()
+    private val _treatmentProfile = MutableStateFlow(TreatmentProfile.ACT)
+    val treatmentProfile: StateFlow<TreatmentProfile> = _treatmentProfile.asStateFlow()
 
-    private val _weatherMood = MutableStateFlow<Int?>(null)
-    val weatherMood: StateFlow<Int?> = _weatherMood.asStateFlow()
+    private val _hasEmotionalRecordToday = MutableStateFlow(false)
+    val hasEmotionalRecordToday: StateFlow<Boolean> = _hasEmotionalRecordToday.asStateFlow()
 
-    private val _weeklyStep = MutableStateFlow(1)
-    val weeklyStep: StateFlow<Int> = _weeklyStep.asStateFlow()
+    private val _todaysEmotionRecord = MutableStateFlow<Map<FeelingType, Int>?>(null)
+    val todaysEmotionRecord: StateFlow<Map<FeelingType, Int>?> = _todaysEmotionRecord.asStateFlow()
 
-    private val _valueConnectionLevels = MutableStateFlow<Map<String, Float>>(emptyMap())
-    val valueConnectionLevels: StateFlow<Map<String, Float>> = _valueConnectionLevels.asStateFlow()
+    private val _previousObjective = MutableStateFlow<String?>(null)
+    val previousObjective: StateFlow<String?> = _previousObjective.asStateFlow()
 
-    private val _emotionalSatisfaction = MutableStateFlow(0.5f)
-    val emotionalSatisfaction: StateFlow<Float> = _emotionalSatisfaction.asStateFlow()
+    private val _selectedActivity = MutableStateFlow<ActivityType?>(null)
+    val selectedActivity: StateFlow<ActivityType?> = _selectedActivity.asStateFlow()
 
-    private val _realConnectionLevel = MutableStateFlow(0.5f)
-    val realConnectionLevel: StateFlow<Float> = _realConnectionLevel.asStateFlow()
-
-    private val _weeklyAnxiety = MutableStateFlow(0.5f)
-    val weeklyAnxiety: StateFlow<Float> = _weeklyAnxiety.asStateFlow()
-
-    private val _defusionChoice = MutableStateFlow<Int?>(null)
-    val defusionChoice: StateFlow<Int?> = _defusionChoice.asStateFlow()
-
-    private val _defusionObservation = MutableStateFlow("")
-    val defusionObservation: StateFlow<String> = _defusionObservation.asStateFlow()
+    private val _navigationEvents = MutableSharedFlow<CheckInNavigationDestination>(extraBufferCapacity = 1)
+    val navigationEvents: SharedFlow<CheckInNavigationDestination> = _navigationEvents.asSharedFlow()
 
     private var userId: Int = 0
     private var addictionTypeId: Int? = null
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val profile = userProfileRepository.getAllProfiles().first().firstOrNull()
-                userId = profile?.id ?: 0
-                _checkInType.value = DetermineCheckInTypeUseCase().execute(profile?.createdAt ?: 0L)
-                _coreValues.value = onboardingRepository.getCoreValues(userId).first()
+            try {
+                withContext(ioDispatcher) {
+                    val profile = userProfileRepository.getAllProfiles().first().firstOrNull()
+                    userId = profile?.id ?: 0
+                    _profileName.value = profile?.profileName
 
-                val addiction = userProfileRepository.getAddictionsByUserId(userId).first().firstOrNull()
-                addictionTypeId = addiction?.userProfileId
+                    val alreadyDone =
+                        hasCompletedTodaysCheckInUseCase.execute(userId, profile?.createdAt ?: 0L)
+                    if (alreadyDone) _isCompleted.value = true
 
-                val alreadyDone =
-                    HasCompletedTodaysCheckInUseCase(
-                        checkInRepository,
-                        DetermineCheckInTypeUseCase(),
-                    ).execute(userId, profile?.createdAt ?: 0L)
-                if (alreadyDone) _isCompleted.value = true
+                    refreshTodaysEmotionRecord(userId)
+
+                    _previousObjective.value =
+                        loadPreviousObjectiveUseCase.execute(userId)
+
+                    val session = onboardingRepository.getOnboardingSession(userId)
+                    if (session != null) {
+                        val resolvedProfile =
+                            runCatching {
+                                TreatmentProfile.valueOf(session.clinicalApproach)
+                            }.onFailure { e ->
+                                logger.e(TAG, "Failed to parse treatment profile: ${session.clinicalApproach}", e)
+                            }.getOrDefault(TreatmentProfile.ACT)
+                        _treatmentProfile.value = resolvedProfile
+                        val flow = loadDailyCheckInFlowUseCase.execute(resolvedProfile)
+                        _dailyFlow.value = flow
+
+                        val activityStep = flow.steps.filterIsInstance<TherapeuticActivityStep>().firstOrNull()
+                        if (activityStep != null) {
+                            _selectedActivity.value =
+                                selectTherapeuticActivityUseCase.execute(
+                                    userId = userId,
+                                    activityOptions = activityStep.activityOptions,
+                                )
+                        }
+                    }
+
+                    val addiction = userProfileRepository.getAddictionsByUserId(userId).first().firstOrNull()
+                    addictionTypeId = addiction?.addictionCategoryId
+                }
+            } catch (e: Exception) {
+                logger.e(TAG, "Failed to initialize check-in data", e)
             }
         }
     }
 
-    fun updateWeatherMood(level: Int) {
-        _weatherMood.value = level
+    fun startDailyFlow() {
+        _dailyPhase.value = DailyCheckInPhase.FLOW
+        val firstStep = flattenedSteps().firstOrNull()
+        if (firstStep != null) _dailyVisitedSteps.value = listOf(firstStep.id)
     }
 
-    fun updateDopamineLevel(level: Int) {
-        _dopamineLevel.value = level
+    fun resetDailyFlowState() {
+        _dailyPhase.value = DailyCheckInPhase.INVITE
+        _dailyAnswers.value = emptyMap()
+        _dailyVisitedSteps.value = emptyList()
+        _selectedActivity.value = null
     }
 
-    fun updateDopamineType(type: DopamineType) {
-        _dopamineType.value = type
+    fun startEmotionRecord() {
+        _navigationEvents.tryEmit(CheckInNavigationDestination.EmotionalRecord)
     }
 
-    fun updateMood(value: String) {
-        _mood.value = value
+    fun onReturnFromEmotionalRecord() {
+        viewModelScope.launch {
+            withContext(ioDispatcher) {
+                refreshTodaysEmotionRecord(userId)
+            }
+        }
     }
 
-    fun updateAnxietyLevel(level: Int?) {
-        _anxietyLevel.value = level
+    private suspend fun refreshTodaysEmotionRecord(userId: Int) {
+        val todaysRecord = loadTodaysEmotionRecordUseCase.execute(userId)
+        _todaysEmotionRecord.value = todaysRecord
+        _hasEmotionalRecordToday.value = todaysRecord != null
     }
 
-    fun updateValuesAlignmentText(text: String) {
-        _valuesAlignmentText.value = text
+    fun currentDailyStep(): DailyCheckInStep? {
+        val steps = flattenedSteps()
+        val currentId = _dailyVisitedSteps.value.lastOrNull() ?: return null
+        return steps.find { it.id == currentId }
     }
 
-    fun nextWeeklyStep() {
-        if (_weeklyStep.value < 5) _weeklyStep.value++
-    }
+    fun currentStepNumber(): Int = _dailyVisitedSteps.value.size
 
-    fun previousWeeklyStep() {
-        if (_weeklyStep.value > 1) _weeklyStep.value--
-    }
+    fun totalStepsEstimate(): Int = flattenedSteps().size
 
-    fun updateValueConnectionLevel(
-        valueName: String,
-        level: Float,
+    fun setDailyAnswer(
+        id: String,
+        answer: DailyCheckInAnswer,
     ) {
-        _valueConnectionLevels.value = _valueConnectionLevels.value + (valueName to level)
+        _dailyAnswers.value += (id to answer)
     }
 
-    fun updateEmotionalSatisfaction(level: Float) {
-        _emotionalSatisfaction.value = level
+    fun selectActivity(type: ActivityType) {
+        _selectedActivity.value = type
+        val stepId =
+            flattenedSteps()
+                .filterIsInstance<TherapeuticActivityStep>()
+                .firstOrNull()
+                ?.id ?: return
+        _dailyAnswers.value += (stepId to DailyCheckInAnswer.TherapeuticActivity(type))
     }
 
-    fun updateRealConnectionLevel(level: Float) {
-        _realConnectionLevel.value = level
+    fun previousDailyStep() {
+        val visited = _dailyVisitedSteps.value
+        if (visited.size <= 1) return
+        _dailyVisitedSteps.value = visited.dropLast(1)
     }
 
-    fun updateWeeklyAnxiety(level: Float) {
-        _weeklyAnxiety.value = level
+    fun nextDailyStep() {
+        val currentStep = currentDailyStep()
+
+        if (currentStep is EmotionalRecordStep && _hasEmotionalRecordToday.value) {
+            advanceToNextStep()
+            return
+        }
+
+        if (currentStep is EmotionalRecordStep && !_hasEmotionalRecordToday.value) {
+            val answered = _dailyAnswers.value[currentStep.id] as? DailyCheckInAnswer.EmotionalRecord
+            if (answered == null) {
+                _navigationEvents.tryEmit(CheckInNavigationDestination.EmotionalRecord)
+                return
+            }
+        }
+
+        advanceToNextStep()
     }
 
-    fun updateDefusionChoice(choice: Int?) {
-        _defusionChoice.value = choice
+    private fun advanceToNextStep() {
+        val steps = flattenedSteps()
+        val currentId = _dailyVisitedSteps.value.lastOrNull()
+        val currentIndex = steps.indexOfFirst { it.id == currentId }
+        val next = steps.getOrNull(currentIndex + 1)
+        if (next != null) {
+            _dailyVisitedSteps.value += next.id
+        } else {
+            submit()
+            _dailyPhase.value = DailyCheckInPhase.DONE
+        }
     }
 
-    fun updateDefusionObservation(text: String) {
-        _defusionObservation.value = text
+    fun flattenedSteps(): List<DailyCheckInStep> {
+        val flow = _dailyFlow.value ?: return emptyList()
+        val answers = _dailyAnswers.value
+        val hasPreviousObjective = _previousObjective.value != null
+        val selected = _selectedActivity.value
+
+        return buildList {
+            for (step in flow.steps) {
+                if (step is SingleSelectWithContextStep && step.isObjectiveReview && !hasPreviousObjective) {
+                    continue
+                }
+                add(step)
+                when (step) {
+                    is BooleanBranchStep -> {
+                        val answer = answers[step.id] as? DailyCheckInAnswer.Bool
+                        when (answer?.value) {
+                            true -> add(step.onYes)
+                            false -> add(step.onNo)
+                            null -> Unit
+                        }
+                    }
+                    is TherapeuticActivityStep -> {
+                        if (selected != null) {
+                            val option = step.activityOptions.find { it.type == selected }
+                            if (option != null) addAll(option.subSteps)
+                        }
+                    }
+                    else -> Unit
+                }
+            }
+        }
     }
 
     fun submit() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                when (_checkInType.value) {
-                    CheckInType.DAILY ->
-                        SaveDailyCheckInUseCase(checkInRepository, addictionRepository).execute(
-                            userId = userId,
-                            dopamineLevel = _dopamineLevel.value,
-                            mood = _mood.value,
-                            anxietyLevel = _anxietyLevel.value,
-                            dopamineType = _dopamineType.value,
-                            addictionTypeId = addictionTypeId,
-                        )
-                    CheckInType.WEEKLY ->
-                        SaveWeeklyCheckInUseCase(checkInRepository).execute(
-                            userId = userId,
-                            valuesAlignmentText = _valuesAlignmentText.value.ifBlank { null },
-                            realConnectionEnergy = ((_realConnectionLevel.value * 4).toInt() + 1).coerceIn(1, 5),
-                        )
+            try {
+                withContext(ioDispatcher) {
+                    saveDailyCheckInUseCase.execute(
+                        userId = userId,
+                        treatmentProfile = _treatmentProfile.value,
+                        answers = _dailyAnswers.value,
+                        addictionTypeId = addictionTypeId,
+                    )
+                    calculateAndSaveRiskAssessmentUseCase.execute(userId)
                 }
+                _isCompleted.value = true
+            } catch (e: Exception) {
+                logger.e(TAG, "Failed to submit check-in", e)
             }
-            _isCompleted.value = true
         }
     }
 
     companion object {
+        private const val TAG = "CheckInViewModel"
+
         fun factory(context: Context): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     val database = AppDatabase.getDatabase(context)
+                    val checkInRepository =
+                        RoomCheckInRepository(
+                            database.dailyCheckInDao(),
+                            database.weeklyCheckInDao(),
+                        )
+                    val addictionRepository =
+                        RoomAddictionRepository(
+                            database.addictionCategoryDao(),
+                            database.relapseRecordDao(),
+                        )
+                    val metricsRepository =
+                        RoomMetricsRepository(
+                            database.emotionRecordDao(),
+                            database.riskFeatureSnapshotDao(),
+                            database.riskAssessmentDao(),
+                        )
                     @Suppress("UNCHECKED_CAST")
                     return CheckInViewModel(
-                        checkInRepository =
-                            RoomCheckInRepository(
-                                database.dailyCheckInDao(),
-                                database.weeklyCheckInDao(),
-                            ),
-                        addictionRepository =
-                            RoomAddictionRepository(
-                                database.addictionCategoryDao(),
-                                database.relapseRecordDao(),
-                            ),
                         userProfileRepository =
                             RoomUserProfileRepository(
                                 database.userProfileDao(),
@@ -220,6 +336,32 @@ class CheckInViewModel(
                                 database.userHobbyDao(),
                                 database.userObjectiveDao(),
                                 database.userSymptomDao(),
+                            ),
+                        calculateAndSaveRiskAssessmentUseCase =
+                            CalculateAndSaveRiskAssessmentUseCase(
+                                metricsRepository = metricsRepository,
+                                riskWeightsRepository =
+                                    KeyValueRiskWeightsRepository(
+                                        SharedPreferencesKeyValueStorage(context),
+                                    ),
+                                checkInRepository = checkInRepository,
+                                addictionRepository = addictionRepository,
+                            ),
+                        loadTodaysEmotionRecordUseCase =
+                            LoadTodaysEmotionRecordUseCase(metricsRepository),
+                        hasCompletedTodaysCheckInUseCase =
+                            HasCompletedTodaysCheckInUseCase(
+                                checkInRepository = checkInRepository,
+                            ),
+                        loadPreviousObjectiveUseCase =
+                            LoadPreviousObjectiveUseCase(checkInRepository),
+                        loadDailyCheckInFlowUseCase = LoadDailyCheckInFlowUseCase(),
+                        selectTherapeuticActivityUseCase =
+                            SelectTherapeuticActivityUseCase(checkInRepository),
+                        saveDailyCheckInUseCase =
+                            SaveDailyCheckInUseCase(
+                                checkInRepository = checkInRepository,
+                                addictionRepository = addictionRepository,
                             ),
                     ) as T
                 }

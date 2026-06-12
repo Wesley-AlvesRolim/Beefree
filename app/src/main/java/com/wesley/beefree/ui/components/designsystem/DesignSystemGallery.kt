@@ -32,9 +32,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.wesley.beefree.R
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.theme.Error
 import com.wesley.beefree.ui.theme.ErrorContainer
@@ -173,7 +175,7 @@ fun DesignSystemGallery() {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(BeeSpacing.M)) {
                         BeeLabelSmall("FAB:", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         BeeFAB(onClick = {}) {
-                            Icon(Icons.Default.Add, contentDescription = null)
+                            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.btn_add))
                         }
                     }
                 }
@@ -271,7 +273,13 @@ fun DesignSystemGallery() {
                         onValueChange = { text2 = it },
                         modifier = Modifier.fillMaxWidth(),
                         label = { BeeBodySmall("With value") },
-                        leadingIcon = { Icon(Icons.Default.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Favorite,
+                                contentDescription = stringResource(R.string.btn_favorite),
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        },
                     )
                     BeeTextArea(
                         value = "Multi-line text area for ACT journaling exercises. Borderless with surfaceContainerLowest fill.",

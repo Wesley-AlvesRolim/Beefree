@@ -1,8 +1,8 @@
 package com.wesley.beefree.infrastructure.bus.subscribers.intervention
 
-import com.wesley.beefree.domain.bus.ports.EventBus
 import com.wesley.beefree.domain.events.InterventionTriggered
 import com.wesley.beefree.domain.events.InterventionUIPending
+import com.wesley.beefree.domain.events.ports.EventBus
 import com.wesley.beefree.domain.intervention.ports.DeviceActionProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
