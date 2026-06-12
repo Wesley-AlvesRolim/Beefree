@@ -23,6 +23,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+enum class SettingsUiError(
+    @StringRes val messageRes: Int,
+) {
+    EXPORT_FAILED(R.string.export_data_error),
+}
+
 class SettingsViewModel(
     private val addictionRepository: AddictionRepository,
     private val dataExportSharer: DataExportSharer,
@@ -34,7 +40,7 @@ class SettingsViewModel(
     private val _isBetsMonitoringEnabled = MutableStateFlow(false)
     val isBetsMonitoringEnabled: StateFlow<Boolean> = _isBetsMonitoringEnabled.asStateFlow()
 
-    private val _errorMessage = MutableStateFlow<String?>(null)
+    private val _errorMessage = MutableStateFlow<SettingsUiError?>(null)
     val errorMessage = _errorMessage.asSharedFlow()
 
     init {
@@ -56,7 +62,7 @@ class SettingsViewModel(
                 dataExportSharer.shareExportedData()
             } catch (error: Exception) {
                 logger.e(TAG, "Failed to export data", error)
-                _errorMessage.value = context.getString(R.string.export_data_error)
+                _errorMessage.value = SettingsUiError.EXPORT_FAILED
             }
         }
     }

@@ -58,9 +58,9 @@ fun SettingsScreen(
 ) {
     val isAdultMonitoringEnabled by viewModel.isAdultMonitoringEnabled.collectAsState()
     val isBetsMonitoringEnabled by viewModel.isBetsMonitoringEnabled.collectAsState()
-    val errorText by viewModel.errorMessage.collectAsState(null)
+    val error by viewModel.errorMessage.collectAsState(null)
 
-    errorText?.let { uiText ->
+    error?.let { uiError ->
         AlertDialog(
             onDismissRequest = { viewModel.resetError() },
             confirmButton = {
@@ -69,7 +69,7 @@ fun SettingsScreen(
                 }
             },
             text = {
-                BeeBodyMedium(uiText)
+                BeeBodyMedium(stringResource(uiError.messageRes))
             },
         )
     }
