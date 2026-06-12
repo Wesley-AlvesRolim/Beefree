@@ -1,5 +1,6 @@
 package com.wesley.beefree.domain.entities
 
+import com.wesley.beefree.domain.checkin.ActivityType
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
 import kotlinx.serialization.Serializable
 
@@ -58,7 +59,7 @@ sealed interface DailyCheckInAnswer {
 
     @Serializable
     data class TherapeuticActivity(
-        val activityType: String,
+        val activityType: ActivityType,
     ) : DailyCheckInAnswer
 
     @Serializable

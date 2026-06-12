@@ -26,7 +26,7 @@ class SelectTherapeuticActivityUseCase(
             checkIns.count { checkIn ->
                 checkIn.answers.values
                     .filterIsInstance<DailyCheckInAnswer.TherapeuticActivity>()
-                    .any { it.activityType == type.name }
+                    .any { it.activityType == type }
             }
 
         val videoCount = countType(ActivityType.VIDEO)

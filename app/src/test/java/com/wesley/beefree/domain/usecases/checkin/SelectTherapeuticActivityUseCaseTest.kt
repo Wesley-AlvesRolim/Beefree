@@ -32,7 +32,7 @@ class SelectTherapeuticActivityUseCaseTest {
         DailyCheckIn(
             userProfileId = userId,
             treatmentProfile = TreatmentProfile.TCC,
-            answers = mapOf("tcc.therapeutic_activity" to DailyCheckInAnswer.TherapeuticActivity(type.name)),
+            answers = mapOf("tcc.therapeutic_activity" to DailyCheckInAnswer.TherapeuticActivity(type)),
             checkedInAt = now,
         )
 

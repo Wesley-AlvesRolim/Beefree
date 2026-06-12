@@ -56,7 +56,7 @@ private fun DailyCheckInAnswer.toEntityAnswer(): EntityAnswer =
         is DailyCheckInAnswer.Bool -> EntityAnswer.Bool(value)
         is DailyCheckInAnswer.EmotionalRecord -> EntityAnswer.EmotionalRecord(alreadyDone)
         is DailyCheckInAnswer.SingleSelectWithContext -> EntityAnswer.SingleSelectWithContext(id, context)
-        is DailyCheckInAnswer.TherapeuticActivity -> EntityAnswer.TherapeuticActivity(activityType.name)
+        is DailyCheckInAnswer.TherapeuticActivity -> EntityAnswer.TherapeuticActivity(activityType)
         is DailyCheckInAnswer.TextWithSuggestions -> EntityAnswer.TextWithSuggestions(value)
         is DailyCheckInAnswer.RelapseRegistration -> EntityAnswer.RelapseRegistration(hour, minute, triggers, context)
         is DailyCheckInAnswer.VideoWatch -> EntityAnswer.VideoWatch
