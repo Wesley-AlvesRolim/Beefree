@@ -73,4 +73,10 @@ sealed interface DailyCheckInAnswer {
         val triggers: List<String>,
         val context: String? = null,
     ) : DailyCheckInAnswer
+
+    @Serializable
+    data object VideoWatch : DailyCheckInAnswer
+
+    @Serializable
+    data object Mindfulness : DailyCheckInAnswer
 }

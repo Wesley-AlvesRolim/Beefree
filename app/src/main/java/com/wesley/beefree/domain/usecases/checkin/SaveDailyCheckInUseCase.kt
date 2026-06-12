@@ -59,6 +59,6 @@ private fun DailyCheckInAnswer.toEntityAnswer(): EntityAnswer =
         is DailyCheckInAnswer.TherapeuticActivity -> EntityAnswer.TherapeuticActivity(activityType.name)
         is DailyCheckInAnswer.TextWithSuggestions -> EntityAnswer.TextWithSuggestions(value)
         is DailyCheckInAnswer.RelapseRegistration -> EntityAnswer.RelapseRegistration(hour, minute, triggers, context)
-        is DailyCheckInAnswer.VideoWatch -> EntityAnswer.Bool(true)
-        is DailyCheckInAnswer.Mindfulness -> EntityAnswer.Bool(true)
+        is DailyCheckInAnswer.VideoWatch -> EntityAnswer.VideoWatch
+        is DailyCheckInAnswer.Mindfulness -> EntityAnswer.Mindfulness
     }
