@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">BeeFree</string>
-    <string name="accessibility_service_label">Serviço de Acessibilidade BeeFree</string>
-    <string name="accessibility_service_description">O BeeFree utiliza este serviço para identificar conteúdos relacionados a vícios digitais exibidos na tela, permitindo que o aplicativo bloqueie acessos de risco e ajude você a manter o foco na sua recuperação.</string>
     <string name="dont_do_this">Não faça isso</string>
 
     <!-- Onboarding shared -->
@@ -169,9 +167,6 @@
 
     <!-- Settings screen -->
     <string name="settings_title">Configurações</string>
-    <string name="settings_monitoring_section_title">Monitoramento Ativo</string>
-    <string name="settings_adult_content_label">Conteúdo adulto</string>
-    <string name="settings_bets_label">Apostas online</string>
     <string name="settings_support_network_section_title">Rede de Apoio (WhatsApp)</string>
     <string name="settings_export_data">Exportar os meus dados</string>
     <string name="settings_manage_contacts">Gerenciar contatos</string>

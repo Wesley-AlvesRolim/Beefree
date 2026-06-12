@@ -21,7 +21,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -56,8 +55,6 @@ fun SettingsScreen(
     onNavigateToAbout: () -> Unit = {},
     onNavigateToTerms: () -> Unit = {},
 ) {
-    val isAdultMonitoringEnabled by viewModel.isAdultMonitoringEnabled.collectAsState()
-    val isBetsMonitoringEnabled by viewModel.isBetsMonitoringEnabled.collectAsState()
     val error by viewModel.errorMessage.collectAsState(null)
 
     error?.let { uiError ->
@@ -75,10 +72,6 @@ fun SettingsScreen(
     }
 
     SettingsScreenContent(
-        isAdultMonitoringEnabled = isAdultMonitoringEnabled,
-        isBetsMonitoringEnabled = isBetsMonitoringEnabled,
-        onToggleAdultMonitoring = { viewModel.toggleAdultMonitoring() },
-        onToggleBetsMonitoring = { viewModel.toggleBetsMonitoring() },
         onExportData = { viewModel.exportData() },
         onNavigateToAbout = onNavigateToAbout,
         onNavigateToTerms = onNavigateToTerms,
@@ -88,10 +81,6 @@ fun SettingsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreenContent(
-    isAdultMonitoringEnabled: Boolean,
-    isBetsMonitoringEnabled: Boolean,
-    onToggleAdultMonitoring: () -> Unit,
-    onToggleBetsMonitoring: () -> Unit,
     onExportData: () -> Unit,
     onNavigateToAbout: () -> Unit = {},
     onNavigateToTerms: () -> Unit = {},
@@ -116,23 +105,6 @@ fun SettingsScreenContent(
                 .padding(BeeSpacing.M),
             verticalArrangement = Arrangement.spacedBy(BeeSpacing.L),
         ) {
-            BeeCardSection {
-                Column(Modifier.padding(BeeSpacing.M)) {
-                    BeeHeadlineSmall(
-                        stringResource(R.string.settings_monitoring_section_title),
-                    )
-                    Spacer(Modifier.height(BeeSpacing.M))
-                    SwitchRow(
-                        stringResource(R.string.settings_adult_content_label),
-                        isAdultMonitoringEnabled,
-                    ) { onToggleAdultMonitoring() }
-                    SwitchRow(
-                        stringResource(R.string.settings_bets_label),
-                        isBetsMonitoringEnabled,
-                    ) { onToggleBetsMonitoring() }
-                }
-            }
-
             Section(stringResource(R.string.settings_support_network_section_title)) {
                 BeeCardSection(
                     modifier =
@@ -259,22 +231,6 @@ private fun NavigationRow(
 }
 
 @Composable
-private fun SwitchRow(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-) {
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        BeeBodyLarge(
-            label,
-            Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Switch(checked, onCheckedChange)
-    }
-}
-
-@Composable
 private fun Section(
     title: String,
     action: @Composable (() -> Unit)? = null,
@@ -301,10 +257,6 @@ private fun Section(
 fun SettingsScreenPreview() {
     BeeFreeTheme {
         SettingsScreenContent(
-            isAdultMonitoringEnabled = true,
-            isBetsMonitoringEnabled = false,
-            onToggleAdultMonitoring = {},
-            onToggleBetsMonitoring = {},
             onExportData = {},
             onNavigateToAbout = {},
             onNavigateToTerms = {},
