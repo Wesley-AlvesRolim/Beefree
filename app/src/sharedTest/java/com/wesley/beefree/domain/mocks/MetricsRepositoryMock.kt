@@ -5,6 +5,7 @@ import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.entities.RiskAssessment
 import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
 import com.wesley.beefree.domain.repository.ports.MetricsRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -19,6 +20,8 @@ class MetricsRepositoryMock : MetricsRepository {
     var throwOnInsertRiskAssessment: Throwable? = null
     var throwOnGetLatestRiskFeatureSnapshot: Throwable? = null
 
+    var delayOnInsertEmotionRecord: Long = 0
+
     val insertEmotionRecordArgs = mutableListOf<EmotionRecord>()
     val insertRiskFeatureSnapshotArgs = mutableListOf<RiskFeatureSnapshot>()
     val insertRiskAssessmentArgs = mutableListOf<RiskAssessment>()
@@ -32,6 +35,7 @@ class MetricsRepositoryMock : MetricsRepository {
 
     override suspend fun insertEmotionRecord(record: EmotionRecord): Long {
         insertEmotionRecordCount++
+        if (delayOnInsertEmotionRecord > 0) delay(delayOnInsertEmotionRecord)
         throwOnInsertEmotionRecord?.let { throw it }
         insertEmotionRecordArgs += record
         return insertEmotionRecordArgs.size.toLong()

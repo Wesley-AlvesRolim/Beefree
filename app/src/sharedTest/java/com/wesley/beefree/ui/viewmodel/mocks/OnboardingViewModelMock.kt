@@ -16,16 +16,22 @@ class OnboardingViewModelMock : OnboardingViewModelPort {
     override val scaleResult = MutableStateFlow<ScaleResult?>(null)
     override val clinicalProfile = MutableStateFlow<ClinicalProfile?>(null)
 
+    var nextCalled = 0
+    var previousCalled = 0
+    var finishCalled = 0
+
     override fun updateAnswer(update: OnboardingAnswers.() -> OnboardingAnswers) {
         answers.value = answers.value.update()
     }
 
     override fun next() {
+        nextCalled++
         engine.next(answers.value)
         currentStep.value = engine.currentStep
     }
 
     override fun previous() {
+        previousCalled++
         engine.previous()
         currentStep.value = engine.currentStep
     }
@@ -34,6 +40,7 @@ class OnboardingViewModelMock : OnboardingViewModelPort {
         onFinish: () -> Unit,
         onError: (Throwable) -> Unit,
     ) {
+        finishCalled++
         onFinish()
     }
 }
