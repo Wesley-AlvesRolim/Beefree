@@ -50,7 +50,7 @@ fun CheckInBannerCard(
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.Outlined.EnergySavingsLeaf,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.checkin_banner_icon),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(BeeSpacing.L),
                     )

@@ -120,7 +120,7 @@ fun TimerStepContent(
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 imageVector = Icons.Filled.Schedule,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.help_intervention_timer_icon),
                             )
                         }
                     }

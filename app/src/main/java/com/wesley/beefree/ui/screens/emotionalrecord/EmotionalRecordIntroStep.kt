@@ -100,7 +100,7 @@ fun EmotionalRecordIntroStep(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Info,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.emotional_record_info_icon),
                         tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.size(BeeSpacing.M),
                     )

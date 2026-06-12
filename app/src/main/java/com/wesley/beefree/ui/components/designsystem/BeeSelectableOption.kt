@@ -28,7 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import com.wesley.beefree.R
 
 private val BeeSelectableOptionShape = RoundedCornerShape(BeeSpacing.M)
 
@@ -277,7 +279,7 @@ private fun BeeCheckboxIndicator(selected: Boolean) {
         ) {
             Icon(
                 imageVector = Icons.Default.Check,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.btn_selected),
                 tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.size(BeeSpacing.M),
             )

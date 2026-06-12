@@ -171,7 +171,7 @@ private fun HelpInterventionContent(
                 navigationIcon = {
                     if (currentStepIndex > 0) {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                         }
                     }
                 },

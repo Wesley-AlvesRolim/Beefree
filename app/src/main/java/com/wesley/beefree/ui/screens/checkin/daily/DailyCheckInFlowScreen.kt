@@ -96,7 +96,7 @@ fun DailyCheckInFlowScreen(
                 navigationIcon = {
                     if (canGoBack) {
                         IconButton(onClick = onPrevious) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.daily_checkin_back))
                         }
                     }
                 },

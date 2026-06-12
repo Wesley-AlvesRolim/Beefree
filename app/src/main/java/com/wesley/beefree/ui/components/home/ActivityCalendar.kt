@@ -7,6 +7,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.wesley.beefree.R
 import com.wesley.beefree.domain.entities.RelapseRecord
 import com.wesley.beefree.ui.components.designsystem.BeeCalendar
 import com.wesley.beefree.ui.components.designsystem.BeeSpacing
@@ -36,7 +38,7 @@ fun ActivityCalendar(
             if (tileTypeForDay(calendarForDay(year, month, dayNumber), relapseHistory) == CalendarDayType.ALIGN) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.calendar_day_aligned),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.size(BeeSpacing.M),
                 )

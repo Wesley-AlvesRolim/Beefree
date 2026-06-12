@@ -127,7 +127,7 @@ fun NavBarWithItems(navController: NavHostController) {
                         .clickable { onClick(screen) }
                         .padding(horizontal = BeeSpacing.L, vertical = BeeSpacing.S),
             ) {
-                Icon(screen.icon, contentDescription = null, tint = fgColor)
+                Icon(screen.icon, contentDescription = stringResource(screen.labelRes), tint = fgColor)
                 BeeBodySmall(stringResource(screen.labelRes), color = fgColor, textAlign = TextAlign.Center)
             }
         }
