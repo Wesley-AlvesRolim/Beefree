@@ -1,9 +1,6 @@
 package com.wesley.beefree.domain.usecases.risk
 
-import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
-import com.wesley.beefree.domain.repository.ports.RiskFeatureSnapshotRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
+import com.wesley.beefree.domain.mocks.RiskFeatureSnapshotRepositoryMock
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -15,7 +12,7 @@ class SaveRiskFeatureSnapshotUseCaseTest {
     @Test
     fun `saves snapshot with provided values and derived date fields`() =
         runTest {
-            val repository = RecordingRiskFeatureSnapshotRepository()
+            val repository = RiskFeatureSnapshotRepositoryMock()
             val useCase = SaveRiskFeatureSnapshotUseCase(repository)
             val userId = 7
             val sleep = 6
@@ -56,7 +53,7 @@ class SaveRiskFeatureSnapshotUseCaseTest {
     @Test
     fun `returns failure when repository save throws`() =
         runTest {
-            val repository = RecordingRiskFeatureSnapshotRepository(throwOnSave = RuntimeException("DB error"))
+            val repository = RiskFeatureSnapshotRepositoryMock(throwOnSave = RuntimeException("DB error"))
             val useCase = SaveRiskFeatureSnapshotUseCase(repository)
 
             val result =
@@ -74,25 +71,4 @@ class SaveRiskFeatureSnapshotUseCaseTest {
             assertNull(repository.savedSnapshot)
             assertEquals(1, repository.saveCalls)
         }
-
-    private class RecordingRiskFeatureSnapshotRepository(
-        private val throwOnSave: Throwable? = null,
-    ) : RiskFeatureSnapshotRepository {
-        var savedSnapshot: RiskFeatureSnapshot? = null
-            private set
-
-        var saveCalls: Int = 0
-            private set
-
-        override suspend fun save(snapshot: RiskFeatureSnapshot): Long {
-            saveCalls++
-            throwOnSave?.let { throw it }
-            savedSnapshot = snapshot
-            return 1L
-        }
-
-        override fun getAllByUser(userId: Int): Flow<List<RiskFeatureSnapshot>> = emptyFlow()
-
-        override suspend fun getLatestByUser(userId: Int): RiskFeatureSnapshot? = null
-    }
 }

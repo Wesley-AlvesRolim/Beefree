@@ -1,22 +1,15 @@
 package com.wesley.beefree.domain.usecases.risk
 
-import com.wesley.beefree.domain.entities.AddictionCategory
 import com.wesley.beefree.domain.entities.DailyCheckIn
 import com.wesley.beefree.domain.entities.EmotionRecord
 import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.entities.RelapseRecord
-import com.wesley.beefree.domain.entities.RiskAssessment
 import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
-import com.wesley.beefree.domain.entities.WeeklyCheckIn
+import com.wesley.beefree.domain.mocks.AddictionRepositoryMock
+import com.wesley.beefree.domain.mocks.CheckInRepositoryMock
+import com.wesley.beefree.domain.mocks.MetricsRepositoryMock
+import com.wesley.beefree.domain.mocks.RiskWeightsRepositoryMock
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
-import com.wesley.beefree.domain.repository.ports.AddictionRepository
-import com.wesley.beefree.domain.repository.ports.CheckInRepository
-import com.wesley.beefree.domain.repository.ports.MetricsRepository
-import com.wesley.beefree.domain.repository.ports.RiskWeightsRepository
-import com.wesley.beefree.domain.risk.RiskWeights
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -44,8 +37,8 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
     @Test
     fun `produces 24 assessments when snapshot exists`() =
         runTest {
-            val metrics = FakeMetricsRepository(latestSnapshot = defaultSnapshot)
-            val weights = FakeRiskWeightsRepository()
+            val metrics = MetricsRepositoryMock().apply { latestRiskFeatureSnapshot = defaultSnapshot }
+            val weights = RiskWeightsRepositoryMock()
             val useCase = CalculateAndSaveRiskAssessmentUseCase(metrics, weights)
 
             val result = useCase.execute(userId = 1)
@@ -57,32 +50,32 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
     @Test
     fun `deletes old assessments before inserting`() =
         runTest {
-            val metrics = FakeMetricsRepository(latestSnapshot = defaultSnapshot)
-            val weights = FakeRiskWeightsRepository()
+            val metrics = MetricsRepositoryMock().apply { latestRiskFeatureSnapshot = defaultSnapshot }
+            val weights = RiskWeightsRepositoryMock()
             val useCase = CalculateAndSaveRiskAssessmentUseCase(metrics, weights)
 
             useCase.execute(userId = 1)
 
-            assertTrue(metrics.deleteAllCalled)
+            assertTrue(metrics.deleteAllRiskAssessmentsCalled)
         }
 
     @Test
     fun `inserts exactly 24 assessments into repository`() =
         runTest {
-            val metrics = FakeMetricsRepository(latestSnapshot = defaultSnapshot)
-            val weights = FakeRiskWeightsRepository()
+            val metrics = MetricsRepositoryMock().apply { latestRiskFeatureSnapshot = defaultSnapshot }
+            val weights = RiskWeightsRepositoryMock()
             val useCase = CalculateAndSaveRiskAssessmentUseCase(metrics, weights)
 
             useCase.execute(userId = 1)
 
-            assertEquals(24, metrics.insertedAssessments.size)
+            assertEquals(24, metrics.insertRiskAssessmentCount)
         }
 
     @Test
     fun `returns empty list when no snapshot`() =
         runTest {
-            val metrics = FakeMetricsRepository(latestSnapshot = null)
-            val weights = FakeRiskWeightsRepository()
+            val metrics = MetricsRepositoryMock()
+            val weights = RiskWeightsRepositoryMock()
             val useCase = CalculateAndSaveRiskAssessmentUseCase(metrics, weights)
 
             val result = useCase.execute(userId = 1)
@@ -94,8 +87,8 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
     @Test
     fun `all scores are in range 0 to 100`() =
         runTest {
-            val metrics = FakeMetricsRepository(latestSnapshot = defaultSnapshot)
-            val weights = FakeRiskWeightsRepository()
+            val metrics = MetricsRepositoryMock().apply { latestRiskFeatureSnapshot = defaultSnapshot }
+            val weights = RiskWeightsRepositoryMock()
             val useCase = CalculateAndSaveRiskAssessmentUseCase(metrics, weights)
 
             val scores = useCase.execute(userId = 1).getOrThrow()
@@ -106,8 +99,12 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
     @Test
     fun `returns failure when repository throws`() =
         runTest {
-            val metrics = FakeMetricsRepository(latestSnapshot = defaultSnapshot, throwOnInsert = true)
-            val weights = FakeRiskWeightsRepository()
+            val metrics =
+                MetricsRepositoryMock().apply {
+                    latestRiskFeatureSnapshot = defaultSnapshot
+                    throwOnInsertRiskAssessment = RuntimeException("DB error")
+                }
+            val weights = RiskWeightsRepositoryMock()
             val useCase = CalculateAndSaveRiskAssessmentUseCase(metrics, weights)
 
             val result = useCase.execute(userId = 1)
@@ -118,8 +115,8 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
     @Test
     fun `succeeds when optional repositories are null`() =
         runTest {
-            val metrics = FakeMetricsRepository(latestSnapshot = defaultSnapshot)
-            val weights = FakeRiskWeightsRepository()
+            val metrics = MetricsRepositoryMock().apply { latestRiskFeatureSnapshot = defaultSnapshot }
+            val weights = RiskWeightsRepositoryMock()
             val useCase =
                 CalculateAndSaveRiskAssessmentUseCase(
                     metricsRepository = metrics,
@@ -140,16 +137,16 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
             val now = System.currentTimeMillis()
             val sixHoursAgo = now - 6 * MILLIS_PER_HOUR
             val quietSnapshot = quietSnapshot(hoursSinceLastRelapse = 500)
-            val metrics = FakeMetricsRepository(latestSnapshot = quietSnapshot)
-            val weights = FakeRiskWeightsRepository()
+            val metrics = MetricsRepositoryMock().apply { latestRiskFeatureSnapshot = quietSnapshot }
+            val weights = RiskWeightsRepositoryMock()
             val addictions =
-                FakeAddictionRepository(
-                    relapses =
+                AddictionRepositoryMock().apply {
+                    relapseHistory =
                         listOf(
                             relapse(createdAt = now - 10 * MILLIS_PER_DAY),
                             relapse(createdAt = sixHoursAgo),
-                        ),
-                )
+                        )
+                }
             val useCase =
                 CalculateAndSaveRiskAssessmentUseCase(
                     metricsRepository = metrics,
@@ -159,7 +156,7 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
 
             val resultEnriched = useCase.execute(userId = 1).getOrThrow()
 
-            val metricsNoHistory = FakeMetricsRepository(latestSnapshot = quietSnapshot)
+            val metricsNoHistory = MetricsRepositoryMock().apply { latestRiskFeatureSnapshot = quietSnapshot }
             val resultBaseline =
                 CalculateAndSaveRiskAssessmentUseCase(metricsNoHistory, weights)
                     .execute(userId = 1)
@@ -172,16 +169,16 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
     fun `derives missingCheckins from 7-day check-in history`() =
         runTest {
             val now = System.currentTimeMillis()
-            val metrics = FakeMetricsRepository(latestSnapshot = defaultSnapshot.copy(missingCheckins = 0))
-            val weights = FakeRiskWeightsRepository()
+            val metrics = MetricsRepositoryMock().apply { latestRiskFeatureSnapshot = defaultSnapshot.copy(missingCheckins = 0) }
+            val weights = RiskWeightsRepositoryMock()
             val checkIns =
-                FakeCheckInRepository(
+                CheckInRepositoryMock().apply {
                     dailyCheckIns =
                         listOf(
                             dailyCheckIn(checkedInAt = now - 1 * MILLIS_PER_DAY),
                             dailyCheckIn(checkedInAt = now - 2 * MILLIS_PER_DAY),
-                        ),
-                )
+                        )
+                }
             val useCase =
                 CalculateAndSaveRiskAssessmentUseCase(
                     metricsRepository = metrics,
@@ -210,16 +207,16 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
                     )
                 }
             val metrics =
-                FakeMetricsRepository(
-                    latestSnapshot = snapshot,
-                    emotionRecords = recentHighCraving,
-                )
-            val weights = FakeRiskWeightsRepository()
+                MetricsRepositoryMock().apply {
+                    latestRiskFeatureSnapshot = snapshot
+                    emotionRecords = recentHighCraving
+                }
+            val weights = RiskWeightsRepositoryMock()
             val useCase = CalculateAndSaveRiskAssessmentUseCase(metrics, weights)
 
             val enrichedResult = useCase.execute(userId = 1).getOrThrow()
 
-            val metricsNoEmotions = FakeMetricsRepository(latestSnapshot = snapshot)
+            val metricsNoEmotions = MetricsRepositoryMock().apply { latestRiskFeatureSnapshot = snapshot }
             val baselineResult =
                 CalculateAndSaveRiskAssessmentUseCase(metricsNoEmotions, weights)
                     .execute(userId = 1)
@@ -243,18 +240,19 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
                     )
                 }
             val metrics =
-                FakeMetricsRepository(
-                    latestSnapshot = snapshot,
-                    emotionRecords = stressAtSameHour,
-                )
-            val weights = FakeRiskWeightsRepository()
+                MetricsRepositoryMock().apply {
+                    latestRiskFeatureSnapshot = snapshot
+                    emotionRecords = stressAtSameHour
+                }
+            val weights = RiskWeightsRepositoryMock()
 
             val scores = CalculateAndSaveRiskAssessmentUseCase(metrics, weights).execute(userId = 1).getOrThrow()
 
             val baseline =
-                CalculateAndSaveRiskAssessmentUseCase(FakeMetricsRepository(latestSnapshot = snapshot), weights)
-                    .execute(userId = 1)
-                    .getOrThrow()
+                CalculateAndSaveRiskAssessmentUseCase(
+                    MetricsRepositoryMock().apply { latestRiskFeatureSnapshot = snapshot },
+                    weights,
+                ).execute(userId = 1).getOrThrow()
 
             assertTrue(scores[0] > baseline[0])
             assertEquals(baseline[1], scores[1])
@@ -292,85 +290,6 @@ class CalculateAndSaveRiskAssessmentUseCaseTest {
             answers = emptyMap(),
             checkedInAt = checkedInAt,
         )
-
-    private class FakeMetricsRepository(
-        private val latestSnapshot: RiskFeatureSnapshot?,
-        private val throwOnInsert: Boolean = false,
-        private val emotionRecords: List<EmotionRecord> = emptyList(),
-    ) : MetricsRepository {
-        val insertedAssessments = mutableListOf<RiskAssessment>()
-        var deleteAllCalled = false
-
-        override suspend fun insertEmotionRecord(record: EmotionRecord): Long = 0L
-
-        override suspend fun deleteEmotionRecordsByIds(ids: List<Long>) = Unit
-
-        override fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>> = flowOf(emotionRecords)
-
-        override fun getEmotionRecordsByType(
-            userId: Int,
-            feelingType: FeelingType,
-        ): Flow<List<EmotionRecord>> = flowOf(emotionRecords.filter { it.feelingType == feelingType })
-
-        override suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord? = emotionRecords.maxByOrNull { it.createdAt }
-
-        override suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long = 0L
-
-        override fun getRiskFeatureSnapshots(userId: Int): Flow<List<RiskFeatureSnapshot>> = emptyFlow()
-
-        override suspend fun getLatestRiskFeatureSnapshot(userId: Int): RiskFeatureSnapshot? = latestSnapshot
-
-        override suspend fun insertRiskAssessment(assessment: RiskAssessment): Long {
-            if (throwOnInsert) throw RuntimeException("DB error")
-            insertedAssessments.add(assessment)
-            return insertedAssessments.size.toLong()
-        }
-
-        override suspend fun deleteAllRiskAssessmentsForUser(userId: Int) {
-            deleteAllCalled = true
-        }
-
-        override fun getRiskAssessments(userId: Int): Flow<List<RiskAssessment>> = emptyFlow()
-    }
-
-    private class FakeRiskWeightsRepository : RiskWeightsRepository {
-        override fun getWeights(userId: Int): RiskWeights = RiskWeights()
-
-        override fun saveWeights(
-            userId: Int,
-            weights: RiskWeights,
-        ) = Unit
-    }
-
-    private class FakeCheckInRepository(
-        private val dailyCheckIns: List<DailyCheckIn> = emptyList(),
-    ) : CheckInRepository {
-        override suspend fun insertDailyCheckIn(checkIn: DailyCheckIn): Long = 0L
-
-        override fun getDailyCheckIns(userId: Int): Flow<List<DailyCheckIn>> = flowOf(dailyCheckIns)
-
-        override suspend fun insertWeeklyCheckIn(checkIn: WeeklyCheckIn): Long = 0L
-
-        override fun getWeeklyCheckIns(userId: Int): Flow<List<WeeklyCheckIn>> = emptyFlow()
-    }
-
-    private class FakeAddictionRepository(
-        private val relapses: List<RelapseRecord> = emptyList(),
-    ) : AddictionRepository {
-        override suspend fun insertAddictionCategory(category: AddictionCategory): Long = 0L
-
-        override suspend fun updateAddictionCategory(category: AddictionCategory) = Unit
-
-        override suspend fun deleteAddictionCategory(category: AddictionCategory) = Unit
-
-        override suspend fun getAddictionCategoryById(id: Int): AddictionCategory? = null
-
-        override fun getAllAddictionCategories(): Flow<List<AddictionCategory>> = emptyFlow()
-
-        override suspend fun insertRelapse(relapse: RelapseRecord): Long = 0L
-
-        override fun getRelapseHistory(): Flow<List<RelapseRecord>> = flowOf(relapses)
-    }
 
     companion object {
         private const val MILLIS_PER_HOUR = 3_600_000L

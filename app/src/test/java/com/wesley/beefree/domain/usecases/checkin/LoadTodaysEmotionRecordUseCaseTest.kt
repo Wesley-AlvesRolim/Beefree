@@ -2,9 +2,7 @@ package com.wesley.beefree.domain.usecases.checkin
 
 import com.wesley.beefree.domain.entities.EmotionRecord
 import com.wesley.beefree.domain.entities.FeelingType
-import com.wesley.beefree.domain.repository.ports.MetricsRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import com.wesley.beefree.domain.mocks.MetricsRepositoryMock
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -18,7 +16,7 @@ class LoadTodaysEmotionRecordUseCaseTest {
     @Test
     fun `returns null when there is no emotion record today`() {
         runBlocking {
-            val useCase = LoadTodaysEmotionRecordUseCase(FakeMetricsRepository(emptyList()))
+            val useCase = LoadTodaysEmotionRecordUseCase(MetricsRepositoryMock())
 
             assertNull(useCase.execute(userId))
         }
@@ -40,7 +38,7 @@ class LoadTodaysEmotionRecordUseCaseTest {
                     record(FeelingType.FATIGUE, 9, today - 500),
                     record(FeelingType.CRAVING, 1, today - dayMs),
                 )
-            val useCase = LoadTodaysEmotionRecordUseCase(FakeMetricsRepository(records))
+            val useCase = LoadTodaysEmotionRecordUseCase(MetricsRepositoryMock().apply { emotionRecords = records })
 
             val summary = useCase.execute(userId)
 
@@ -63,34 +61,4 @@ class LoadTodaysEmotionRecordUseCaseTest {
         intensity = intensity,
         createdAt = createdAt,
     )
-
-    private class FakeMetricsRepository(
-        private val records: List<EmotionRecord>,
-    ) : MetricsRepository {
-        override suspend fun insertEmotionRecord(record: EmotionRecord): Long = 0L
-
-        override fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>> = flowOf(records)
-
-        override fun getEmotionRecordsByType(
-            userId: Int,
-            feelingType: FeelingType,
-        ): Flow<List<EmotionRecord>> = flowOf(records.filter { it.feelingType == feelingType })
-
-        override suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord? = null
-
-        override suspend fun deleteEmotionRecordsByIds(ids: List<Long>) = Unit
-
-        override suspend fun insertRiskFeatureSnapshot(snapshot: com.wesley.beefree.domain.entities.RiskFeatureSnapshot): Long = 0L
-
-        override fun getRiskFeatureSnapshots(userId: Int): Flow<List<com.wesley.beefree.domain.entities.RiskFeatureSnapshot>> =
-            flowOf(emptyList())
-
-        override suspend fun getLatestRiskFeatureSnapshot(userId: Int): com.wesley.beefree.domain.entities.RiskFeatureSnapshot? = null
-
-        override suspend fun insertRiskAssessment(assessment: com.wesley.beefree.domain.entities.RiskAssessment): Long = 0L
-
-        override suspend fun deleteAllRiskAssessmentsForUser(userId: Int) = Unit
-
-        override fun getRiskAssessments(userId: Int): Flow<List<com.wesley.beefree.domain.entities.RiskAssessment>> = flowOf(emptyList())
-    }
 }

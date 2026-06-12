@@ -1,20 +1,12 @@
 package com.wesley.beefree.ui.viewmodel
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import com.wesley.beefree.TestApplication
 import com.wesley.beefree.domain.entities.AddictionCategory
 import com.wesley.beefree.domain.entities.AddictionCategoryEnum
-import com.wesley.beefree.domain.entities.RelapseRecord
-import com.wesley.beefree.domain.repository.ports.AddictionRepository
-import com.wesley.beefree.domain.repository.ports.DatabaseExporterStrategy
+import com.wesley.beefree.domain.mocks.AddictionRepositoryMock
+import com.wesley.beefree.domain.mocks.DataExportSharerMock
 import com.wesley.beefree.infrastructure.logging.TestLogger
-import com.wesley.beefree.infrastructure.storage.adapters.db.exporters.FileDatabaseExporter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -26,14 +18,8 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
-import java.io.OutputStreamWriter
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(RobolectricTestRunner::class)
-@Config(application = TestApplication::class)
 class SettingsViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
@@ -51,7 +37,7 @@ class SettingsViewModelTest {
     @Test
     fun `initial state reflects addiction categories`() =
         runTest {
-            val repository = FakeAddictionRepository()
+            val repository = addictionRepository()
             val viewModel = createViewModel(repository)
 
             advanceUntilIdle()
@@ -63,7 +49,7 @@ class SettingsViewModelTest {
     @Test
     fun `toggle adult monitoring updates repository and ui state`() =
         runTest {
-            val repository = FakeAddictionRepository()
+            val repository = addictionRepository()
             val viewModel = createViewModel(repository)
 
             advanceUntilIdle()
@@ -82,7 +68,7 @@ class SettingsViewModelTest {
     @Test
     fun `toggle bets monitoring updates repository and ui state`() =
         runTest {
-            val repository = FakeAddictionRepository()
+            val repository = addictionRepository()
             val viewModel = createViewModel(repository)
 
             advanceUntilIdle()
@@ -98,26 +84,16 @@ class SettingsViewModelTest {
             )
         }
 
-    private fun createViewModel(repository: AddictionRepository): SettingsViewModel =
+    private fun createViewModel(repository: AddictionRepositoryMock): SettingsViewModel =
         SettingsViewModel(
-            context = ApplicationProvider.getApplicationContext<Context>(),
             addictionRepository = repository,
-            exporter = FileDatabaseExporter(),
-            exporterStrategy = FakeDatabaseExporterStrategy(),
+            dataExportSharer = DataExportSharerMock(),
             logger = TestLogger,
         )
 
-    private class FakeDatabaseExporterStrategy : DatabaseExporterStrategy {
-        override fun getMimeType(): String = "application/sql"
-
-        override fun getFileExtension(): String = "sql"
-
-        override fun writeData(stream: OutputStreamWriter) = Unit
-    }
-
-    private class FakeAddictionRepository : AddictionRepository {
-        val categories =
-            MutableStateFlow(
+    private fun addictionRepository(): AddictionRepositoryMock =
+        AddictionRepositoryMock().apply {
+            categories.value =
                 listOf(
                     AddictionCategory(
                         id = 1,
@@ -133,28 +109,6 @@ class SettingsViewModelTest {
                         createdAt = 0L,
                         updatedAt = 0L,
                     ),
-                ),
-            )
-        var updateCalls = 0
-
-        override suspend fun insertAddictionCategory(category: AddictionCategory): Long = 0
-
-        override suspend fun updateAddictionCategory(category: AddictionCategory) {
-            updateCalls++
-            categories.value =
-                categories.value.map {
-                    if (it.name == category.name) category else it
-                }
+                )
         }
-
-        override suspend fun deleteAddictionCategory(category: AddictionCategory) = Unit
-
-        override suspend fun getAddictionCategoryById(id: Int): AddictionCategory? = null
-
-        override fun getAllAddictionCategories(): Flow<List<AddictionCategory>> = categories
-
-        override suspend fun insertRelapse(relapse: RelapseRecord): Long = 0
-
-        override fun getRelapseHistory(): Flow<List<RelapseRecord>> = emptyFlow()
-    }
 }

@@ -1,36 +1,21 @@
 package com.wesley.beefree.ui.viewmodel
 
 import com.wesley.beefree.domain.entities.BreathingPhaseEnum
-import com.wesley.beefree.domain.entities.EmotionRecord
-import com.wesley.beefree.domain.entities.FeelingType
-import com.wesley.beefree.domain.entities.InterventionRecord
-import com.wesley.beefree.domain.entities.RiskAssessment
-import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
-import com.wesley.beefree.domain.entities.UserAddiction
-import com.wesley.beefree.domain.entities.UserCoreValue
-import com.wesley.beefree.domain.entities.UserHobby
-import com.wesley.beefree.domain.entities.UserObjective
 import com.wesley.beefree.domain.entities.UserOnboardingSession
 import com.wesley.beefree.domain.entities.UserProfile
-import com.wesley.beefree.domain.entities.UserSymptom
 import com.wesley.beefree.domain.intervention.HelpInterventionStep
+import com.wesley.beefree.domain.mocks.EMIRepositoryMock
+import com.wesley.beefree.domain.mocks.MetricsRepositoryMock
+import com.wesley.beefree.domain.mocks.OnboardingRepositoryMock
+import com.wesley.beefree.domain.mocks.RiskWeightsRepositoryMock
+import com.wesley.beefree.domain.mocks.TickerMock
+import com.wesley.beefree.domain.mocks.UserProfileRepositoryMock
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
-import com.wesley.beefree.domain.repository.ports.EMIRepository
-import com.wesley.beefree.domain.repository.ports.MetricsRepository
-import com.wesley.beefree.domain.repository.ports.OnboardingRepository
-import com.wesley.beefree.domain.repository.ports.RiskWeightsRepository
-import com.wesley.beefree.domain.repository.ports.UserProfileRepository
-import com.wesley.beefree.domain.risk.RiskWeights
-import com.wesley.beefree.domain.shared.Ticker
 import com.wesley.beefree.domain.usecases.intervention.SaveInterventionSessionUseCase
 import com.wesley.beefree.domain.usecases.risk.CalculateAndSaveRiskAssessmentUseCase
 import com.wesley.beefree.infrastructure.logging.TestLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -40,32 +25,29 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.whenever
 import kotlin.OptIn
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HelpInterventionViewModelTest {
-    private lateinit var mockOnboardingRepository: OnboardingRepository
-    private lateinit var mockUserProfileRepository: UserProfileRepository
-    private lateinit var fakeEMIRepository: FakeEMIRepository
+    private lateinit var onboardingRepository: OnboardingRepositoryMock
+    private lateinit var userProfileRepository: UserProfileRepositoryMock
+    private lateinit var emiRepository: EMIRepositoryMock
     private lateinit var saveInterventionSessionUseCase: SaveInterventionSessionUseCase
-    private lateinit var fakeTicker: FakeTicker
+    private lateinit var ticker: TickerMock
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        mockOnboardingRepository = mock(OnboardingRepository::class.java)
-        mockUserProfileRepository = mock(UserProfileRepository::class.java)
-        whenever(mockUserProfileRepository.getAllProfiles()).thenReturn(flowOf(emptyList()))
-        fakeEMIRepository = FakeEMIRepository()
+        onboardingRepository = OnboardingRepositoryMock()
+        userProfileRepository = UserProfileRepositoryMock()
+        emiRepository = EMIRepositoryMock()
         saveInterventionSessionUseCase =
             SaveInterventionSessionUseCase(
-                emiRepository = fakeEMIRepository,
-                onboardingRepository = mockOnboardingRepository,
+                emiRepository = emiRepository,
+                onboardingRepository = onboardingRepository,
             )
-        fakeTicker = FakeTicker()
+        ticker = TickerMock()
     }
 
     @After
@@ -224,22 +206,22 @@ class HelpInterventionViewModelTest {
         val viewModel = createViewModelWithProfile(TreatmentProfile.TCC)
 
         advanceToTimerStep(viewModel)
-        assertEquals(0, fakeEMIRepository.insertedInterventionRecords.size)
+        assertEquals(0, emiRepository.insertInterventionRecordArgs.size)
 
         viewModel.onNext(true)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertFalse(viewModel.uiState.value.isComplete)
         assertEquals(viewModel.uiState.value.allSteps.lastIndex, viewModel.uiState.value.currentStepIndex)
-        assertEquals(0, fakeEMIRepository.insertedInterventionRecords.size)
+        assertEquals(0, emiRepository.insertInterventionRecordArgs.size)
 
         viewModel.onNext("no")
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertTrue(viewModel.uiState.value.isComplete)
         assertEquals(viewModel.uiState.value.allSteps.lastIndex, viewModel.uiState.value.currentStepIndex)
-        assertEquals(1, fakeEMIRepository.insertedInterventionRecords.size)
-        assertTrue(fakeEMIRepository.insertedInterventionRecords.first().wasCompleted)
+        assertEquals(1, emiRepository.insertInterventionRecordArgs.size)
+        assertTrue(emiRepository.insertInterventionRecordArgs.first().wasCompleted)
     }
 
     @Test
@@ -257,7 +239,7 @@ class HelpInterventionViewModelTest {
         viewModel.startBreathingTimer()
 
         testDispatcher.scheduler.advanceUntilIdle()
-        fakeTicker.flow.tryEmit(Unit)
+        ticker.flow.tryEmit(Unit)
         testDispatcher.scheduler.advanceUntilIdle()
 
         val secondsAfter = viewModel.uiState.value.breathingSecondsLeft
@@ -271,7 +253,7 @@ class HelpInterventionViewModelTest {
         viewModel.startBreathingTimer()
 
         testDispatcher.scheduler.advanceUntilIdle()
-        fakeTicker.flow.tryEmit(Unit)
+        ticker.flow.tryEmit(Unit)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals("Seconds should decrease by 1", secondsBeforeStart - 1, viewModel.uiState.value.breathingSecondsLeft)
@@ -284,7 +266,7 @@ class HelpInterventionViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         repeat(BreathingPhaseEnum.INHALE.durationSeconds) {
-            fakeTicker.flow.tryEmit(Unit)
+            ticker.flow.tryEmit(Unit)
             testDispatcher.scheduler.advanceUntilIdle()
         }
 
@@ -305,7 +287,7 @@ class HelpInterventionViewModelTest {
         val totalTicks =
             BreathingPhaseEnum.INHALE.durationSeconds + BreathingPhaseEnum.HOLD.durationSeconds + BreathingPhaseEnum.EXHALE.durationSeconds
         repeat(totalTicks) {
-            fakeTicker.flow.tryEmit(Unit)
+            ticker.flow.tryEmit(Unit)
             testDispatcher.scheduler.advanceUntilIdle()
         }
 
@@ -339,67 +321,49 @@ class HelpInterventionViewModelTest {
 
     private fun createEmptyViewModel(): HelpInterventionViewModel =
         HelpInterventionViewModel(
-            onboardingRepository = mockOnboardingRepository,
-            userProfileRepository = mockUserProfileRepository,
+            onboardingRepository = onboardingRepository,
+            userProfileRepository = userProfileRepository,
             saveInterventionSessionUseCase = saveInterventionSessionUseCase,
             calculateAndSaveRiskAssessmentUseCase = noOpCalculateRiskUseCase(),
-            ticker = fakeTicker,
+            ticker = ticker,
             logger = TestLogger,
         )
 
     private fun createViewModelWithProfile(profile: TreatmentProfile): HelpInterventionViewModel {
         val vm =
             HelpInterventionViewModel(
-                onboardingRepository = FakeOnboardingRepository(profile),
-                userProfileRepository = FakeUserProfileRepository(),
+                onboardingRepository = OnboardingRepositoryMock().apply { session = onboardingSession(profile) },
+                userProfileRepository =
+                    UserProfileRepositoryMock().apply {
+                        profiles = listOf(UserProfile(id = 1, profileName = "Test", createdAt = 0L, updatedAt = 0L))
+                    },
                 saveInterventionSessionUseCase = saveInterventionSessionUseCase,
                 calculateAndSaveRiskAssessmentUseCase = noOpCalculateRiskUseCase(),
-                ticker = fakeTicker,
+                ticker = ticker,
                 logger = TestLogger,
             )
         testDispatcher.scheduler.advanceUntilIdle()
         return vm
     }
 
-    private fun noOpCalculateRiskUseCase(): CalculateAndSaveRiskAssessmentUseCase {
-        val stubMetrics =
-            object : MetricsRepository {
-                override suspend fun insertEmotionRecord(record: EmotionRecord): Long = 0L
+    private fun onboardingSession(profile: TreatmentProfile) =
+        UserOnboardingSession(
+            userProfileId = 1,
+            clinicalApproach = profile.name,
+            ppcsScore = null,
+            pgsiScore = null,
+            moralIncongruenceScore = null,
+            frequencyScore = null,
+            moralDisapprovalScore = null,
+            hasNeurodivergence = false,
+            createdAt = 0L,
+        )
 
-                override suspend fun deleteEmotionRecordsByIds(ids: List<Long>) = Unit
-
-                override fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>> = emptyFlow()
-
-                override fun getEmotionRecordsByType(
-                    userId: Int,
-                    feelingType: FeelingType,
-                ): Flow<List<EmotionRecord>> = emptyFlow()
-
-                override suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord? = null
-
-                override suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long = 0L
-
-                override fun getRiskFeatureSnapshots(userId: Int): Flow<List<RiskFeatureSnapshot>> = emptyFlow()
-
-                override suspend fun getLatestRiskFeatureSnapshot(userId: Int): RiskFeatureSnapshot? = null
-
-                override suspend fun insertRiskAssessment(assessment: RiskAssessment): Long = 0L
-
-                override suspend fun deleteAllRiskAssessmentsForUser(userId: Int) = Unit
-
-                override fun getRiskAssessments(userId: Int): Flow<List<RiskAssessment>> = emptyFlow()
-            }
-        val stubWeights =
-            object : RiskWeightsRepository {
-                override fun getWeights(userId: Int) = RiskWeights()
-
-                override fun saveWeights(
-                    userId: Int,
-                    weights: RiskWeights,
-                ) = Unit
-            }
-        return CalculateAndSaveRiskAssessmentUseCase(stubMetrics, stubWeights)
-    }
+    private fun noOpCalculateRiskUseCase(): CalculateAndSaveRiskAssessmentUseCase =
+        CalculateAndSaveRiskAssessmentUseCase(
+            metricsRepository = MetricsRepositoryMock(),
+            riskWeightsRepository = RiskWeightsRepositoryMock(),
+        )
 
     private fun advanceToTimerStep(viewModel: HelpInterventionViewModel) {
         while (viewModel.uiState.value.allSteps
@@ -428,95 +392,4 @@ class HelpInterventionViewModelTest {
             is HelpInterventionStep.TimerStep -> true
             is HelpInterventionStep.ReflectionStep -> "yes"
         }
-
-    private class FakeTicker : Ticker {
-        val flow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-
-        override fun ticks() = flow
-    }
-
-    private class FakeEMIRepository : EMIRepository {
-        val insertedInterventionRecords = mutableListOf<InterventionRecord>()
-
-        override suspend fun insertInterventionRecord(record: InterventionRecord): Long {
-            insertedInterventionRecords += record
-            return 1L
-        }
-
-        override suspend fun updateInterventionRecord(record: InterventionRecord) = Unit
-
-        override fun getInterventionRecords(userId: Int) = flowOf(emptyList<InterventionRecord>())
-
-        override suspend fun insertThoughtRecord(record: com.wesley.beefree.domain.entities.CognitiveThoughtRecord): Long = 1L
-
-        override suspend fun updateThoughtRecord(record: com.wesley.beefree.domain.entities.CognitiveThoughtRecord) = Unit
-
-        override fun getThoughtRecords(userId: Int) = flowOf(emptyList<com.wesley.beefree.domain.entities.CognitiveThoughtRecord>())
-
-        override suspend fun insertInterventionValueLink(link: com.wesley.beefree.domain.entities.InterventionValueLink) = Unit
-    }
-
-    private class FakeOnboardingRepository(
-        private val profile: TreatmentProfile,
-    ) : OnboardingRepository {
-        override suspend fun getOnboardingSession(userId: Int) =
-            UserOnboardingSession(
-                userProfileId = userId,
-                clinicalApproach = profile.name,
-                ppcsScore = null,
-                pgsiScore = null,
-                moralIncongruenceScore = null,
-                frequencyScore = null,
-                moralDisapprovalScore = null,
-                hasNeurodivergence = false,
-                createdAt = 0L,
-            )
-
-        override suspend fun insertOnboardingSession(session: UserOnboardingSession) = 0L
-
-        override suspend fun insertCoreValue(value: UserCoreValue) = 0L
-
-        override suspend fun deleteCoreValue(value: UserCoreValue) {}
-
-        override fun getCoreValues(userId: Int): Flow<List<UserCoreValue>> = flowOf(emptyList())
-
-        override suspend fun insertHobby(hobby: UserHobby) = 0L
-
-        override suspend fun deleteHobby(hobby: UserHobby) {}
-
-        override fun getHobbies(userId: Int): Flow<List<UserHobby>> = flowOf(emptyList())
-
-        override suspend fun insertObjective(objective: UserObjective) = 0L
-
-        override suspend fun deleteObjective(objective: UserObjective) {}
-
-        override fun getObjectives(userId: Int): Flow<List<UserObjective>> = flowOf(emptyList())
-
-        override suspend fun insertSymptom(symptom: UserSymptom) = 0L
-
-        override suspend fun deleteSymptom(symptom: UserSymptom) {}
-
-        override fun getSymptoms(userId: Int): Flow<List<UserSymptom>> = flowOf(emptyList())
-    }
-
-    private class FakeUserProfileRepository : UserProfileRepository {
-        override fun getAllProfiles(): Flow<List<UserProfile>> =
-            flowOf(
-                listOf(
-                    UserProfile(id = 1, profileName = "Test", createdAt = 0L, updatedAt = 0L),
-                ),
-            )
-
-        override suspend fun insertProfile(profile: UserProfile) = 0L
-
-        override suspend fun updateProfile(profile: UserProfile) {}
-
-        override suspend fun getProfileById(id: Int) = null
-
-        override suspend fun associateAddictionToProfile(userAddiction: UserAddiction) = 0L
-
-        override suspend fun removeAddictionFromProfile(userAddiction: UserAddiction) {}
-
-        override fun getAddictionsByUserId(userId: Int): Flow<List<UserAddiction>> = flowOf(emptyList())
-    }
 }
