@@ -8,34 +8,19 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import com.wesley.beefree.R
-import com.wesley.beefree.domain.entities.CognitiveThoughtRecord
-import com.wesley.beefree.domain.entities.EmotionRecord
-import com.wesley.beefree.domain.entities.FeelingType
-import com.wesley.beefree.domain.entities.InterventionRecord
-import com.wesley.beefree.domain.entities.InterventionValueLink
-import com.wesley.beefree.domain.entities.RiskAssessment
-import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
-import com.wesley.beefree.domain.entities.UserAddiction
-import com.wesley.beefree.domain.entities.UserCoreValue
-import com.wesley.beefree.domain.entities.UserHobby
-import com.wesley.beefree.domain.entities.UserObjective
 import com.wesley.beefree.domain.entities.UserOnboardingSession
 import com.wesley.beefree.domain.entities.UserProfile
-import com.wesley.beefree.domain.entities.UserSymptom
-import com.wesley.beefree.domain.intervention.ports.Ticker
-import com.wesley.beefree.domain.intervention.usecases.SaveInterventionSessionUseCase
+import com.wesley.beefree.domain.mocks.EMIRepositoryMock
+import com.wesley.beefree.domain.mocks.MetricsRepositoryMock
+import com.wesley.beefree.domain.mocks.OnboardingRepositoryMock
+import com.wesley.beefree.domain.mocks.RiskWeightsRepositoryMock
+import com.wesley.beefree.domain.mocks.TickerMock
+import com.wesley.beefree.domain.mocks.UserProfileRepositoryMock
 import com.wesley.beefree.domain.onboarding.TreatmentProfile
-import com.wesley.beefree.domain.repository.ports.EMIRepository
-import com.wesley.beefree.domain.repository.ports.MetricsRepository
-import com.wesley.beefree.domain.repository.ports.OnboardingRepository
-import com.wesley.beefree.domain.repository.ports.RiskWeightsRepository
-import com.wesley.beefree.domain.repository.ports.UserProfileRepository
-import com.wesley.beefree.domain.risk.RiskWeights
-import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
+import com.wesley.beefree.domain.usecases.intervention.SaveInterventionSessionUseCase
+import com.wesley.beefree.domain.usecases.risk.CalculateAndSaveRiskAssessmentUseCase
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.HelpInterventionViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
 
@@ -44,7 +29,7 @@ class HelpInterventionScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun stepperShowsCorrectStepCount() {
+    fun stepper_shows_correct_step_count() {
         val viewModel = setupViewModel(TreatmentProfile.TCC)
         composeTestRule.setContent {
             BeeFreeTheme {
@@ -61,7 +46,7 @@ class HelpInterventionScreenTest {
     }
 
     @Test
-    fun nextButtonDisabledWhenNoAnswer() {
+    fun next_button_disabled_when_no_answer() {
         val viewModel = setupViewModel(TreatmentProfile.ACT)
         composeTestRule.setContent {
             BeeFreeTheme {
@@ -79,7 +64,7 @@ class HelpInterventionScreenTest {
     }
 
     @Test
-    fun backButtonHiddenOnFirstStep() {
+    fun back_button_hidden_on_first_step() {
         val viewModel = setupViewModel(TreatmentProfile.HYBRID)
         composeTestRule.setContent {
             BeeFreeTheme {
@@ -96,7 +81,7 @@ class HelpInterventionScreenTest {
     }
 
     @Test
-    fun closeButtonCallsDismiss() {
+    fun close_button_calls_dismiss() {
         var dismissCalled = false
         val viewModel = setupViewModel(TreatmentProfile.PREVENTION)
         composeTestRule.setContent {
@@ -119,7 +104,7 @@ class HelpInterventionScreenTest {
     }
 
     @Test
-    fun tccFlowHasCorrectStepCount() {
+    fun tcc_flow_has_correct_step_count() {
         val viewModel = setupViewModel(TreatmentProfile.TCC)
         composeTestRule.setContent {
             BeeFreeTheme {
@@ -134,29 +119,52 @@ class HelpInterventionScreenTest {
     }
 
     private fun setupViewModel(profile: TreatmentProfile): HelpInterventionViewModel {
-        val onboardingRepository = FakeOnboardingRepository(profile)
-        val userProfileRepository = FakeUserProfileRepository()
-        val emiRepository = FakeEMIRepository()
+        val onboardingRepository =
+            OnboardingRepositoryMock().apply {
+                session =
+                    UserOnboardingSession(
+                        id = 1,
+                        userProfileId = 1,
+                        clinicalApproach = profile.name,
+                        ppcsScore = 10,
+                        pgsiScore = 5,
+                        moralIncongruenceScore = 3,
+                        frequencyScore = 2,
+                        moralDisapprovalScore = 4,
+                        hasNeurodivergence = false,
+                        createdAt = System.currentTimeMillis(),
+                    )
+            }
+        val userProfileRepository =
+            UserProfileRepositoryMock().apply {
+                profiles =
+                    listOf(
+                        UserProfile(
+                            id = 1,
+                            profileName = "TestUser",
+                            createdAt = System.currentTimeMillis(),
+                            updatedAt = System.currentTimeMillis(),
+                        ),
+                    )
+            }
+        val emiRepository = EMIRepositoryMock()
         val useCase =
             SaveInterventionSessionUseCase(
                 emiRepository = emiRepository,
                 onboardingRepository = onboardingRepository,
             )
-        val metricsRepository = FakeMetricsRepository()
-        val riskWeightsRepository = FakeRiskWeightsRepository()
         val calculateAndSaveRiskAssessmentUseCase =
             CalculateAndSaveRiskAssessmentUseCase(
-                metricsRepository = metricsRepository,
-                riskWeightsRepository = riskWeightsRepository,
+                metricsRepository = MetricsRepositoryMock(),
+                riskWeightsRepository = RiskWeightsRepositoryMock(),
             )
-        val ticker = FakeTicker()
 
         return HelpInterventionViewModel(
             onboardingRepository = onboardingRepository,
             userProfileRepository = userProfileRepository,
             saveInterventionSessionUseCase = useCase,
             calculateAndSaveRiskAssessmentUseCase = calculateAndSaveRiskAssessmentUseCase,
-            ticker = ticker,
+            ticker = TickerMock(),
         )
     }
 
@@ -166,179 +174,5 @@ class HelpInterventionScreenTest {
         message: () -> String,
     ) {
         if (expected != actual) throw AssertionError(message())
-    }
-
-    private class FakeOnboardingRepository(
-        private val profile: TreatmentProfile,
-    ) : OnboardingRepository {
-        override suspend fun getOnboardingSession(userId: Int) =
-            UserOnboardingSession(
-                id = 1,
-                userProfileId = userId,
-                clinicalApproach = profile.name,
-                ppcsScore = 10,
-                pgsiScore = 5,
-                moralIncongruenceScore = 3,
-                frequencyScore = 2,
-                moralDisapprovalScore = 4,
-                hasNeurodivergence = false,
-                createdAt = System.currentTimeMillis(),
-            )
-
-        override suspend fun insertOnboardingSession(session: UserOnboardingSession): Long {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun insertCoreValue(value: UserCoreValue): Long {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun deleteCoreValue(value: UserCoreValue) {
-            TODO("Not yet implemented")
-        }
-
-        override fun getCoreValues(userId: Int): Flow<List<UserCoreValue>> = flowOf(emptyList())
-
-        override suspend fun insertHobby(hobby: UserHobby): Long {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun deleteHobby(hobby: UserHobby) {
-            TODO("Not yet implemented")
-        }
-
-        override fun getHobbies(userId: Int): Flow<List<UserHobby>> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun insertObjective(objective: UserObjective): Long {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun deleteObjective(objective: UserObjective) {
-            TODO("Not yet implemented")
-        }
-
-        override fun getObjectives(userId: Int): Flow<List<UserObjective>> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun insertSymptom(symptom: UserSymptom): Long {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun deleteSymptom(symptom: UserSymptom) {
-            TODO("Not yet implemented")
-        }
-
-        override fun getSymptoms(userId: Int): Flow<List<UserSymptom>> {
-            TODO("Not yet implemented")
-        }
-    }
-
-    private class FakeUserProfileRepository : UserProfileRepository {
-        override fun getAllProfiles() =
-            flowOf(
-                listOf(
-                    UserProfile(
-                        id = 1,
-                        profileName = "TestUser",
-                        createdAt = System.currentTimeMillis(),
-                        updatedAt = System.currentTimeMillis(),
-                    ),
-                ),
-            )
-
-        override suspend fun insertProfile(profile: UserProfile): Long {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun updateProfile(profile: UserProfile) {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun getProfileById(id: Int): UserProfile? {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun associateAddictionToProfile(userAddiction: UserAddiction): Long {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun removeAddictionFromProfile(userAddiction: UserAddiction) {
-            TODO("Not yet implemented")
-        }
-
-        override fun getAddictionsByUserId(userId: Int): Flow<List<UserAddiction>> {
-            TODO("Not yet implemented")
-        }
-    }
-
-    private class FakeEMIRepository : EMIRepository {
-        override suspend fun insertInterventionRecord(record: InterventionRecord): Long {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun updateInterventionRecord(record: InterventionRecord) {
-            TODO("Not yet implemented")
-        }
-
-        override fun getInterventionRecords(userId: Int): Flow<List<InterventionRecord>> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun insertThoughtRecord(record: CognitiveThoughtRecord): Long {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun updateThoughtRecord(record: CognitiveThoughtRecord) {
-            TODO("Not yet implemented")
-        }
-
-        override fun getThoughtRecords(userId: Int): Flow<List<CognitiveThoughtRecord>> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun insertInterventionValueLink(link: InterventionValueLink) {
-            TODO("Not yet implemented")
-        }
-    }
-
-    private class FakeTicker : Ticker {
-        override fun ticks(): Flow<Unit> = flowOf()
-    }
-
-    private class FakeMetricsRepository : MetricsRepository {
-        override suspend fun insertEmotionRecord(record: EmotionRecord): Long = 1L
-
-        override fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>> = flowOf(emptyList())
-
-        override fun getEmotionRecordsByType(
-            userId: Int,
-            feelingType: FeelingType,
-        ): Flow<List<EmotionRecord>> = flowOf(emptyList())
-
-        override suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord? = null
-
-        override suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long = 1L
-
-        override fun getRiskFeatureSnapshots(userId: Int): Flow<List<RiskFeatureSnapshot>> = flowOf(emptyList())
-
-        override suspend fun getLatestRiskFeatureSnapshot(userId: Int): RiskFeatureSnapshot? = null
-
-        override suspend fun insertRiskAssessment(assessment: RiskAssessment): Long = 1L
-
-        override suspend fun deleteAllRiskAssessmentsForUser(userId: Int) = Unit
-
-        override fun getRiskAssessments(userId: Int): Flow<List<RiskAssessment>> = flowOf(emptyList())
-    }
-
-    private class FakeRiskWeightsRepository : RiskWeightsRepository {
-        override fun getWeights(userId: Int): RiskWeights = RiskWeights()
-
-        override fun saveWeights(
-            userId: Int,
-            weights: RiskWeights,
-        ) = Unit
     }
 }

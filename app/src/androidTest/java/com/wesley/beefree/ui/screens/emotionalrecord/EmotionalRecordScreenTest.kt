@@ -10,25 +10,20 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import com.wesley.beefree.R
-import com.wesley.beefree.domain.emotion.usecases.SaveEmotionRecordUseCase
-import com.wesley.beefree.domain.entities.EmotionRecord
 import com.wesley.beefree.domain.entities.FeelingType
-import com.wesley.beefree.domain.entities.RiskAssessment
-import com.wesley.beefree.domain.entities.RiskFeatureSnapshot
-import com.wesley.beefree.domain.entities.UserAddiction
 import com.wesley.beefree.domain.entities.UserProfile
-import com.wesley.beefree.domain.repository.ports.MetricsRepository
-import com.wesley.beefree.domain.repository.ports.RiskWeightsRepository
-import com.wesley.beefree.domain.repository.ports.UserProfileRepository
-import com.wesley.beefree.domain.risk.RiskWeights
-import com.wesley.beefree.domain.risk.usecases.CalculateAndSaveRiskAssessmentUseCase
-import com.wesley.beefree.infrastructure.logging.Logger
+import com.wesley.beefree.domain.mocks.MetricsRepositoryMock
+import com.wesley.beefree.domain.mocks.RiskFeatureSnapshotRepositoryMock
+import com.wesley.beefree.domain.mocks.RiskWeightsRepositoryMock
+import com.wesley.beefree.domain.mocks.UserProfileRepositoryMock
+import com.wesley.beefree.domain.usecases.emotion.SaveEmotionRecordUseCase
+import com.wesley.beefree.domain.usecases.risk.CalculateAndSaveRiskAssessmentUseCase
+import com.wesley.beefree.domain.usecases.risk.SaveRiskFeatureSnapshotUseCase
+import com.wesley.beefree.infrastructure.logging.TestLogger
 import com.wesley.beefree.ui.theme.BeeFreeTheme
 import com.wesley.beefree.ui.viewmodel.EmotionalRecordStep
 import com.wesley.beefree.ui.viewmodel.EmotionalRecordViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
 
@@ -39,7 +34,7 @@ class EmotionalRecordScreenTest {
     private val context: Context get() = ApplicationProvider.getApplicationContext()
 
     @Test
-    fun introStepShowsTitleAndStartButton() {
+    fun intro_step_shows_title_and_start_button() {
         val viewModel = buildViewModel()
         composeTestRule.setContent {
             BeeFreeTheme { EmotionalRecordScreen(viewModel = viewModel) }
@@ -55,7 +50,7 @@ class EmotionalRecordScreenTest {
     }
 
     @Test
-    fun clickingStartAdvancesToCaptureStep() {
+    fun clicking_start_advances_to_capture_step() {
         val viewModel = buildViewModel()
         composeTestRule.setContent {
             BeeFreeTheme { EmotionalRecordScreen(viewModel = viewModel) }
@@ -73,7 +68,7 @@ class EmotionalRecordScreenTest {
     }
 
     @Test
-    fun captureBackButtonReturnsToIntro() {
+    fun capture_back_button_returns_to_intro() {
         val viewModel = buildViewModel()
         viewModel.onNext()
         composeTestRule.setContent {
@@ -91,8 +86,11 @@ class EmotionalRecordScreenTest {
     }
 
     @Test
-    fun saveButtonIsDisabledWhileSaving() {
-        val viewModel = buildViewModel(metricsRepository = BlockingMetricsRepository())
+    fun save_button_is_disabled_while_saving() {
+        val viewModel =
+            buildViewModel(
+                metricsRepository = MetricsRepositoryMock().apply { delayOnInsertEmotionRecord = 2_000L },
+            )
         viewModel.onNext()
         composeTestRule.setContent {
             BeeFreeTheme { EmotionalRecordScreen(viewModel = viewModel) }
@@ -109,7 +107,7 @@ class EmotionalRecordScreenTest {
     }
 
     @Test
-    fun successfulSaveAdvancesToDoneStep() {
+    fun successful_save_advances_to_done_step() {
         val viewModel = buildViewModel()
         viewModel.onNext()
         composeTestRule.setContent {
@@ -132,10 +130,13 @@ class EmotionalRecordScreenTest {
     }
 
     @Test
-    fun failedSaveShowsErrorDialog() {
+    fun failed_save_shows_error_dialog() {
         val viewModel =
             buildViewModel(
-                metricsRepository = FailingMetricsRepository("save failed"),
+                metricsRepository =
+                    MetricsRepositoryMock().apply {
+                        throwOnInsertEmotionRecord = IllegalStateException("save failed")
+                    },
             )
         viewModel.onNext()
         composeTestRule.setContent {
@@ -159,10 +160,13 @@ class EmotionalRecordScreenTest {
     }
 
     @Test
-    fun dismissingErrorDialogClearsErrorState() {
+    fun dismissing_error_dialog_clears_error_state() {
         val viewModel =
             buildViewModel(
-                metricsRepository = FailingMetricsRepository("save failed"),
+                metricsRepository =
+                    MetricsRepositoryMock().apply {
+                        throwOnInsertEmotionRecord = IllegalStateException("save failed")
+                    },
             )
         viewModel.onNext()
         composeTestRule.setContent {
@@ -182,7 +186,7 @@ class EmotionalRecordScreenTest {
     }
 
     @Test
-    fun sliderChangeReflectsInCaptureValueLabel() {
+    fun slider_change_reflects_in_capture_value_label() {
         val viewModel = buildViewModel()
         viewModel.onNext()
         viewModel.onSliderChange(FeelingType.SLEEP, 8f)
@@ -195,109 +199,20 @@ class EmotionalRecordScreenTest {
             .assertIsDisplayed()
     }
 
-    private fun buildViewModel(
-        metricsRepository: MetricsRepository = RecordingMetricsRepository(),
-        userProfileRepository: UserProfileRepository = FakeUserProfileRepository(),
-    ): EmotionalRecordViewModel =
+    private fun buildViewModel(metricsRepository: MetricsRepositoryMock = MetricsRepositoryMock()): EmotionalRecordViewModel =
         EmotionalRecordViewModel(
-            userProfileRepository = userProfileRepository,
+            userProfileRepository =
+                UserProfileRepositoryMock().apply {
+                    profiles = listOf(UserProfile(id = 1, profileName = "Test", createdAt = 0L, updatedAt = 0L))
+                },
             saveEmotionRecordUseCase = SaveEmotionRecordUseCase(metricsRepository),
+            saveRiskFeatureSnapshotUseCase = SaveRiskFeatureSnapshotUseCase(RiskFeatureSnapshotRepositoryMock()),
             calculateAndSaveRiskAssessmentUseCase =
                 CalculateAndSaveRiskAssessmentUseCase(
                     metricsRepository = metricsRepository,
-                    riskWeightsRepository = FakeRiskWeightsRepository(),
+                    riskWeightsRepository = RiskWeightsRepositoryMock(),
                 ),
-            logger = NoOpLogger,
+            logger = TestLogger,
+            ioDispatcher = Dispatchers.Unconfined,
         )
-
-    private object NoOpLogger : Logger {
-        override fun d(
-            tag: String,
-            message: String,
-        ) = Unit
-
-        override fun info(
-            tag: String,
-            message: String,
-        ) = Unit
-    }
-
-    private class FakeUserProfileRepository : UserProfileRepository {
-        override fun getAllProfiles(): Flow<List<UserProfile>> =
-            flowOf(
-                listOf(
-                    UserProfile(
-                        id = 1,
-                        profileName = "Test",
-                        createdAt = 0L,
-                        updatedAt = 0L,
-                    ),
-                ),
-            )
-
-        override suspend fun insertProfile(profile: UserProfile): Long = TODO("Not used")
-
-        override suspend fun updateProfile(profile: UserProfile) = TODO("Not used")
-
-        override suspend fun getProfileById(id: Int): UserProfile? = TODO("Not used")
-
-        override suspend fun associateAddictionToProfile(userAddiction: UserAddiction): Long = TODO("Not used")
-
-        override suspend fun removeAddictionFromProfile(userAddiction: UserAddiction) = TODO("Not used")
-
-        override fun getAddictionsByUserId(userId: Int): Flow<List<UserAddiction>> = flowOf(emptyList())
-    }
-
-    private open class RecordingMetricsRepository : MetricsRepository {
-        val inserted = mutableListOf<EmotionRecord>()
-
-        override suspend fun insertEmotionRecord(record: EmotionRecord): Long {
-            inserted.add(record)
-            return inserted.size.toLong()
-        }
-
-        override fun getEmotionRecords(userId: Int): Flow<List<EmotionRecord>> = flowOf(emptyList())
-
-        override fun getEmotionRecordsByType(
-            userId: Int,
-            feelingType: FeelingType,
-        ): Flow<List<EmotionRecord>> = flowOf(emptyList())
-
-        override suspend fun getLatestEmotionRecord(userId: Int): EmotionRecord? = null
-
-        override suspend fun insertRiskFeatureSnapshot(snapshot: RiskFeatureSnapshot): Long = 0L
-
-        override fun getRiskFeatureSnapshots(userId: Int): Flow<List<RiskFeatureSnapshot>> = flowOf(emptyList())
-
-        override suspend fun getLatestRiskFeatureSnapshot(userId: Int): RiskFeatureSnapshot? = null
-
-        override suspend fun insertRiskAssessment(assessment: RiskAssessment): Long = 0L
-
-        override suspend fun deleteAllRiskAssessmentsForUser(userId: Int) {
-        }
-
-        override fun getRiskAssessments(userId: Int): Flow<List<RiskAssessment>> = flowOf(emptyList())
-    }
-
-    private class FailingMetricsRepository(
-        private val errorMessage: String,
-    ) : RecordingMetricsRepository() {
-        override suspend fun insertEmotionRecord(record: EmotionRecord): Long = throw IllegalStateException(errorMessage)
-    }
-
-    private class BlockingMetricsRepository : RecordingMetricsRepository() {
-        override suspend fun insertEmotionRecord(record: EmotionRecord): Long {
-            delay(2_000L)
-            return super.insertEmotionRecord(record)
-        }
-    }
-
-    private class FakeRiskWeightsRepository : RiskWeightsRepository {
-        override fun getWeights(userId: Int): RiskWeights = RiskWeights()
-
-        override fun saveWeights(
-            userId: Int,
-            weights: RiskWeights,
-        ) = Unit
-    }
 }

@@ -15,7 +15,7 @@ class BeeScale0to10Test {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun clickingBarUpdatesValue() {
+    fun clicking_bar_updates_value() {
         var value = 2
 
         composeTestRule.setContent {
@@ -33,7 +33,7 @@ class BeeScale0to10Test {
     }
 
     @Test
-    fun draggingTrackUpdatesValue() {
+    fun dragging_track_updates_value() {
         var value = 2
 
         composeTestRule.setContent {
@@ -47,7 +47,7 @@ class BeeScale0to10Test {
 
         composeTestRule.onNodeWithTag("bee_scale_track").performTouchInput {
             down(Offset(8f, 20f))
-            moveBy(Offset(1000f, 0f))
+            moveBy(Offset(5000f, 0f))
             up()
         }
 
