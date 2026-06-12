@@ -127,6 +127,7 @@ object TccDailyCheckInFlow {
                                 OptionSpec("no", "daily_checkin_objective_review_no"),
                             ),
                         contextHintKey = "daily_checkin_objective_review_context_hint",
+                        isObjectiveReview = true,
                     ),
                     TherapeuticActivityStep(
                         id = STEP_THERAPEUTIC_ACTIVITY,

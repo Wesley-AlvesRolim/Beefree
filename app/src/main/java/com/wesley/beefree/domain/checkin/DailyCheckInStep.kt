@@ -86,6 +86,7 @@ data class SingleSelectWithContextStep(
     val subtitleKey: String,
     val options: List<OptionSpec>,
     val contextHintKey: String? = null,
+    val isObjectiveReview: Boolean = false,
 ) : DailyCheckInStep
 
 data class TherapeuticActivityStep(

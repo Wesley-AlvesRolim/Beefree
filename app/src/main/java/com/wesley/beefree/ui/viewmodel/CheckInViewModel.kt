@@ -255,7 +255,7 @@ class CheckInViewModel(
 
         return buildList {
             for (step in flow.steps) {
-                if (step is SingleSelectWithContextStep && step.id.endsWith("objective_review") && !hasPreviousObjective) {
+                if (step is SingleSelectWithContextStep && step.isObjectiveReview && !hasPreviousObjective) {
                     continue
                 }
                 add(step)
