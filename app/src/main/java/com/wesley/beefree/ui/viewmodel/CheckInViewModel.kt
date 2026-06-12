@@ -144,7 +144,7 @@ class CheckInViewModel(
                     }
 
                     val addiction = userProfileRepository.getAddictionsByUserId(userId).first().firstOrNull()
-                    addictionTypeId = addiction?.userProfileId
+                    addictionTypeId = addiction?.addictionCategoryId
                 }
             } catch (e: Exception) {
                 logger.e(TAG, "Failed to initialize check-in data", e)
