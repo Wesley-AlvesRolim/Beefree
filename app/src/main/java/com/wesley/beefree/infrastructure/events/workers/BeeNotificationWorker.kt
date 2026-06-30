@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
@@ -52,6 +53,11 @@ abstract class BeeNotificationWorker(
                 .setSmallIcon(R.drawable.bee_mono)
                 .setContentTitle(content.title)
                 .setContentText(content.text)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(content.text))
+                .setColor(ContextCompat.getColor(applicationContext, R.color.notification_accent))
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .build()

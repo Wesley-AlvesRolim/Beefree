@@ -67,7 +67,7 @@ class MidnightRiskCalculationWorker(
                 workerClass = MidnightRiskCalculationWorker::class.java,
                 workName = WORK_NAME,
                 channelId = CHANNEL_ID,
-                channelName = "Análise de Risco",
+                channelName = context.getString(R.string.midnight_risk_notification_channel_name),
                 periodHours = 24,
                 initialDelayMs = calculateDelayToMidnight(),
             )
