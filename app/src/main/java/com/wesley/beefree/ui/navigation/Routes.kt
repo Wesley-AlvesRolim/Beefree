@@ -102,6 +102,7 @@ fun Routes(
                 onFinish = {
                     onOnboardingFinished()
                     homeViewModel.refresh()
+                    checkInViewModel.refresh()
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
                     }

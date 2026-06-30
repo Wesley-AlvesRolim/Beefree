@@ -35,6 +35,7 @@ import com.wesley.beefree.infrastructure.storage.adapters.SharedPreferencesKeyVa
 import com.wesley.beefree.infrastructure.storage.adapters.db.AppDatabase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -100,55 +101,72 @@ class CheckInViewModel(
     private val _navigationEvents = MutableSharedFlow<CheckInNavigationDestination>(extraBufferCapacity = 1)
     val navigationEvents: SharedFlow<CheckInNavigationDestination> = _navigationEvents.asSharedFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     private var userId: Int = 0
     private var addictionTypeId: Int? = null
+    private var loadJob: Job? = null
 
     init {
-        viewModelScope.launch {
-            try {
-                withContext(ioDispatcher) {
-                    val profile = userProfileRepository.getAllProfiles().first().firstOrNull()
-                    userId = profile?.id ?: 0
-                    _profileName.value = profile?.profileName
+        refresh()
+    }
 
-                    val alreadyDone =
-                        hasCompletedTodaysCheckInUseCase.execute(userId, profile?.createdAt ?: 0L)
-                    if (alreadyDone) _isCompleted.value = true
+    fun refresh() {
+        loadJob?.cancel()
+        _isLoading.value = true
+        loadJob =
+            viewModelScope.launch {
+                try {
+                    withContext(ioDispatcher) {
+                        val profile = userProfileRepository.getAllProfiles().first().firstOrNull()
+                        userId = profile?.id ?: 0
+                        _profileName.value = profile?.profileName
 
-                    refreshTodaysEmotionRecord(userId)
+                        val alreadyDone =
+                            hasCompletedTodaysCheckInUseCase.execute(userId)
+                        if (alreadyDone) _isCompleted.value = true
 
-                    _previousObjective.value =
-                        loadPreviousObjectiveUseCase.execute(userId)
+                        refreshTodaysEmotionRecord(userId)
 
-                    val session = onboardingRepository.getOnboardingSession(userId)
-                    if (session != null) {
-                        val resolvedProfile =
-                            runCatching {
-                                TreatmentProfile.valueOf(session.clinicalApproach)
-                            }.onFailure { e ->
-                                logger.e(TAG, "Failed to parse treatment profile: ${session.clinicalApproach}", e)
-                            }.getOrDefault(TreatmentProfile.ACT)
-                        _treatmentProfile.value = resolvedProfile
-                        val flow = loadDailyCheckInFlowUseCase.execute(resolvedProfile)
-                        _dailyFlow.value = flow
+                        _previousObjective.value =
+                            loadPreviousObjectiveUseCase.execute(userId)
 
-                        val activityStep = flow.steps.filterIsInstance<TherapeuticActivityStep>().firstOrNull()
-                        if (activityStep != null) {
-                            _selectedActivity.value =
-                                selectTherapeuticActivityUseCase.execute(
-                                    userId = userId,
-                                    activityOptions = activityStep.activityOptions,
-                                )
+                        val session = onboardingRepository.getOnboardingSession(userId)
+                        if (session != null) {
+                            val resolvedProfile =
+                                runCatching {
+                                    TreatmentProfile.valueOf(session.clinicalApproach)
+                                }.onFailure { e ->
+                                    logger.e(TAG, "Failed to parse treatment profile: ${session.clinicalApproach}", e)
+                                }.getOrDefault(TreatmentProfile.ACT)
+                            _treatmentProfile.value = resolvedProfile
+                            val flow = loadDailyCheckInFlowUseCase.execute(resolvedProfile)
+                            _dailyFlow.value = flow
+
+                            val activityStep = flow.steps.filterIsInstance<TherapeuticActivityStep>().firstOrNull()
+                            if (activityStep != null) {
+                                val preSelected =
+                                    selectTherapeuticActivityUseCase.execute(
+                                        userId = userId,
+                                        activityOptions = activityStep.activityOptions,
+                                    )
+                                _selectedActivity.value = preSelected
+                                if (preSelected != null) {
+                                    _dailyAnswers.value += (activityStep.id to DailyCheckInAnswer.TherapeuticActivity(preSelected))
+                                }
+                            }
                         }
-                    }
 
-                    val addiction = userProfileRepository.getAddictionsByUserId(userId).first().firstOrNull()
-                    addictionTypeId = addiction?.addictionCategoryId
+                        val addiction = userProfileRepository.getAddictionsByUserId(userId).first().firstOrNull()
+                        addictionTypeId = addiction?.addictionCategoryId
+                    }
+                } catch (e: Exception) {
+                    logger.e(TAG, "Failed to initialize check-in data", e)
+                } finally {
+                    _isLoading.value = false
                 }
-            } catch (e: Exception) {
-                logger.e(TAG, "Failed to initialize check-in data", e)
             }
-        }
     }
 
     fun startDailyFlow() {

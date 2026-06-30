@@ -1,8 +1,13 @@
 package com.wesley.beefree.ui.screens.checkin.daily
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import com.wesley.beefree.ui.viewmodel.CheckInViewModel
 import com.wesley.beefree.ui.viewmodel.DailyCheckInPhase
 
@@ -22,6 +27,14 @@ fun DailyCheckInRouter(
     val selectedActivity by viewModel.selectedActivity.collectAsState()
     val todaysEmotionRecord by viewModel.todaysEmotionRecord.collectAsState()
     val previousObjective by viewModel.previousObjective.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
 
     val resolvedFlow = flow ?: return
 
