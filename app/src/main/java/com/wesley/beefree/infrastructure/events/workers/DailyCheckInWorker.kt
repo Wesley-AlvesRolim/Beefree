@@ -58,7 +58,7 @@ class DailyCheckInWorker(
                 workerClass = DailyCheckInWorker::class.java,
                 workName = WORK_NAME,
                 channelId = CHANNEL_ID,
-                channelName = "Check-in Diário",
+                channelName = context.getString(R.string.check_in_notification_channel_name),
                 periodHours = 24,
                 initialDelayMs = calculateDelayToNextNotification(),
             )

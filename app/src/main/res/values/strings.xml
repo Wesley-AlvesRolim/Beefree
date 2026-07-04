@@ -280,8 +280,9 @@
     <string name="check_in_weekly_continue">Continuar Jornada</string>
     <string name="check_in_weekly_conclude">Concluir Check-in</string>
 
+    <string name="check_in_notification_channel_name">Check-in Diário</string>
     <string name="check_in_notification_title">Hora do check-in!</string>
-    <string name="check_in_notification_body">Como foi seu dia? Registre seu humor e dopamina agora.</string>
+    <string name="check_in_notification_body">Como foi seu dia? Reserve um minuto para registrar.</string>
 
     <!-- Errors -->
     <string name="export_data_error">Falha ao exportar os seus dados!</string>
@@ -383,10 +384,10 @@
     <string name="daily_checkin_back">Voltar</string>
 
     <!-- Daily Check-in – ACT steps -->
-    <string name="daily_checkin_act_craving_title">Nível de craving</string>
+    <string name="daily_checkin_act_craving_title">Nível de impulso</string>
     <string name="daily_checkin_act_craving_subtitle">Quanto você sentiu vontade de usar hoje?</string>
-    <string name="daily_checkin_act_craving_low">Sem craving</string>
-    <string name="daily_checkin_act_craving_high">Craving intenso</string>
+    <string name="daily_checkin_act_craving_low">Sem impulso</string>
+    <string name="daily_checkin_act_craving_high">Impulso intenso</string>
     <string name="daily_checkin_act_acceptance_title">Aceitação</string>
     <string name="daily_checkin_act_acceptance_subtitle">Quanto você conseguiu aceitar seus pensamentos sem lutar?</string>
     <string name="daily_checkin_act_acceptance_low">Muita luta</string>
@@ -416,15 +417,15 @@
     <string name="daily_checkin_tcc_anxiety_label">Ansiedade</string>
     <string name="daily_checkin_tcc_anxiety_low">Sem ansiedade</string>
     <string name="daily_checkin_tcc_anxiety_high">Muito ansioso</string>
-    <string name="daily_checkin_tcc_craving_title">Craving</string>
-    <string name="daily_checkin_tcc_craving_subtitle">Qual foi a intensidade do seu craving hoje?</string>
-    <string name="daily_checkin_tcc_craving_low">Sem craving</string>
-    <string name="daily_checkin_tcc_craving_high">Craving intenso</string>
+    <string name="daily_checkin_tcc_craving_title">Impulso</string>
+    <string name="daily_checkin_tcc_craving_subtitle">Qual foi a intensidade do seu impulso hoje?</string>
+    <string name="daily_checkin_tcc_craving_low">Sem impulso</string>
+    <string name="daily_checkin_tcc_craving_high">Impulso intenso</string>
     <string name="daily_checkin_tcc_triggers_title">Gatilhos</string>
-    <string name="daily_checkin_tcc_triggers_subtitle">Quais situações ou emoções desencadearam o craving?</string>
+    <string name="daily_checkin_tcc_triggers_subtitle">Quais situações ou emoções desencadearam o impulso?</string>
     <string name="daily_checkin_tcc_triggers_context_hint">Descreva o contexto...</string>
     <string name="daily_checkin_trigger_sleep">Sono</string>
-    <string name="daily_checkin_trigger_craving">Craving</string>
+    <string name="daily_checkin_trigger_craving">Impulso</string>
     <string name="daily_checkin_trigger_boredom">Tédio</string>
     <string name="daily_checkin_trigger_stress">Estresse</string>
     <string name="daily_checkin_trigger_loneliness">Solidão</string>
@@ -472,8 +473,9 @@
     <string name="scale_step_presence_hint">Seu estado mental e emocional</string>
 
     <!-- Emotional Record notifications -->
+    <string name="emotional_record_notification_channel_name">Registro Emocional</string>
     <string name="emotional_record_notification_title">Como você está agora?</string>
-    <string name="emotional_record_notification_body">Registro rápido — 6 leituras em ~30s.</string>
+    <string name="emotional_record_notification_body">Registre como você se sente agora. Leva menos de 1 minuto.</string>
 
     <!-- SOS Widget -->
     <string name="sos_widget_description">Botão SOS para abrir o suporte imediato do BeeFree</string>
@@ -653,14 +655,15 @@
     <string name="done">Concluído</string>
 
     <!-- Midnight risk notification -->
+    <string name="midnight_risk_notification_channel_name">Análise de Risco</string>
     <string name="midnight_risk_notification_title">Atenção ao seu bem-estar</string>
-    <string name="midnight_risk_notification_body">Identificamos momentos de risco para amanhã. Veja como se preparar.</string>
+    <string name="midnight_risk_notification_body">Identificamos horários de maior risco para hoje. Veja como se preparar.</string>
 
     <!-- Hourly risk reminder -->
     <string name="hourly_risk_notification_channel_name">Lembrete de hobbies</string>
     <string name="hourly_risk_notification_title">Hora de se cuidar</string>
-    <string name="hourly_risk_notification_body_with_hobby">Este próximo horário parece sensível. Tente agora: %1$s.</string>
-    <string name="hourly_risk_notification_body_generic">Este próximo horário parece sensível. Faça uma atividade prazerosa agora.</string>
+    <string name="hourly_risk_notification_body_with_hobby">A próxima hora pode ser um momento de risco. Uma sugestão para agora: %1$s.</string>
+    <string name="hourly_risk_notification_body_generic">A próxima hora pode ser um momento de risco. Faça uma atividade prazerosa.</string>
 
     <!-- Home: Risk Assessment Today -->
     <string name="home_risk_assessment_title">Avaliação de risco do dia</string>

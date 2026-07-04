@@ -92,11 +92,8 @@ fun NavBarWithItems(navController: NavHostController) {
 
     fun onClick(screen: Screen) {
         navController.navigate(screen.route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
+            popUpTo(navController.graph.findStartDestination().id)
             launchSingleTop = true
-            restoreState = true
         }
     }
 

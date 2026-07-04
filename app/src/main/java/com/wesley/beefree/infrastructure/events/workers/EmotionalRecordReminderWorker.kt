@@ -61,7 +61,7 @@ class EmotionalRecordReminderWorker(
                 workerClass = EmotionalRecordReminderWorker::class.java,
                 workName = WORK_NAME,
                 channelId = CHANNEL_ID,
-                channelName = "Registro Emocional",
+                channelName = context.getString(R.string.emotional_record_notification_channel_name),
                 periodHours = NOTIFICATION_HOURLY,
                 initialDelayMs = NOTIFICATION_INTERVAL_MS,
             )

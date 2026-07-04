@@ -2,6 +2,7 @@ package com.wesley.beefree.ui.viewmodel
 
 import com.wesley.beefree.domain.checkin.ActivityType
 import com.wesley.beefree.domain.checkin.DailyCheckInAnswer
+import com.wesley.beefree.domain.entities.DailyCheckIn
 import com.wesley.beefree.domain.entities.EmotionRecord
 import com.wesley.beefree.domain.entities.FeelingType
 import com.wesley.beefree.domain.entities.UserOnboardingSession
@@ -126,6 +127,87 @@ class CheckInViewModelTest {
             assertEquals(emptyMap<String, DailyCheckInAnswer>(), viewModel.dailyAnswers.value)
             assertEquals(emptyList<String>(), viewModel.dailyVisitedSteps.value)
             assertNull(viewModel.selectedActivity.value)
+        }
+
+    @Test
+    fun `isCompleted is false when check-in was done on a different day`() =
+        runTest {
+            val dispatcher = StandardTestDispatcher(testScheduler)
+            Dispatchers.setMain(dispatcher)
+            val yesterday = System.currentTimeMillis() - 86_400_000L
+            val repo =
+                CheckInRepositoryMock().apply {
+                    dailyCheckIns =
+                        listOf(
+                            DailyCheckIn(
+                                userProfileId = 1,
+                                treatmentProfile = TreatmentProfile.ACT,
+                                answers = emptyMap(),
+                                checkedInAt = yesterday,
+                            ),
+                        )
+                }
+            val viewModel = createViewModel(ioDispatcher = dispatcher, checkInRepository = repo)
+
+            advanceUntilIdle()
+
+            assertEquals(false, viewModel.isCompleted.value)
+        }
+
+    @Test
+    fun `pre-selected activity is added to answers on init so next button is enabled`() =
+        runTest {
+            val dispatcher = StandardTestDispatcher(testScheduler)
+            Dispatchers.setMain(dispatcher)
+            val viewModel =
+                createViewModel(
+                    ioDispatcher = dispatcher,
+                    onboardingRepository =
+                        OnboardingRepositoryMock().apply {
+                            session =
+                                UserOnboardingSession(
+                                    id = 1,
+                                    userProfileId = 1,
+                                    clinicalApproach = TreatmentProfile.ACT.name,
+                                    ppcsScore = null,
+                                    pgsiScore = null,
+                                    moralIncongruenceScore = null,
+                                    frequencyScore = null,
+                                    moralDisapprovalScore = null,
+                                    hasNeurodivergence = false,
+                                    createdAt = 0L,
+                                )
+                        },
+                )
+
+            advanceUntilIdle()
+
+            val answer = viewModel.dailyAnswers.value[ActDailyCheckInFlow.STEP_THERAPEUTIC_ACTIVITY]
+            assertTrue(answer is DailyCheckInAnswer.TherapeuticActivity)
+        }
+
+    @Test
+    fun `isCompleted is true when check-in was done today`() =
+        runTest {
+            val dispatcher = StandardTestDispatcher(testScheduler)
+            Dispatchers.setMain(dispatcher)
+            val repo =
+                CheckInRepositoryMock().apply {
+                    dailyCheckIns =
+                        listOf(
+                            DailyCheckIn(
+                                userProfileId = 1,
+                                treatmentProfile = TreatmentProfile.ACT,
+                                answers = emptyMap(),
+                                checkedInAt = System.currentTimeMillis(),
+                            ),
+                        )
+                }
+            val viewModel = createViewModel(ioDispatcher = dispatcher, checkInRepository = repo)
+
+            advanceUntilIdle()
+
+            assertEquals(true, viewModel.isCompleted.value)
         }
 
     @Test

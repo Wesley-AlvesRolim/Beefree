@@ -50,7 +50,7 @@ class LoadHomeDataUseCase(
 ) {
     suspend fun execute(): HomeData =
         coroutineScope {
-            val user = resolveUser() ?: throw IllegalStateException("User profile not found")
+            val user = resolveUser() ?: return@coroutineScope HomeData.OnboardingRequired
             val userId = user.id ?: throw IllegalStateException("User ID not found")
             val userAddiction = userProfileRepository.getAddictionsByUserId(userId).first().firstOrNull()
             if (userAddiction == null) {
